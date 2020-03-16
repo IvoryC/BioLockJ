@@ -630,15 +630,20 @@ public class MetaUtil {
 
 	private static void report() {
 		try {
-			final String exId = getSampleIds().get( 0 );
+			
 			Log.info( MetaUtil.class, META_SPACER );
 			Log.info( MetaUtil.class, "===> New Metadata file: " + getPath() );
 			Log.info( MetaUtil.class, "===> Sample IDs: " + getSampleIds() );
 			Log.info( MetaUtil.class, "===> Metadata fields: " + getFieldNames() );
-			Log.info( MetaUtil.class, "===> 1st Record: [" + exId + "]: " + getRecord( exId ) );
+			if ( getSampleIds().size() > 0 ) {
+				final String exId = getSampleIds().get( 0 );
+				Log.info( MetaUtil.class, "===> 1st Record: [" + exId + "]: " + getRecord( exId ) );
+			}else {
+				Log.warn(MetaUtil.class, "No samples to report.");
+			}
 			Log.info( MetaUtil.class, META_SPACER );
 		} catch( final MetadataException ex ) {
-			Log.error( MetaUtil.class, "Failed to log MetaUtil reprot", ex );
+			Log.error( MetaUtil.class, "Failed to log MetaUtil report", ex );
 		}
 	}
 	
