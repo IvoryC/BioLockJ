@@ -12,6 +12,7 @@
 package biolockj;
 
 import biolockj.api.API_Exception;
+import biolockj.exception.NonExecutable;
 
 /**
  * Single Java class to hold shared constant values referenced my multiple classes.
@@ -32,6 +33,7 @@ public class Constants {
 		Properties.registerProp( DEFAULT_STATS_MODULE, Properties.STRING_TYPE, DEFAULT_STATS_MODULE_DESC );
 		Properties.registerProp( DETACH_JAVA_MODULES, Properties.BOOLEAN_TYPE, DETACH_JAVA_MODULES_DESC );
 		Properties.registerProp( DISABLE_ADD_IMPLICIT_MODULES, Properties.BOOLEAN_TYPE, DISABLE_ADD_IMPLICIT_MODULES_DESC );
+		Properties.registerProp( DISABLE_EXE_CHECK, Properties.BOOLEAN_TYPE, DISABLE_EXE_CHECK_DESC );
 		Properties.registerProp( DISABLE_PRE_REQ_MODULES, Properties.BOOLEAN_TYPE, DISABLE_PRE_REQ_MODULES_DESC );
 		Properties.registerProp( EXE_AWK, Properties.EXE_PATH, "" );
 		Properties.registerProp( EXE_DOCKER, Properties.EXE_PATH, "" );
@@ -217,6 +219,14 @@ public class Constants {
 	 */
 	public static final String DEVELOPER_NOTE = "Developer note: ";
 	
+	/**
+	 * {@link biolockj.Config} {@value biolockj.Properties#BOOLEAN_TYPE } property: {@value #DISABLE_EXE_CHECK}<br>
+	 * {@value #DISABLE_EXE_CHECK_DESC}
+	 */
+	public static final String DISABLE_EXE_CHECK = "pipeline.disableExeCheck";
+	private static String DISABLE_EXE_CHECK_DESC = "If set to true, the exe.* properties will not be checked. Avoids " 
+					+ NonExecutable.class.getSimpleName() + " exception; use with caution. Use module-specif form.";
+
 	/**
 	 * {@link biolockj.Config} {@value biolockj.Properties#BOOLEAN_TYPE} property: {@value #DISABLE_ADD_IMPLICIT_MODULES}<br>
 	 * {@value #DISABLE_ADD_IMPLICIT_MODULES_DESC}

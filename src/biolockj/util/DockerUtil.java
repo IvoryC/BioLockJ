@@ -323,6 +323,30 @@ public class DockerUtil {
 		if (infoType == INSPECT) return "docker inspect " + getContainerId();
 		else return "docker version";
 	}
+	
+	public static String getCurrentImage() throws IOException, DockerVolCreationException {
+		if ( !inDockerEnv() ) return null;
+		if (currentImage == null) { inspectForCurrentImage(); }
+		return currentImage;
+	}
+
+	private static void inspectForCurrentImage() throws IOException, DockerVolCreationException {
+		String cmd = "docker inspect --format='{{.Config.Image}}' " + getContainerId();
+		StringBuffer sb = new StringBuffer();
+		try {
+			Process p = Runtime.getRuntime().exec( cmd );
+			final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+			String s;
+			while( ( s = br.readLine() ) != null ) {
+				sb.append( s );
+			}
+			p.waitFor();
+			p.destroy();
+		} catch( IOException | InterruptedException e ) {
+			e.printStackTrace();
+		} 
+		currentImage = sb.toString();
+	}
 
 	/**
 	 * 
@@ -415,8 +439,8 @@ public class DockerUtil {
 				id = line.substring( line.indexOf( "docker/" ) + 7 );
 			}
 		}
-		if (id==null) throw new DockerVolCreationException( "Failed to determine the id of the current container." );
 		br.close();
+		if (id==null) throw new DockerVolCreationException( "Failed to determine the id of the current container." );
 		return id;
 	}
 
@@ -444,7 +468,7 @@ public class DockerUtil {
 		}
 	}
 
-	public static boolean isLocalImage(BioModule module, String image) throws SpecialPropertiesException, InterruptedException {
+	public static boolean isLocalImage(BioModule module, String image) throws SpecialPropertiesException, InterruptedException, ConfigFormatException {
 		String cmd = Config.getExe( module, Constants.EXE_DOCKER ) + " image inspect " + image;
 		int exit = -1;
 		try {
@@ -750,4 +774,7 @@ public class DockerUtil {
 	public static final String DEFAULT_IMAGE_TAG = "latest";
 	
 	private static DockerMountMapper mapper = null;
+
+	private static String currentImage = null;
+
 }

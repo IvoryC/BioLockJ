@@ -434,6 +434,12 @@ public class BashScriptBuilder {
 		if( prologue != null ) lines.add( prologue + RETURN );
 		return lines;
 	}
+	public static String oneLineLoadModules(final ScriptModule module) {
+		List<String> list = loadModules( module );
+		String string = "";
+		for (String line : list) {string += (line + ";") ; }
+		return string;
+	}
 
 	/**
 	 * Should the worker be saved. If it is NOT saved, it is left open to have more work lines added.
