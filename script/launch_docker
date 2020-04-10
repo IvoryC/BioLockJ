@@ -279,11 +279,11 @@ print_info(){
 	elif restartDir_has_status_flag; then 
 		echo "Restarting pipeline:  ${pipeDir}"
 		print_action_options
-		print_pipeline_status_and_exit ${pipeDir} 15
+		print_pipeline_status_and_exit ${pipeDir} 600
 	elif [ "${initDir}" != "${pipeDir}" ] ; then 
 		echo "Building pipeline:  ${pipeDir}"
 		print_action_options
-		print_pipeline_status_and_exit ${pipeDir} 15
+		print_pipeline_status_and_exit ${pipeDir} 600
 	else
 		echo "Pipeline may have failed to launch - check $BLJ_PROJ for new pipeline"
 		print_action_options
