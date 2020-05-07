@@ -54,6 +54,7 @@ public class Pipeline {
 		if( hasScripts ) waitForModuleScripts();
 		Thread.sleep( Config.getPositiveInteger( exeModule(), Constants.SCRIPT_DELAY_FOR_FILE_UPDATES ) * 1000 );
 		exeModule().cleanUp();
+		MetaUtil.createSavePointIfNeeded( exeModule() );
 		ValidationUtil.validateModule( exeModule() );
 		if( !runDetached ) SummaryUtil.reportSuccess( exeModule() );
 		Config.saveModuleProps( exeModule() );

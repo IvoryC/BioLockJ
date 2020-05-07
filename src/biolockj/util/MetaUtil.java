@@ -48,7 +48,7 @@ public class MetaUtil {
 	 * @throws FileNotFoundException if metadata file not found
 	 * @returns true if the column is added to the metadata; false if the column already exists.
 	 */
-	public static boolean addColumn( final String colName, final Map<String, String> map, final File fileDir,
+	public static boolean addColumn( final String colName, final Map<String, String> map,
 		final boolean removeMissingIds ) throws MetadataException, IOException, DockerVolCreationException {
 		Log.info( MetaUtil.class, "Adding new field [" + colName + "] to metadata." );
 		
@@ -64,30 +64,32 @@ public class MetaUtil {
 			}
 		}
 				
+		hasModifiedData = true;
 		getFieldNames().add( colName );
 		for (String sampleId: getSampleIds() ) {
-			//List<String> record = getRecord( sampleId );
 			getRecord( sampleId ).add( map.get( sampleId ) );
-			//metadataMap.put(sampleId, record);
 		}
 		
 		createSavePoint(Pipeline.exeModule());
 		return true;
-	}
-	public static boolean addColumn( final String colName, final Map<String, String> map,
-		final boolean removeMissingIds ) throws MetadataException, IOException, DockerVolCreationException {
-		return addColumn(colName, map, null, removeMissingIds);
 	}
 	
 	public static void createSavePoint(BioModule module) throws DockerVolCreationException, MetadataException, IOException {
 		final File newMeta = new File( module.getMetadata().getAbsolutePath() );
 		if ( writeMetaTable(newMeta) ) {
 			setFile( newMeta );
+			hasModifiedData = false;
 		}else {
 			throw new MetadataException( "An error occured while attempting to save the metadata to \"" 
 							+ DockerUtil.deContainerizePath( newMeta.getAbsolutePath() ) + "\"." );
 		}
 		
+	}
+	
+	public static void createSavePointIfNeeded(BioModule module) throws DockerVolCreationException, MetadataException, IOException {
+		if (hasModifiedData) {
+			createSavePoint(module);
+		}
 	}
 	
 	private static boolean writeMetaTable(final File newMeta) throws  MetadataException {
@@ -702,6 +704,11 @@ public class MetaUtil {
 	 * Key string is a file name, value string is a sample id from the metadata.
 	 */
 	private static HashMap<String, String> nameToSample = null;
+	
+	/**
+	 * Boolean indicating if there are modifications to the metadata not reflected in a file on the file system.
+	 */
+	private static boolean hasModifiedData = false;
 	
 	/**
 	 * {@link biolockj.Config} property {@value #META_BARCODE_COLUMN}
