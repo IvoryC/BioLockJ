@@ -245,7 +245,7 @@ public class TrimPrimers extends JavaModuleImpl implements SeqModule, ApiModule,
 			}
 		}
 
-		MetaUtil.addColumn( getMetaColName(), getValidReadsPerSample(), getOutputDir(), true );
+		MetaUtil.addColumn( getMetaColName(), getValidReadsPerSample(), true );
 	}
 
 	/**

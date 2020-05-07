@@ -98,8 +98,10 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 				generateOtuput( OtuUtil.getOtuCountFile( getOutputDir(), sampleId, getMetaColName() ), data );
 		}
 
-		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) ) MetaUtil
-			.addColumn( getMetaColName() + "_" + Constants.OTU_COUNT, this.hitsPerSample, getOutputDir(), true );
+		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) ) {
+			MetaUtil.addColumn( getMetaColName() + "_" + Constants.OTU_COUNT, this.hitsPerSample, true );
+		}
+			
 	}
 
 	/**

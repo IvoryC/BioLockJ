@@ -55,9 +55,9 @@ public class RemoveLowPathwayCounts extends Humann2CountModule {
 				!Config.getBoolean( this, Constants.HN2_DISABLE_PATH_ABUNDANCE ) &&
 				file.getName().contains( Constants.HN2_PATH_ABUND_SUM ) ) {
 				MetaUtil.addColumn( getMetaColName() + "_" + Constants.HN2_UNIQUE_PATH_COUNT,
-					this.uniquePathwaysPerSample, getTempDir(), true );
+					this.uniquePathwaysPerSample, true );
 				MetaUtil.addColumn( getMetaColName() + "_" + Constants.HN2_TOTAL_PATH_COUNT,
-					this.totalPathwaysPerSample, getOutputDir(), true );
+					this.totalPathwaysPerSample, true );
 			}
 		}
 	}

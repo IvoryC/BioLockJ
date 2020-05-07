@@ -151,7 +151,7 @@ public class SeqFileValidator extends JavaModuleImpl implements SeqModule, ApiMo
 
 		if( SeqUtil.hasPairedReads() ) verifyPairedSeqs();
 
-		MetaUtil.addColumn( getMetaColName(), this.readsPerSample, getOutputDir(), true );
+		MetaUtil.addColumn( getMetaColName(), this.readsPerSample, true );
 	}
 
 	/**

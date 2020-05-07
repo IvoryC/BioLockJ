@@ -136,7 +136,7 @@ public class AddMetadataToTaxaTables extends TaxaCountModule implements ApiModul
 			}
 		}
 
-		MetaUtil.addColumn( HIT_RATIO, this.hitRatioPerSample, getOutputDir(), true );
+		MetaUtil.addColumn( HIT_RATIO, this.hitRatioPerSample, true );
 	}
 
 	/**

@@ -111,7 +111,8 @@ public class PearMergeReads extends SeqModuleImpl implements ApiModule, ReadCoun
 				this.readsPerSample.put( SeqUtil.getSampleId( f ), Long.toString( count ) );
 			}
 
-			MetaUtil.addColumn( getMetaColName(), this.readsPerSample, getOutputDir(), true );
+			MetaUtil.addColumn( getMetaColName(), this.readsPerSample, true );
+			MetaUtil.createSavePoint( this );
 		} else Log.warn( getClass(),
 			"Counts for # merged reads/sample already found in metadata, not re-counting " + MetaUtil.getPath() );
 		RegisterNumReads.setNumReadFieldName( getMetaColName() );

@@ -79,8 +79,10 @@ public class RemoveLowOtuCounts extends OtuCountModule implements ApiModule{
 
 		final TreeMap<String, TreeSet<String>> lowCountOtus = removeLowOtuCounts( sampleOtuCounts );
 		logLowCountOtus( lowCountOtus );
-		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) ) MetaUtil
-			.addColumn( getMetaColName() + "_" + Constants.OTU_COUNT, this.hitsPerSample, getOutputDir(), true );
+		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) ) {
+			MetaUtil.addColumn( getMetaColName() + "_" + Constants.OTU_COUNT, this.hitsPerSample, true );
+		}
+			
 	}
 
 	/**

@@ -116,8 +116,9 @@ public abstract class ParserModuleImpl extends JavaModuleImpl implements ParserM
 		Log.debug( getClass(), "# Samples parsed: " + getParsedSamples().size() );
 		buildOtuCountFiles();
 
-		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) )
-			MetaUtil.addColumn( NUM_OTUS, getHitsPerSample(), getOutputDir(), true );
+		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) ) {
+			MetaUtil.addColumn( NUM_OTUS, getHitsPerSample(), true );
+		}
 	}
 
 	/**

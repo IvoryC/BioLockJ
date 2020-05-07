@@ -78,7 +78,7 @@ public class RegisterNumReads extends JavaModuleImpl implements SeqModule, ReadC
 				this.readsPerSample.put( SeqUtil.getSampleId( f ), Long.toString( count ) );
 			}
 
-		MetaUtil.addColumn( getNumReadFieldName(), this.readsPerSample, getOutputDir(), true );
+		MetaUtil.addColumn( getNumReadFieldName(), this.readsPerSample, true );
 	}
 
 	/**
