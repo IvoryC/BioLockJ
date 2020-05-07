@@ -18,6 +18,7 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
+import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.ConfigViolationException;
 import biolockj.exception.DockerVolCreationException;
@@ -45,38 +46,80 @@ public class MetaUtil {
 	 * @throws IOException if errors occur attempting to read metadata file
 	 * @throws DockerVolCreationException 
 	 * @throws FileNotFoundException if metadata file not found
+	 * @returns true if the column is added to the metadata; false if the column already exists.
 	 */
-	public static void addColumn( final String colName, final Map<String, String> map, final File fileDir,
+	public static boolean addColumn( final String colName, final Map<String, String> map, final File fileDir,
 		final boolean removeMissingIds ) throws MetadataException, IOException, DockerVolCreationException {
-		final File newMeta = new File( fileDir.getAbsolutePath() + File.separator + getFileName() );
-		Log.info( MetaUtil.class, "Adding new field [" + colName + "] to metadata: " + newMeta.getAbsolutePath() );
-		Log.debug( MetaUtil.class, "Current metadata: " + getPath() );
+		Log.info( MetaUtil.class, "Adding new field [" + colName + "] to metadata." );
+		
 		if( getFieldNames().contains( colName ) ) {
 			Log.warn( MetaUtil.class, "Metadata column [" + colName + "] already exists in: " + getPath() );
-			return;
+			return false;
 		}
 
-		final Set<String> sampleIds = map.keySet();
-		final BufferedReader reader = BioLockJUtil.getFileReader( getMetadata() );
-		setFile( newMeta );
-		final BufferedWriter writer = new BufferedWriter( new FileWriter( getMetadata() ) );
-		try {
-			writer.write( reader.readLine() + DEFAULT_COL_DELIM + colName + Constants.RETURN );
-			for( String line = reader.readLine(); line != null; line = reader.readLine() ) {
-				final StringTokenizer st = new StringTokenizer( line, DEFAULT_COL_DELIM );
-				final String id = st.nextToken();
-				if( sampleIds.contains( id ) )
-					writer.write( line + DEFAULT_COL_DELIM + map.get( id ) + Constants.RETURN );
-				else if( !removeMissingIds )
-					writer.write( line + DEFAULT_COL_DELIM + getNullValue( null ) + Constants.RETURN );
-				else Log.warn( MetaUtil.class, getRemoveIdMsg( id ) );
-
+		for (String key : map.keySet()) {
+			if ( ! getSampleIds().contains( key ) ) {
+				throw new MetadataException( "The sample id [" + key + "] is not part of the existing sample set:" 
+								+ System.lineSeparator() + BioLockJUtil.getCollectionAsString( getSampleIds() ) );
 			}
-		} finally {
-			reader.close();
-			writer.close();
-			refreshCache();
 		}
+				
+		getFieldNames().add( colName );
+		for (String sampleId: getSampleIds() ) {
+			//List<String> record = getRecord( sampleId );
+			getRecord( sampleId ).add( map.get( sampleId ) );
+			//metadataMap.put(sampleId, record);
+		}
+		
+		createSavePoint(Pipeline.exeModule());
+		return true;
+	}
+	public static boolean addColumn( final String colName, final Map<String, String> map,
+		final boolean removeMissingIds ) throws MetadataException, IOException, DockerVolCreationException {
+		return addColumn(colName, map, null, removeMissingIds);
+	}
+	
+	public static void createSavePoint(BioModule module) throws DockerVolCreationException, MetadataException, IOException {
+		final File newMeta = new File( module.getMetadata().getAbsolutePath() );
+		if ( writeMetaTable(newMeta) ) {
+			setFile( newMeta );
+		}else {
+			throw new MetadataException( "An error occured while attempting to save the metadata to \"" 
+							+ DockerUtil.deContainerizePath( newMeta.getAbsolutePath() ) + "\"." );
+		}
+		
+	}
+	
+	private static boolean writeMetaTable(final File newMeta) throws  MetadataException {
+		boolean success = false;
+		try {
+			final BufferedWriter writer = new BufferedWriter( new FileWriter( newMeta ) );
+			List<String> samples = new ArrayList<>( metadataMap.keySet() );
+			Collections.sort(samples);
+			writer.write( metaId );
+			Log.debug(MetaUtil.class, "writting header starting with: " + metaId);
+			for (String heading : getFieldNames() ) {
+				writer.write( DEFAULT_COL_DELIM + heading );
+			}
+			writer.write( Constants.RETURN );
+			
+			for (String sampleId : samples) {
+				if (sampleId.equals( metaId )) continue;
+				Log.debug(MetaUtil.class, "writting sample: " + sampleId);
+				writer.write( sampleId );
+				for (String field : getRecord( sampleId )) {
+					writer.write( DEFAULT_COL_DELIM + field );
+				}
+				writer.write( Constants.RETURN );
+			}
+			writer.close();
+			success=true;
+		} catch(BioLockJException be) {
+			throw be;
+		} catch (Exception ex) {
+			Log.error(MetaUtil.class, ex.toString() );
+		}
+		return success;
 	}
 
 	/**
@@ -537,11 +580,13 @@ public class MetaUtil {
 	 * @throws DockerVolCreationException 
 	 */
 	public static void setFile( final File file ) throws MetadataException, DockerVolCreationException {
+		if( metadataFile != null ) Log.debug( MetaUtil.class, "Previous metadata: " + getPath() );
 		if( file == null ) throw new MetadataException( "Cannot pass NULL to MetaUtil.setFile( file )" );
 		if( metadataFile != null && file.getAbsolutePath().equals( getPath() ) )
 			Log.debug( MetaUtil.class, "===> MetaUtil.setFile() not required, no changes to: " + getPath() );
 		BioLockJUtil.ignoreFile( file );
 		metadataFile = file;
+		if( metadataFile != null ) Log.info( MetaUtil.class, "New metadata: " + getPath() );
 	}
 
 	private static void cacheMetadata( final List<List<String>> data ) {

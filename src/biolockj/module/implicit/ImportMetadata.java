@@ -66,20 +66,11 @@ public class ImportMetadata extends BioModuleImpl implements ApiModule {
 		this.configMeta = MetaUtil.getMetadata();
 		if( this.configMeta == null ) buildNewMetadataFile();
 		else {
-			Log.info( getClass(), "Importing metadata (column delim=" +
-				Config.requireString( this, MetaUtil.META_COLUMN_DELIM ) + "): " + MetaUtil.getPath() );
+			Log.info( getClass(), "Importing metadata: " + MetaUtil.getPath() );
 
-			final BufferedReader reader = BioLockJUtil.getFileReader( MetaUtil.getMetadata() );
-			final BufferedWriter writer = new BufferedWriter( new FileWriter( getMetadata() ) );
-			try {
-				int lineNum = 0;
-				for( String line = reader.readLine(); line != null; line = reader.readLine() )
-					writer.write( parseRow( line, lineNum++ == 0 ) );
-			} finally {
-				reader.close();
-				writer.close();
-			}
+			MetaUtil.createSavePoint( this );
 
+			//TODO: add some explanation here.
 			if( doIdToSeqVerifiction() ) {
 				MetaUtil.setFile( getMetadata() );
 				MetaUtil.refreshCache();
