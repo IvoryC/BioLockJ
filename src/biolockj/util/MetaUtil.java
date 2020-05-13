@@ -34,6 +34,17 @@ public class MetaUtil {
 	// Prevent instantiation
 	private MetaUtil() {}
 
+	private static boolean addSample(String sampleId) throws MetadataException {
+		//TODO: add some restrictions on if a sample can be added - if it can't be, then return false.
+		int numFields = getFieldNames().size();
+		List<String> record = new ArrayList<>(); 
+		for (int i = 0; i < numFields; i++) {
+			record.add(null);
+		}
+		metadataMap.put(sampleId, record);
+		return true;
+	}
+	
 	/**
 	 * Adds a column to the metadata file. The updated metadata file is output to the fileDir. Once the new file is
 	 * created, the new file is cached in memory and used as the new metadata.
@@ -173,9 +184,14 @@ public class MetaUtil {
 	 * Get a list of all metadata fields (metadata file column names except the 1st).
 	 *
 	 * @return List of metadata column names, excluding the 1st column
+	 * @throws MetadataException 
 	 * 
 	 */
-	public static List<String> getFieldNames() {
+	public static List<String> getFieldNames() throws MetadataException {
+		if (!metadataMap.containsKey( metaId ) ) {
+			if (metadataMap.isEmpty()) initialize();//TODO: test this.
+			else throw new MetadataException("Header row is missing.");
+		}
 		try {
 			return getRecord( metaId );
 		} catch( final MetadataException ex ) {
@@ -262,8 +278,9 @@ public class MetaUtil {
 	 * 
 	 * @param name Base column name
 	 * @return column name
+	 * @throws MetadataException 
 	 */
-	public static String getLatestColumnName( final String name ) {
+	public static String getLatestColumnName( final String name ) throws MetadataException {
 		int suffix = 1;
 		String testName = name;
 		String foundName = null;
@@ -306,13 +323,7 @@ public class MetaUtil {
 	 */
 	public static String getNullValue( final BioModule module ) {
 		if( metaNullVal != null ) return metaNullVal;
-		if( Config.getString( module, META_NULL_VALUE ) == null ) {
-			Log.warn( MetaUtil.class,
-				"Undefined prop: " + META_NULL_VALUE + " set to default val: " + DEFAULT_NULL_VALUE );
-			metaNullVal = DEFAULT_NULL_VALUE;
-			Config.setConfigProperty( META_COLUMN_DELIM, metaNullVal );
-		} else metaNullVal = Config.getString( module, META_NULL_VALUE );
-
+		metaNullVal = Config.getString( module, META_NULL_VALUE, DEFAULT_NULL_VALUE );
 		return metaNullVal;
 	}
 
@@ -338,8 +349,12 @@ public class MetaUtil {
 	 * @throws MetadataException if Sample ID not found or metadata file doesn't exist
 	 */
 	public static List<String> getRecord( final String sampleId ) throws MetadataException {
-		if( metadataMap == null || !metadataMap.keySet().contains( sampleId ) )
-			throw new MetadataException( "Invalid Sample ID: " + sampleId );
+		if (metadataMap == null) {
+			throw new MetadataException( "Somehow the metadata has been inappropriately cleared out." );
+		}else if(  !metadataMap.keySet().contains( sampleId ) ) {
+			boolean added = addSample(sampleId);
+			if (!added) throw new MetadataException( "Invalid Sample ID: " + sampleId );
+		}
 		return metadataMap.get( sampleId );
 	}
 
@@ -396,9 +411,20 @@ public class MetaUtil {
 	 * 
 	 * @param columnName Column name
 	 * @return TRUE if columnName exists in hearder row of metadata file
+	 * @throws MetadataException 
 	 */
-	public static boolean hasColumn( final String columnName ) {
+	public static boolean hasColumn( final String columnName ) throws MetadataException {
 		return exists() && columnName != null && getFieldNames().contains( columnName );
+	}
+	
+	/**
+	 * Check if sample name exists in the current metadata file.
+	 * 
+	 * @param sampleId Sample name
+	 * @return TRUE if sampleId exists in metadata file
+	 */
+	public static boolean hasSample( final String sampleId ) {
+		return metadataMap.containsKey( sampleId );
 	}
 
 	/**
@@ -413,29 +439,35 @@ public class MetaUtil {
 	 */
 	public static void initialize() throws Exception {
 
+		if (!metadataMap.isEmpty()) throw new MetadataException("Metadata has already been initialized.");
+		
 		Log.info( MetaUtil.class,
 			"Initialize metadata property [ " + META_NULL_VALUE + " ] = " + getNullValue( null ) );
 
-		if( Config.getString( null, META_COLUMN_DELIM ) == null )
-			Config.setConfigProperty( META_COLUMN_DELIM, DEFAULT_COL_DELIM );
+		Config.getString( null, META_COLUMN_DELIM, DEFAULT_COL_DELIM);  
 
-		if( Config.getString( null, META_COMMENT_CHAR ) == null )
-			Config.setConfigProperty( META_COMMENT_CHAR, DEFAULT_COMMENT_CHAR );
+		final String commentChar = Config.getString( null, META_COMMENT_CHAR, DEFAULT_COMMENT_CHAR);
+		if( commentChar != null && commentChar.length() > 1 ) {
+			throw new ConfigFormatException(META_COMMENT_CHAR, "The comment character must be a single character.");
+		}
 
-		final String commentChar = Config.getString( null, META_COMMENT_CHAR );
-		if( commentChar != null && commentChar.length() > 1 ) throw new MetadataException(
-			META_COMMENT_CHAR + " property must be a single character.  Config value = \"" + commentChar + "\"" );
-
-		if( Config.getString( null, META_FILE_PATH ) != null ) {
+		File file = Config.getExistingFile( null, META_FILE_PATH );
+		
+		if (file == null) {
+			metadataMap.put(metaId, new ArrayList<String>());
+		}else {
+			cacheMetadata( parseMetadataFile( file ) );
+		}
+		if( Config.getString( null, META_FILE_PATH ) != null ) { //make this a one-liner; use getExistingFile(
 			Config.requireExistingFile( null, META_FILE_PATH );
 			setFile( getMetadata() );
 			refreshCache();
-		}
-		
+		}		
 		getNameToSampleMap();
 		Config.getBoolean( null, META_REQUIRED );
 		
 		Log.info( MetaUtil.class, "Metadata initialized" );
+		Log.info( MetaUtil.class, "Metadata initialized." );
 	}
 	
 	/*
@@ -517,7 +549,7 @@ public class MetaUtil {
 		if( isUpdated() ) {
 			Log.info( MetaUtil.class, "Update metadata cache: " + getPath() );
 			metadataMap.clear();
-			cacheMetadata( parseMetadataFile() );
+			cacheMetadata( parseMetadataFile(getMetadata()) );
 
 			if( !BioLockJUtil.isDirectMode() ) report();
 
@@ -642,11 +674,11 @@ public class MetaUtil {
 		}
 	}
 
-	private static List<List<String>> parseMetadataFile() {
+	private static List<List<String>> parseMetadataFile(final File file) throws MetadataException {
 		final List<List<String>> data = new ArrayList<>();
 		BufferedReader reader = null;
 		try {
-			reader = BioLockJUtil.getFileReader( getMetadata() );
+			reader = BioLockJUtil.getFileReader( file );
 			for( String line = reader.readLine(); line != null && !line.isEmpty(); line = reader.readLine() ) {
 				if( isUpdated() ) Log.debug( MetaUtil.class, "===> Meta line: " + line );
 				final ArrayList<String> record = new ArrayList<>();
@@ -658,6 +690,7 @@ public class MetaUtil {
 			}
 		} catch( final Exception ex ) {
 			Log.error( MetaUtil.class, "Error occurrred parsing metadata file!", ex );
+			throw new MetadataException( "Error occurrred parsing metadata file." );
 		} finally {
 			try {
 				if( reader != null ) reader.close();

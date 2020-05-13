@@ -42,6 +42,7 @@ public class Pipeline {
 	public static void executeModule() throws Exception {
 		ModuleUtil.markStarted( exeModule() );
 		Config.resetUsedProps();
+		//MetaUtil.readSavePoint();
 		refreshRCacheIfNeeded();
 		exeModule().executeTask();
 		final boolean isJava = exeModule() instanceof JavaModule;
@@ -261,8 +262,10 @@ public class Pipeline {
 		Config.checkDependencies( module );
 
 		if( ModuleUtil.isComplete( module ) ) {
-			module.cleanUp();
-			if( !BioLockJUtil.isDirectMode() ) ValidationUtil.validateModule( module );
+			if( !BioLockJUtil.isDirectMode() ) {
+				module.cleanUp();
+				ValidationUtil.validateModule( module );
+			}
 			refreshRCacheIfNeeded();
 		} else {
 			PipelineUtil.markStatus( module, Constants.PRECHECK_COMPLETE );
