@@ -16,6 +16,7 @@
 | *docker.imageOwner* | _string_ <br>name of the Docker Hub user that owns the docker containers<br>*default:*  *null* |
 | *docker.imageTag* | _string_ <br>indicate specific version of Docker images<br>*default:*  *null* |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
+| *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 
 ### [exe](../../Configuration/#exe-properties)                    
 | Property| Description |

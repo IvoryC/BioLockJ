@@ -19,10 +19,8 @@ Build OTU tables from [KRAKEN](http://ccb.jhu.edu/software/kraken/) mpa-format r
 | *cluster.modules* | _list_ <br>List of cluster modules to load at start of worker scripts<br>*default:*  *null* |
 | *cluster.prologue* | _string_ <br>To run at the start of every script after loading cluster modules (if any)<br>*default:*  *null* |
 | *cluster.statusCommand* | _string_ <br>Terminal command used to check the status of jobs on the cluster<br>*default:*  *null* |
-| *docker.imageName* | _string_ <br>The name of a docker image to override whatever a module says to use.<br>*default:*  *null* |
-| *docker.imageOwner* | _string_ <br>name of the Docker Hub user that owns the docker containers<br>*default:*  *null* |
-| *docker.imageTag* | _string_ <br>indicate specific version of Docker images<br>*default:*  *null* |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
+| *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 | *report.numHits* | _boolean_ <br>Options: Y/N. If Y, and add Num_Hits to metadata<br>*default:*  Y |
 | *report.unclassifiedTaxa* | _boolean_ <br>report unclassified taxa<br>*default:*  Y |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
@@ -43,7 +41,7 @@ Build OTU tables from [KRAKEN](http://ccb.jhu.edu/software/kraken/) mpa-format r
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.2
+biolockjdevteam/biolockj_controller:v1.3.3
 ```
 This can be modified using the following properties:<br>
 `Kraken2Parser.imageOwner`<br>
@@ -52,5 +50,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.2
+BioLockJ v1.3.3
 

@@ -269,20 +269,12 @@
 <td align="left"><em>string</em> <br>Terminal command used to check the status of jobs on the cluster<br><em>default:</em>  <em>null</em></td>
 </tr>
 <tr>
-<td align="left"><em>docker.imageName</em></td>
-<td align="left"><em>string</em> <br>The name of a docker image to override whatever a module says to use.<br><em>default:</em>  <em>null</em></td>
-</tr>
-<tr>
-<td align="left"><em>docker.imageOwner</em></td>
-<td align="left"><em>string</em> <br>name of the Docker Hub user that owns the docker containers<br><em>default:</em>  <em>null</em></td>
-</tr>
-<tr>
-<td align="left"><em>docker.imageTag</em></td>
-<td align="left"><em>string</em> <br>indicate specific version of Docker images<br><em>default:</em>  <em>null</em></td>
-</tr>
-<tr>
 <td align="left"><em>docker.saveContainerOnExit</em></td>
 <td align="left"><em>boolean</em> <br>If Y, docker run command will NOT include the --rm flag<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.verifyImage</em></td>
+<td align="left"><em>boolean</em> <br>In check dependencies, run a test to verify the docker image.<br><em>default:</em>  <em>null</em></td>
 </tr>
 <tr>
 <td align="left"><em>pipeline.defaultSeqMerger</em></td>
@@ -319,7 +311,7 @@
 biolockj.module.implicit.parser.r16s.RdpParser                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/rdp_classifier:v1.3.2
+<pre><code>biolockjdevteam/rdp_classifier:v1.3.3
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -328,7 +320,7 @@ biolockj.module.implicit.parser.r16s.RdpParser                   </p>
 <code>RdpClassifier.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
 <p>Module developed by Mike Sioda                 <br />
-BioLockJ v1.3.2</p>
+BioLockJ v1.3.3</p>
               
             </div>
           </div>

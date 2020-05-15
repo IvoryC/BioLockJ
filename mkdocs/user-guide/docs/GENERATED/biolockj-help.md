@@ -6,7 +6,7 @@ biolockj --help
 
 ```bash                   
                    
-BioLockJ v1.3.2 - UNCC Fodor Lab July 2018                   
+BioLockJ v1.3.3 - UNCC Fodor Lab July 2018                   
 Usage:                   
   biolockj [options] <config|pipeline>                   
                    

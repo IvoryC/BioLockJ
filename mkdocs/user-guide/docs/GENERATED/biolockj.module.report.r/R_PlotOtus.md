@@ -21,10 +21,8 @@ Generate OTU-metadata box-plots and scatter-plots for each reportable metadata f
 | *cluster.modules* | _list_ <br>List of cluster modules to load at start of worker scripts<br>*default:*  *null* |
 | *cluster.prologue* | _string_ <br>To run at the start of every script after loading cluster modules (if any)<br>*default:*  *null* |
 | *cluster.statusCommand* | _string_ <br>Terminal command used to check the status of jobs on the cluster<br>*default:*  *null* |
-| *docker.imageName* | _string_ <br>The name of a docker image to override whatever a module says to use.<br>*default:*  *null* |
-| *docker.imageOwner* | _string_ <br>name of the Docker Hub user that owns the docker containers<br>*default:*  *null* |
-| *docker.imageTag* | _string_ <br>indicate specific version of Docker images<br>*default:*  *null* |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
+| *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 | *exe.Rscript* | _executable_ <br>Path for the "Rscript" executable; if not supplied, any script that needs the Rscript command will assume it is on the PATH.<br>*default:*  *null* |
 | *pipeline.defaultStatsModule* | _string_ <br>Java class name for default module used generate p-value and other stats<br>*default:*  biolockj.module.report.r.R_CalculateStats |
 | *r.colorBase* | _string_ <br>base color used for labels & headings in the PDF report; Must be a valid color in R.<br>*default:*  black |
@@ -55,7 +53,7 @@ Generate OTU-metadata box-plots and scatter-plots for each reportable metadata f
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.2
+biolockjdevteam/r_module:v1.3.3
 ```
 This can be modified using the following properties:<br>
 `R_PlotOtus.imageOwner`<br>
@@ -64,5 +62,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.2
+BioLockJ v1.3.3
 
