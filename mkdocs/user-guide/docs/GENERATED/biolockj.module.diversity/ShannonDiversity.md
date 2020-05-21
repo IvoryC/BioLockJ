@@ -1,19 +1,15 @@
-# KrakenClassifier
+# ShannonDiversity
 Add to module run order:                    
-`#BioModule biolockj.module.classifier.wgs.KrakenClassifier`
+`#BioModule biolockj.module.diversity.ShannonDiversity`
 
 ## Description 
-Classify WGS samples with KRAKEN.
+Calculate shannon diversity as sum p(logp)
 
 ## Properties 
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
 
-### KrakenClassifier properties: 
-| Property| Description |
-| :--- | :--- |
-| *exe.kraken* | _executable_ <br>Path for the "kraken" executable; if not supplied, any script that needs the kraken command will assume it is on the PATH.<br>*default:*  *null* |
-| *kraken.db* | _file path_ <br>file path to Kraken kmer database directory<br>*default:*  *null* |
-| *kraken.krakenParams* | _list_ <br>additional parameters to use with kraken<br>*default:*  --only-classified-output, --preload |
+### ShannonDiversity properties: 
+*none*
 
 ### General properties applicable to this module: 
 | Property| Description |
@@ -32,25 +28,24 @@ Classify WGS samples with KRAKEN.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-Classify WGS samples with [KRAKEN](http://ccb.jhu.edu/software/kraken/). 
-If running in docker, the default docker container contains a kmer database which will be used if no database is supplied through the `kraken.db` property.
+*none*
 
 ## Adds modules 
 **pre-requisite modules**                    
 *none found*                   
 **post-requisite modules**                    
-biolockj.module.implicit.parser.wgs.KrakenParser                   
+*none found*                   
 
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/kraken_classifier:v1.3.4
+biolockjdevteam/biolockj_controller:v1.3.4
 ```
 This can be modified using the following properties:<br>
-`KrakenClassifier.imageOwner`<br>
-`KrakenClassifier.imageName`<br>
-`KrakenClassifier.imageTag`<br>
+`ShannonDiversity.imageOwner`<br>
+`ShannonDiversity.imageName`<br>
+`ShannonDiversity.imageTag`<br>
 
 ## Citation 
-Wood DE, Salzberg SL: Kraken: ultrafast metagenomic sequence classification using exact alignments. Genome Biology 2014, 15:R46.
+Module developed by Anthony Fodor
 
