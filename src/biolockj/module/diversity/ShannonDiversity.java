@@ -1,61 +1,71 @@
 package biolockj.module.diversity;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
 import biolockj.Log;
 import biolockj.api.ApiModule;
-import biolockj.legacy.utils.OtuWrapper;
 import biolockj.module.BioModule;
-import biolockj.module.JavaModuleImpl;
 import biolockj.module.report.taxa.BuildTaxaTables;
+import biolockj.module.report.taxa.TaxaLevelTable;
+import biolockj.module.report.taxa.TransformTaxaTables;
+import biolockj.util.BioLockJUtil;
 
-public class ShannonDiversity extends JavaModuleImpl implements ApiModule
+public class ShannonDiversity extends TransformTaxaTables implements ApiModule
 {
-
-	@Override
-	public void runModule() throws Exception
-	{
-		Log.debug(this.getClass(),"In ShannonDiversity");
-		
-		List<File> inputFiles = getInputFiles();
-		
-		for(File f : inputFiles)
-		{
-			Log.debug( this.getClass(), "Opening " +  f.getAbsolutePath());
-			OtuWrapper wrapper = new OtuWrapper(f);
 	
-			String[] splits= f.getName().split("_");
-			String taxaName = splits[splits.length-1].replace(".tsv", "");
-
-			String newName = "";
-			for(int x=0; x < splits.length-1; x++)
-				newName = splits[x] + "_";
-			
-			newName = newName + "Shannon_" + taxaName + ".tsv";
-			
-			File outFile = new File( getOutputDir() + File.separator+ newName);
-			
-			Log.debug(this.getClass(), "Trying to write to " +  outFile.getAbsolutePath());
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
-			
-			writer.write("sample\tShannonDiversity\n");
-			
-			List<String> sampleNames = wrapper.getSampleNames();
-			
-			for(String name : sampleNames)
-			{
-				writer.write(name + "\t" + wrapper.getShannonEntropy(name) + "\n");
-			}
-			
-			writer.flush(); writer.close();
-			
-			Log.debug(this.getClass(), "Finished ShannonDiversity module");
-			
+	/*
+	 * Calculate the Shannon diversity for each sample within a table.
+	 */
+	@Override
+	protected TaxaLevelTable transform( TaxaLevelTable inputData, List<String> filteredSampleIDs,
+		List<String> filteredTaxaIDs ) throws Exception {
+		
+		Log.debug(this.getClass(), "Doing shannon diversity for for [" + inputData.getLevel() + "] level.");
+		List<String> sampleNames = inputData.listSamples();
+		
+		TaxaLevelTable newData = new TaxaLevelTable(inputData.getLevel());
+		for(String name : sampleNames)
+		{
+			Double val = getShannonEntropy(inputData, name);
+			HashMap<String, Double> cell = new HashMap<>();
+			cell.put( SHANNON_COLUMN, val );
+			newData.put(name, cell);
 		}
+		Log.debug(this.getClass(), "Finished ShannonDiversity calculation for [" + inputData.getLevel() + "] level.");
+		return newData;
+	}
+	
+	protected List<String> filterTaxa( TaxaLevelTable inputData ){
+		List<String> list = new ArrayList<>();
+		list.add( SHANNON_COLUMN );
+		return list;
+	};
+	
+	private double getShannonEntropy(TaxaLevelTable table, String sample) throws Exception
+	{
+		double sum = 0;
+
+		Collection<Double> innerList = table.get( sample ).values();
+
+		for (Double d : innerList)
+			sum += d;
+
+		List<Double> newList = new ArrayList<Double>();
+
+		for (Double d : innerList)
+			newList.add(d / sum);
+
+		sum = 0;
+		for (Double d : newList)
+			if (d > 0)
+			{
+				sum += d * Math.log(d);
+
+			}
+
+		return -sum;
 	}
 
 	@Override
@@ -67,7 +77,8 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 	@Override
 	public String getCitationString()
 	{	
-		return "Module developed by Anthony Fodor";
+		return "Module developed by Anthony Fodor" + System.lineSeparator() 
+			+ "BioLockJ " + BioLockJUtil.getVersion();
 	}
 
 
@@ -75,5 +86,12 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 	public boolean isValidInputModule( final BioModule module ) {
 		return module instanceof BuildTaxaTables;
 	}
+
+	@Override
+	protected String getProcessSuffix() {
+		return "shannon";
+	}
+	
+	public static final String SHANNON_COLUMN = "ShannonDiversity";
 	
 }
