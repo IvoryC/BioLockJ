@@ -1,15 +1,14 @@
 package biolockj.module.diversity;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import biolockj.Log;
 import biolockj.api.ApiModule;
-import biolockj.legacy.utils.OtuWrapper;
 import biolockj.module.BioModule;
-import biolockj.module.JavaModuleImpl;
 import biolockj.module.report.taxa.BuildTaxaTables;
 import biolockj.module.report.taxa.TaxaLevelTable;
 import biolockj.module.report.taxa.TransformTaxaTables;
@@ -30,28 +29,65 @@ public class ShannonDiversity extends TransformTaxaTables implements ApiModule
 		{
 			Log.debug( this.getClass(), "Opening " +  f.getAbsolutePath());
 			
-			OtuWrapper wrapper = new OtuWrapper(f);
+			TaxaLevelTable wrapper = TaxaUtil.readTaxaTable(f);
 			
 			File outFile = getOutputFile(f);
 			
 			Log.debug(this.getClass(), "Writting to " +  outFile.getAbsolutePath());
 			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
+			List<String> sampleNames = wrapper.listSamples();
 			
-			writer.write("sample\tShannonDiversity\n");
-			
-			List<String> sampleNames = wrapper.getSampleNames();
-			
+			TaxaLevelTable newData = new TaxaLevelTable(wrapper.getLevel());
 			for(String name : sampleNames)
 			{
-				writer.write(name + "\t" + wrapper.getShannonEntropy(name) + "\n");
+				Double val = getShannonEntropy(wrapper, name);
+				HashMap<String, Double> cell = new HashMap<>();
+				cell.put( "ShannonDiversity", val );
+				newData.put(name, cell);
 			}
 			
-			writer.flush(); writer.close();
-			
-			Log.debug(this.getClass(), "Finished ShannonDiversity module for file: " + f);
+			TaxaUtil.writeDataToFile( outFile, newData );
+			Log.debug(this.getClass(), "Finished ShannonDiversity module for [" + wrapper.getLevel() + "] level.");
 			
 		}
+	}
+	
+
+	/*
+	 * ignored for now.  This class overrides the TransformTaxaTable runModule method
+	 */
+	@Override
+	protected TaxaLevelTable transform( TaxaLevelTable inputData, List<String> filteredSampleIDs,
+		List<String> filteredTaxaIDs ) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	//public double getShannonEntropy(String sampleIndex) throws Exception
+	private double getShannonEntropy(TaxaLevelTable table, String sample) throws Exception
+	{
+		double sum = 0;
+
+		//List<Double> innerList = getDataPointsUnnormalized().get(sampleIndex);
+		Collection<Double> innerList = table.get( sample ).values();
+
+		for (Double d : innerList)
+			sum += d;
+
+		List<Double> newList = new ArrayList<Double>();
+
+		for (Double d : innerList)
+			newList.add(d / sum);
+
+		sum = 0;
+		for (Double d : newList)
+			if (d > 0)
+			{
+				sum += d * Math.log(d);
+
+			}
+
+		return -sum;
 	}
 
 	@Override
@@ -71,16 +107,6 @@ public class ShannonDiversity extends TransformTaxaTables implements ApiModule
 	@Override
 	public boolean isValidInputModule( final BioModule module ) {
 		return module instanceof BuildTaxaTables;
-	}
-
-	/*
-	 * ignored for now.  This class overrides the TransformTaxaTable runModule method
-	 */
-	@Override
-	protected TaxaLevelTable transform( TaxaLevelTable inputData, List<String> filteredSampleIDs,
-		List<String> filteredTaxaIDs ) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
