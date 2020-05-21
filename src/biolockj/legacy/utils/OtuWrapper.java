@@ -11,7 +11,7 @@
 * GNU General Public License for more details at http://www.gnu.org * * */
 
 
-package biolockj.util;
+package biolockj.legacy.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -7,13 +7,12 @@ import java.util.List;
 
 import biolockj.Log;
 import biolockj.api.ApiModule;
+import biolockj.legacy.utils.OtuWrapper;
 import biolockj.module.JavaModuleImpl;
-import biolockj.util.OtuWrapper;
 
 public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 {
 
-	
 	@Override
 	public void runModule() throws Exception
 	{
@@ -25,13 +24,17 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 		{
 			Log.debug( this.getClass(), "Opening " +  f.getAbsolutePath());
 			OtuWrapper wrapper = new OtuWrapper(f);
+	
+			String[] splits= f.getName().split("_");
+			String taxaName = splits[splits.length-1].replace(".tsv", "");
 
-			String newName = f.getName().replaceAll(".tsv", "") ;
+			String newName = "";
+			for(int x=0; x < splits.length-1; x++)
+				newName = splits[x] + "_";
 			
-			newName = newName.replace("_taxaCount","");
+			newName = newName + "Shannon_" + taxaName + ".tsv";
 			
-			File outFile = new File( getOutputDir() + File.separator+ 
-								newName+  "_Shannon.tsv")	;
+			File outFile = new File( getOutputDir() + File.separator+ newName);
 			
 			Log.debug(this.getClass(), "Trying to write to " +  outFile.getAbsolutePath());
 			

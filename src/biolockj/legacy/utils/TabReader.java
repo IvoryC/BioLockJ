@@ -12,7 +12,7 @@
 
 
 
-package biolockj.util;
+package biolockj.legacy.utils;
 
 public class TabReader
 {

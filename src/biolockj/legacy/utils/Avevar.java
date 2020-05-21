@@ -1,4 +1,4 @@
-package biolockj.util;
+package biolockj.legacy.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
