@@ -11,8 +11,12 @@ import biolockj.legacy.utils.OtuWrapper;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.report.taxa.BuildTaxaTables;
+import biolockj.module.report.taxa.TaxaLevelTable;
+import biolockj.module.report.taxa.TransformTaxaTables;
+import biolockj.util.BioLockJUtil;
+import biolockj.util.TaxaUtil;
 
-public class ShannonDiversity extends JavaModuleImpl implements ApiModule
+public class ShannonDiversity extends TransformTaxaTables implements ApiModule
 {
 
 	@Override
@@ -25,20 +29,12 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 		for(File f : inputFiles)
 		{
 			Log.debug( this.getClass(), "Opening " +  f.getAbsolutePath());
+			
 			OtuWrapper wrapper = new OtuWrapper(f);
-	
-			String[] splits= f.getName().split("_");
-			String taxaName = splits[splits.length-1].replace(".tsv", "");
-
-			String newName = "";
-			for(int x=0; x < splits.length-1; x++)
-				newName = splits[x] + "_";
 			
-			newName = newName + "Shannon_" + taxaName + ".tsv";
+			File outFile = getOutputFile(f);
 			
-			File outFile = new File( getOutputDir() + File.separator+ newName);
-			
-			Log.debug(this.getClass(), "Trying to write to " +  outFile.getAbsolutePath());
+			Log.debug(this.getClass(), "Writting to " +  outFile.getAbsolutePath());
 			
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
 			
@@ -53,7 +49,7 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 			
 			writer.flush(); writer.close();
 			
-			Log.debug(this.getClass(), "Finished ShannonDiversity module");
+			Log.debug(this.getClass(), "Finished ShannonDiversity module for file: " + f);
 			
 		}
 	}
@@ -67,13 +63,29 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 	@Override
 	public String getCitationString()
 	{	
-		return "Module developed by Anthony Fodor";
+		return "Module developed by Anthony Fodor" + System.lineSeparator() 
+			+ "BioLockJ " + BioLockJUtil.getVersion();
 	}
 
 
 	@Override
 	public boolean isValidInputModule( final BioModule module ) {
 		return module instanceof BuildTaxaTables;
+	}
+
+	/*
+	 * ignored for now.  This class overrides the TransformTaxaTable runModule method
+	 */
+	@Override
+	protected TaxaLevelTable transform( TaxaLevelTable inputData, List<String> filteredSampleIDs,
+		List<String> filteredTaxaIDs ) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getProcessSuffix() {
+		return "shannon";
 	}
 	
 }
