@@ -8,7 +8,9 @@ import java.util.List;
 import biolockj.Log;
 import biolockj.api.ApiModule;
 import biolockj.legacy.utils.OtuWrapper;
+import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
+import biolockj.module.report.taxa.BuildTaxaTables;
 
 public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 {
@@ -68,4 +70,10 @@ public class ShannonDiversity extends JavaModuleImpl implements ApiModule
 		return "Module developed by Anthony Fodor";
 	}
 
+
+	@Override
+	public boolean isValidInputModule( final BioModule module ) {
+		return module instanceof BuildTaxaTables;
+	}
+	
 }
