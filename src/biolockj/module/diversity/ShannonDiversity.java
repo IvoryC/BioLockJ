@@ -63,12 +63,10 @@ public class ShannonDiversity extends TransformTaxaTables implements ApiModule
 		return null;
 	}
 	
-	//public double getShannonEntropy(String sampleIndex) throws Exception
 	private double getShannonEntropy(TaxaLevelTable table, String sample) throws Exception
 	{
 		double sum = 0;
 
-		//List<Double> innerList = getDataPointsUnnormalized().get(sampleIndex);
 		Collection<Double> innerList = table.get( sample ).values();
 
 		for (Double d : innerList)
