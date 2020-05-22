@@ -14,7 +14,11 @@ package biolockj.module.report.taxa;
 import java.util.*;
 import java.util.stream.Collectors;
 import biolockj.*;
+import biolockj.api.API_Exception;
+import biolockj.api.ApiModule;
+import biolockj.api.BuildDocs;
 import biolockj.exception.BioLockJException;
+import biolockj.util.BioLockJUtil;
 import biolockj.util.TaxaUtil;
 
 /**
@@ -38,7 +42,12 @@ import biolockj.util.TaxaUtil;
  * 
  * @blj.web_desc Normalize Taxa Tables
  */
-public class NormalizeTaxaTables extends TransformTaxaTables {
+public class NormalizeTaxaTables extends TransformTaxaTables implements ApiModule {
+	
+	public NormalizeTaxaTables() {
+		super();
+		addGeneralProperty( Constants.REPORT_LOG_BASE );
+	}
 
 	/**
 	 * Populate normalized counts with the formula: (RC/n)*((SUM(x))/N)+1
@@ -109,5 +118,22 @@ public class NormalizeTaxaTables extends TransformTaxaTables {
 	}
 	
 	private String summary = "";
+
+	@Override
+	public String getDescription() {
+		return "Normalize taxa tables for sequencing depth.";
+	}
+	
+	@Override
+	public String getDetails() throws API_Exception {
+		return BuildDocs.copyFromModuleResource( this, "NormalizeTaxaTables-Details.md" );
+	}
+
+	@Override
+	public String getCitationString() {
+		return "[\"Stochastic changes over time and not founder effects drive cage effects in microbial community assembly in a mouse model\"](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3806260/)" 
+						+ System.lineSeparator() + "Module developed by Mike Sioda" + System.lineSeparator()
+						+ "BioLockJ " + BioLockJUtil.getVersion();
+	}
 
 }
