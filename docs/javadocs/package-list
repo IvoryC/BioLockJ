@@ -7,6 +7,7 @@ biolockj.module.assembly
 biolockj.module.classifier
 biolockj.module.classifier.r16s
 biolockj.module.classifier.wgs
+biolockj.module.diversity
 biolockj.module.diy
 biolockj.module.getData
 biolockj.module.getData.sra

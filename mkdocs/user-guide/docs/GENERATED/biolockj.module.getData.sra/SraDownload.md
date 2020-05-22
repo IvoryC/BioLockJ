@@ -60,5 +60,5 @@ This can be modified using the following properties:<br>
 ## Citation 
 [sra-tools](https://github.com/ncbi/sra-tools)                   
 Module developed by Philip Badzuh                   
-BioLockJ v1.3.4-dev
+BioLockJ v1.3.4
 

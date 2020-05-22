@@ -28,11 +28,12 @@ Calculate shannon diversity as sum p(logp)
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-*none*
+*If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.*
+
 
 ## Adds modules 
 **pre-requisite modules**                    
-*none found*                   
+*pipeline-dependent*                   
 **post-requisite modules**                    
 *none found*                   
 
@@ -47,5 +48,6 @@ This can be modified using the following properties:<br>
 `ShannonDiversity.imageTag`<br>
 
 ## Citation 
-Module developed by Anthony Fodor
+Module developed by Anthony Fodor                   
+BioLockJ v1.3.4
 
