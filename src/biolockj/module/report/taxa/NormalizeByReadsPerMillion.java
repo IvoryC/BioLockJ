@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Log;
+import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
+import biolockj.api.BuildDocs;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.TaxaUtil;
 
@@ -64,11 +66,10 @@ public class NormalizeByReadsPerMillion extends TransformTaxaTables implements A
 	
 	@Override
 	public List<String> getPostRequisiteModules() throws Exception {
-		List<String> postModules = new ArrayList<>();
-		postModules.addAll( super.getPostRequisiteModules() );
+		List<String> postModules = super.getPostRequisiteModules();
 		if (Config.getString( this, Constants.REPORT_LOG_BASE ) != null) {
 			postModules.add( LogTransformTaxaTables.class.getName() );
-			Log.info(getClass(), "Adding LogTransformTaxaTables method because property [" + Constants.REPORT_LOG_BASE + "] is not null.");
+			Log.info(getClass(), "Adding LogTransformTaxaTables module because property [" + Constants.REPORT_LOG_BASE + "] is not null.");
 		}
 		return postModules;
 	}
@@ -79,7 +80,7 @@ public class NormalizeByReadsPerMillion extends TransformTaxaTables implements A
 		preModules.addAll( super.getPreRequisiteModules() );
 		if (Config.getString( this, Constants.REPORT_LOG_BASE ) != null) {
 			preModules.add( AddPseudoCount.class.getName() );
-			Log.info(getClass(), "Adding LogTransformTaxaTables method because property [" 
+			Log.info(getClass(), "Adding AddPseudoCount module because property [" 
 			+ Constants.REPORT_LOG_BASE + "] is not null; and this normalization does not remove 0's.");
 		}
 		return preModules;
@@ -89,7 +90,14 @@ public class NormalizeByReadsPerMillion extends TransformTaxaTables implements A
 
 	@Override
 	public String getDescription() {
-		return "Represent each count value in the table as: counts / (total counts in sample / 1 million)";
+		return "new counts = counts / (total counts in sample / 1 million)";
+	}
+	
+	@Override
+	public String getDetails() throws API_Exception {
+		return "Represent each count value in the table as: counts / (total counts in sample / 1 million)"
+						+ Constants.markDownReturn + "If report log base is not null, *LogTransformTaxaTables* is added as a post-requisite to do the log transformation and *AddPseudoCount* is added as a pre-requisite before normalization to avoid taking the log of 0."
+						+ Constants.markDownReturn + super.getDetails();
 	}
 
 	@Override

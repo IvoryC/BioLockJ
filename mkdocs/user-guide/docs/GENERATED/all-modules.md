@@ -28,7 +28,7 @@
 [Metaphlan2Classifier](biolockj.module.classifier.wgs/Metaphlan2Classifier.md) - *Classify WGS samples with [MetaPhlAn2](http://bitbucket.org/biobakery/metaphlan2).*                   
 [Metaphlan2Parser](biolockj.module.implicit.parser.wgs/Metaphlan2Parser.md)                   
 [Multiplexer](biolockj.module.seq/Multiplexer.md) - *Multiplex samples into a single file, or two files (one with forward reads, one with reverse reads) if multiplexing paired reads.*                   
-[NormalizeByReadsPerMillion](biolockj.module.report.taxa/NormalizeByReadsPerMillion.md) - *Represent each count value in the table as: counts / (total counts in sample / 1 million)*                   
+[NormalizeByReadsPerMillion](biolockj.module.report.taxa/NormalizeByReadsPerMillion.md) - *new counts = counts / (total counts in sample / 1 million)*                   
 [NormalizeTaxaTables](biolockj.module.report.taxa/NormalizeTaxaTables.md) - *Normalize taxa tables for sequencing depth.*                   
 [PearMergeReads](biolockj.module.seq/PearMergeReads.md) - *Run pear, the Paired-End reAd mergeR*                   
 [QiimeClassifier](biolockj.module.implicit.qiime/QiimeClassifier.md)                   
