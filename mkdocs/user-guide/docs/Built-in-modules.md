@@ -29,6 +29,15 @@ In all cases, add modules to your [BioModule order section](../Configuration#bio
   * [report by taxon](module/report/module.report.taxa.md)
   * [R reports](module/report/module.report.r.md)
 
+### taxa table modules
+
+  * [BuildTaxaTables](GENERATED/biolockj.module.report.taxa/BuildTaxaTables.md)
+  * [AddPseudoCount](GENERATED/biolockj.module.report.taxa/AddPseudoCount.md)
+  * [NormalizeTaxaTables](GENERATED/biolockj.module.report.taxa/NormalizeTaxaTables.md)
+  * [NormalizeByReadsPerMillion](GENERATED/biolockj.module.report.taxa/NormalizeByReadsPerMillion.md)
+  * [LogTransformTaxaTables](GENERATED/biolockj.module.report.taxa/LogTransformTaxaTables.md)
+  * [AddMetadataToTaxaTables](GENERATED/biolockj.module.report.taxa/AddMetadataToTaxaTables.md)
+
 ### sequence modules
 
 BioLockJ comes packaged with several modules for sequence pre-processing.
