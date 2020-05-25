@@ -15,6 +15,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import biolockj.*;
+import biolockj.api.API_Exception;
+import biolockj.api.ApiModule;
 import biolockj.module.implicit.RegisterNumReads;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.util.*;
@@ -24,7 +26,15 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Add Metadata to Taxa Tables
  */
-public class AddMetadataToTaxaTables extends TaxaCountModule {
+public class AddMetadataToTaxaTables extends TaxaCountModule implements ApiModule {
+
+	public AddMetadataToTaxaTables() {
+		addGeneralProperty( MetaUtil.META_COLUMN_DELIM );
+		addGeneralProperty( MetaUtil.META_FILE_PATH );
+		addGeneralProperty( MetaUtil.META_COMMENT_CHAR );
+		addGeneralProperty( MetaUtil.META_NULL_VALUE );
+		addGeneralProperty( Constants.REPORT_TAXONOMY_LEVELS );
+	}
 
 	/**
 	 * For R to report taxa levels (not HumanN2 reports)
@@ -184,6 +194,23 @@ public class AddMetadataToTaxaTables extends TaxaCountModule {
 		return sb.toString();
 	}
 
+	@Override
+	public String getDescription() {
+		return "Map metadata onto taxa tables using sample ID.";
+	}
+	
+	@Override
+	public String getDetails() throws API_Exception {
+		return "The output of this module will have a row for each sample (just like the metadata and the taxa tables) and columns for data AND metadata." 
+				+ Constants.markDownReturn + super.getDetails();
+	}
+
+	@Override
+	public String getCitationString() {
+		return "Module developed by Mike Sioda and Anthony Fodor"
+				+ System.lineSeparator() + "BioLockJ " + BioLockJUtil.getVersion();
+	}
+	
 	private final Map<String, String> hitRatioPerSample = new HashMap<>();
 	private String mergeHeaderLine = null;
 	private String mergeSampleLine = null;
@@ -198,4 +225,5 @@ public class AddMetadataToTaxaTables extends TaxaCountModule {
 	 * File suffix added to OTU table file name once merged with metadata.
 	 */
 	public static final String META_MERGED = "_metaMerged" + TSV_EXT;
+
 }

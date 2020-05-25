@@ -469,7 +469,7 @@ public class BuildDocs {
 
 	private static final String NONE = "*none*";
 	
-	private static final String markDownReturn = "                   " + System.lineSeparator();
+	private static final String markDownReturn = Constants.markDownReturn;
 	
 	private static final String inCellReturn = "<br>";
 	

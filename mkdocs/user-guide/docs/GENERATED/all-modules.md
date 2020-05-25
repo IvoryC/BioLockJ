@@ -2,11 +2,11 @@
 *This is an auto-generated list of all modules with links to auto-generated module documentation.*
 
 [AddMetadataToPathwayTables](biolockj.module.report.humann2/AddMetadataToPathwayTables.md)                   
-[AddMetadataToTaxaTables](biolockj.module.report.taxa/AddMetadataToTaxaTables.md)                   
+[AddMetadataToTaxaTables](biolockj.module.report.taxa/AddMetadataToTaxaTables.md) - *Map metadata onto taxa tables using sample ID.*                   
 [AddPseudoCount](biolockj.module.report.taxa/AddPseudoCount.md) - *Add a pseudocount (+1) to each value in each taxa table.*                   
 [AwkFastaConverter](biolockj.module.seq/AwkFastaConverter.md) - *Convert fastq files into fasta format.*                   
 [BuildQiimeMapping](biolockj.module.implicit.qiime/BuildQiimeMapping.md)                   
-[BuildTaxaTables](biolockj.module.report.taxa/BuildTaxaTables.md)                   
+[BuildTaxaTables](biolockj.module.report.taxa/BuildTaxaTables.md) - *Convert OTU-tables split by sample into taxa tables split by level.*                   
 [CompileOtuCounts](biolockj.module.report.otu/CompileOtuCounts.md)                   
 [DESeq2](biolockj.module.rnaseq/DESeq2.md) - *Determine statistically significant differences using DESeq2.*                   
 [Demultiplexer](biolockj.module.implicit/Demultiplexer.md) - *Demultiplex samples into separate files for each sample.*                   
@@ -23,13 +23,13 @@
 [Kraken2Parser](biolockj.module.implicit.parser.wgs/Kraken2Parser.md) - *Build OTU tables from [KRAKEN](http://ccb.jhu.edu/software/kraken/) mpa-format reports.*                   
 [KrakenClassifier](biolockj.module.classifier.wgs/KrakenClassifier.md) - *Classify WGS samples with KRAKEN.*                   
 [KrakenParser](biolockj.module.implicit.parser.wgs/KrakenParser.md) - *Build OTU tables from [KRAKEN](http://ccb.jhu.edu/software/kraken/) mpa-format reports.*                   
-[LogTransformTaxaTables](biolockj.module.report.taxa/LogTransformTaxaTables.md)                   
+[LogTransformTaxaTables](biolockj.module.report.taxa/LogTransformTaxaTables.md) - *Log-transform the raw taxa counts on Log10 or Log-e scales.*                   
 [MergeQiimeOtuTables](biolockj.module.implicit.qiime/MergeQiimeOtuTables.md)                   
 [Metaphlan2Classifier](biolockj.module.classifier.wgs/Metaphlan2Classifier.md) - *Classify WGS samples with [MetaPhlAn2](http://bitbucket.org/biobakery/metaphlan2).*                   
 [Metaphlan2Parser](biolockj.module.implicit.parser.wgs/Metaphlan2Parser.md)                   
 [Multiplexer](biolockj.module.seq/Multiplexer.md) - *Multiplex samples into a single file, or two files (one with forward reads, one with reverse reads) if multiplexing paired reads.*                   
-[NormalizeByReadsPerMillion](biolockj.module.report.taxa/NormalizeByReadsPerMillion.md) - *Represent each count value in the table as: counts / (total counts in sample / 1 million)*                   
-[NormalizeTaxaTables](biolockj.module.report.taxa/NormalizeTaxaTables.md)                   
+[NormalizeByReadsPerMillion](biolockj.module.report.taxa/NormalizeByReadsPerMillion.md) - *new counts = counts / (total counts in sample / 1 million)*                   
+[NormalizeTaxaTables](biolockj.module.report.taxa/NormalizeTaxaTables.md) - *Normalize taxa tables for sequencing depth.*                   
 [PearMergeReads](biolockj.module.seq/PearMergeReads.md) - *Run pear, the Paired-End reAd mergeR*                   
 [QiimeClassifier](biolockj.module.implicit.qiime/QiimeClassifier.md)                   
 [QiimeClosedRefClassifier](biolockj.module.classifier.r16s/QiimeClosedRefClassifier.md) - *Pick OTUs using a closed reference database and construct an OTU table via the QIIME script pick_closed_reference_otus.py*                   

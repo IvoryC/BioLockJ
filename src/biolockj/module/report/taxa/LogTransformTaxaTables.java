@@ -15,14 +15,21 @@ import java.util.*;
 import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Log;
+import biolockj.api.ApiModule;
 import biolockj.exception.ConfigFormatException;
+import biolockj.util.BioLockJUtil;
 
 /**
  * This utility is used to log-transform the raw OTU counts on Log10 or Log-e scales.
  * 
  * @blj.web_desc Log Transform Taxa Tables
  */
-public class LogTransformTaxaTables extends TransformTaxaTables {
+public class LogTransformTaxaTables extends TransformTaxaTables implements ApiModule {
+	
+	public LogTransformTaxaTables() {
+		super();
+		addGeneralProperty( Constants.REPORT_LOG_BASE );
+	}
 	
 	/**
 	 * Verify {@link biolockj.Config}.{@value biolockj.Constants#REPORT_LOG_BASE} property is valid (if defined) with a
@@ -32,13 +39,25 @@ public class LogTransformTaxaTables extends TransformTaxaTables {
 	 */
 	@Override
 	public void checkDependencies() throws Exception {
-		this.logBase = Config.requireString( this, Constants.REPORT_LOG_BASE );
-		if( !getLogBase().equalsIgnoreCase( LOG_10 ) && !getLogBase().equalsIgnoreCase( LOG_E ) ) {
-			throw new ConfigFormatException( Constants.REPORT_LOG_BASE,
-				"Property only accepts value \"" + LOG_10 + "\" or \"" + LOG_E + "\"" );
-		}
-		Log.debug( getClass(), "Found logBase: " + this.getLogBase() );
 		super.checkDependencies();
+		isValidProp(Constants.REPORT_LOG_BASE);
+    	this.logBase = Config.requireString( this, Constants.REPORT_LOG_BASE );
+	}
+	
+	@Override
+	public Boolean isValidProp( String property ) throws Exception {
+	    Boolean isValid = super.isValidProp( property );
+	    switch(property) {
+	        case Constants.REPORT_LOG_BASE:
+	    		if( !getLogBase().equalsIgnoreCase( LOG_10 ) && !getLogBase().equalsIgnoreCase( LOG_E ) ) {
+	    			throw new ConfigFormatException( Constants.REPORT_LOG_BASE,
+	    				"Property only accepts value \"" + LOG_10 + "\" or \"" + LOG_E + "\"" );
+	    		}
+	    		Log.debug( getClass(), "Found logBase: " + this.getLogBase() );
+	            isValid = true;
+	            break;
+	    }
+	    return isValid;
 	}
 
 	/**
@@ -107,4 +126,15 @@ public class LogTransformTaxaTables extends TransformTaxaTables {
 	protected static final String LOG_E = "e";
 	
 	private String logBase = "";
+
+	@Override
+	public String getDescription() {
+		return "Log-transform the raw taxa counts on Log10 or Log-e scales.";
+	}
+
+	@Override
+	public String getCitationString() {
+		return "Module developed by Mike Sioda" + System.lineSeparator()
+		+ "BioLockJ " + BioLockJUtil.getVersion();
+	}
 }

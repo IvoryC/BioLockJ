@@ -3,7 +3,7 @@ Add to module run order:
 `#BioModule biolockj.module.report.taxa.NormalizeByReadsPerMillion`
 
 ## Description 
-Represent each count value in the table as: counts / (total counts in sample / 1 million)
+new counts = counts / (total counts in sample / 1 million)
 
 ## Properties 
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
@@ -28,6 +28,7 @@ Represent each count value in the table as: counts / (total counts in sample / 1
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+Represent each count value in the table as: counts / (total counts in sample / 1 million)
 *If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.*
 
 
@@ -40,7 +41,7 @@ biolockj.module.report.taxa.LogTransformTaxaTables
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.4
+biolockjdevteam/biolockj_controller:v1.3.5
 ```
 This can be modified using the following properties:<br>
 `NormalizeByReadsPerMillion.imageOwner`<br>
@@ -49,5 +50,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Ivory Blakley                   
-BioLockj v1.3.4
+BioLockj v1.3.5-dev
 
