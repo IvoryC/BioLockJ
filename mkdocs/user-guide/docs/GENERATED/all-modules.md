@@ -2,7 +2,7 @@
 *This is an auto-generated list of all modules with links to auto-generated module documentation.*
 
 [AddMetadataToPathwayTables](biolockj.module.report.humann2/AddMetadataToPathwayTables.md)                   
-[AddMetadataToTaxaTables](biolockj.module.report.taxa/AddMetadataToTaxaTables.md)                   
+[AddMetadataToTaxaTables](biolockj.module.report.taxa/AddMetadataToTaxaTables.md) - *Map metadata onto taxa tables using sample ID.*                   
 [AddPseudoCount](biolockj.module.report.taxa/AddPseudoCount.md) - *Add a pseudocount (+1) to each value in each taxa table.*                   
 [AwkFastaConverter](biolockj.module.seq/AwkFastaConverter.md) - *Convert fastq files into fasta format.*                   
 [BuildQiimeMapping](biolockj.module.implicit.qiime/BuildQiimeMapping.md)                   
