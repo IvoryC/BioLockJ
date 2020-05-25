@@ -526,6 +526,11 @@ public class Constants {
 	public static final String MAIN_DOCKER_IMAGE = "biolockj_controller";
 	
 	/**
+	 * When writing mark down files, use this as a new line to start a new paragraph.
+	 */
+	public static final String markDownReturn = "                   " + System.lineSeparator();
+	
+	/**
 	 * Prefix added to the master Config file: {@value #MASTER_PREFIX}
 	 */
 	public static final String MASTER_PREFIX = "MASTER_";
