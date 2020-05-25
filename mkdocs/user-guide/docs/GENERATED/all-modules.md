@@ -6,7 +6,7 @@
 [AddPseudoCount](biolockj.module.report.taxa/AddPseudoCount.md) - *Add a pseudocount (+1) to each value in each taxa table.*                   
 [AwkFastaConverter](biolockj.module.seq/AwkFastaConverter.md) - *Convert fastq files into fasta format.*                   
 [BuildQiimeMapping](biolockj.module.implicit.qiime/BuildQiimeMapping.md)                   
-[BuildTaxaTables](biolockj.module.report.taxa/BuildTaxaTables.md)                   
+[BuildTaxaTables](biolockj.module.report.taxa/BuildTaxaTables.md) - *Convert OTU-tables split by sample into taxa tables split by level.*                   
 [CompileOtuCounts](biolockj.module.report.otu/CompileOtuCounts.md)                   
 [DESeq2](biolockj.module.rnaseq/DESeq2.md) - *Determine statistically significant differences using DESeq2.*                   
 [Demultiplexer](biolockj.module.implicit/Demultiplexer.md) - *Demultiplex samples into separate files for each sample.*                   

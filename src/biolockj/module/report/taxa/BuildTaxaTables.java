@@ -14,6 +14,7 @@ package biolockj.module.report.taxa;
 import java.io.*;
 import java.util.*;
 import biolockj.Log;
+import biolockj.api.ApiModule;
 import biolockj.module.report.otu.OtuCountModule;
 import biolockj.util.*;
 
@@ -23,7 +24,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Build Taxa Tables
  */
-public class BuildTaxaTables extends OtuCountModule {
+public class BuildTaxaTables extends OtuCountModule implements ApiModule {
 
 	@Override
 	public String getSummary() throws Exception {
@@ -120,4 +121,20 @@ public class BuildTaxaTables extends OtuCountModule {
 	}
 
 	private String summary = "";
+
+	@Override
+	public String getDescription() {
+		return "Convert OTU-tables split by sample into taxa tables split by level.";
+	}
+	
+	@Override
+	public String getDetails() {
+		return "Each classifier module has a parser module that converts the classifier-specific output format into a common OTU table format. This module merges those tables from all samples, and splits the tables by taxonomic level.";
+	}
+
+	@Override
+	public String getCitationString() {
+		return "Module developed by Mike Sioda" + System.lineSeparator()
+		+ "BioLockJ " + BioLockJUtil.getVersion();
+	}
 }
