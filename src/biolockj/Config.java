@@ -100,7 +100,7 @@ public class Config {
 	 * @throws SpecialPropertiesException if property name does not start with "exe." or if other exceptions are encountered
 	 * @throws ConfigFormatException 
 	 */
-	public static String getExe( final BioModule module, final String property ) throws SpecialPropertiesException, ConfigFormatException {
+	public static String getExe( final BioModule module, final String property ) throws SpecialPropertiesException {
 		if( !property.startsWith( Constants.EXE_PREFIX ) ) throw new SpecialPropertiesException( property,
 			"Config.getExe() can only be called for properties that begin with \"" + Constants.EXE_PREFIX + "\"" );
 		String inContainerPath = null;
@@ -146,30 +146,45 @@ public class Config {
 		// property name after trimming "exe." prefix, for example if exe.Rscript is undefined, return "Rscript"
 		else {returnVal = property.replaceFirst( Constants.EXE_PREFIX, "" ); }
 		
-		checkExe(module, returnVal, property);
+		//TODO: make checkExe public, and other utilities and modules should call it in check deps; no need to do it ALL the time
+		try {
+			checkExe(module, returnVal, property);
+		} catch( ConfigFormatException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return returnVal;
 	}
 	
-	private static void checkExe(final BioModule module, final String exe, final String property) throws ConfigFormatException, NonExecutable, ConfigNotFoundException {
+	private static void checkExe(final BioModule module, final String exe, final String property) throws ConfigFormatException, NonExecutable {
 		String propVal = "[" + property + "=" + exe + "]";
 		if ( !Config.getBoolean( module, Constants.DISABLE_EXE_CHECK ) ) {
 			// example cmd: "[ -f exe ] && [ -x exe ] && return 0; [ -f exe ] && [ ! -x exe ] && return 127; [ ! -f exe ] && exe"
 			// if the file exists and is executable, thats good (stop); if it exists but is not executable, return 127 (stop); if its not a file(path) try to execute it (even returning 1 is fine here, but 127 means executable not found).
-			String cmd = "[ -f " + exe + " ] && [ -x " + exe + " ] && return 0; [ -f " + exe + " ] && [ ! -x " + exe + " ] && return 127; [ ! -f " + exe + " ] && " + exe ;
+			//String cmd = "checkExecutable() {[ -f " + exe + " ] && [ -x " + exe + " ] && return 0; [ -f " + exe + " ] && [ ! -x " + exe + " ] && return 127; [ ! -f " + exe + " ] && " + exe + "}; checkExecutable" ;
+			String cmd = replaceEnvVar( BLJ_BASH_VAR )+ "/script/test-is-executable.sh " + exe;
 			int allowedTime = 2;
 			if (Config.getString( module, Constants.PIPELINE_ENV ).equals(Constants.PIPELINE_ENV_LOCAL) ) {
-				Log.debug(Config.class, "Locally verifying " + propVal + " with command: " + cmd);
+				Log.debug(Config.class, "Locally verifying " + propVal + " with command: \"" + cmd + "\"");
 			}else if ( Config.getString( module, Constants.PIPELINE_ENV ).equals(Constants.PIPELINE_ENV_CLUSTER) ) {
 				if ( module != null && module instanceof ScriptModule ) { cmd = BashScriptBuilder.oneLineLoadModules( (ScriptModule)module ) + cmd; }
 				allowedTime = 5;
 			}else if ( DockerUtil.inDockerEnv() ) {
-				String moduleContainer = DockerUtil.getDockerImage( module );
+				String moduleContainer = null;
+				try {
+					moduleContainer = DockerUtil.getDockerImage( module );
+				} catch( ConfigNotFoundException e1 ) {
+					// This is not the time to throw this error;
+					e1.printStackTrace();
+					moduleContainer = null;
+				}
 				String current = null;
 				try {
 					current = DockerUtil.getCurrentImage();
 				} catch( IOException e ) {
 					Log.warn(Config.class, "Currenty in docker env; but could not determine current docker image.");
 					e.printStackTrace();
+					current = null;
 				}
 				if( moduleContainer == null || moduleContainer.equals( current ) ) {
 					Log.debug( Config.class, "Verifying in current container " + propVal + " with command: " + cmd );
@@ -182,16 +197,18 @@ public class Config {
 			
 			try {
 				final Process p = Runtime.getRuntime().exec( cmd ); 
-				boolean timedOut = p.waitFor(allowedTime, TimeUnit.SECONDS);
+				boolean timedOut = !(p.waitFor(allowedTime, TimeUnit.SECONDS));
 				int exitVal = p.exitValue();
 				p.destroy();
-				// 127 means executable not found
-				if ( timedOut || exitVal == 127 ) {
+				// 127 means executable not found; 126 means command not found
+				if ( timedOut || exitVal == 127 || exitVal == 126 ) {
+					if (timedOut) Log.error(Config.class, "The command timed out; it exceeded " + allowedTime + " seconds");
+					Log.error(Config.class, "The command exited with exit value: " + exitVal );
 					throw new NonExecutable( property, exe, module );
 				}
 			} catch( IOException | InterruptedException ex ) {
 				ex.printStackTrace();
-				throw new NonExecutable( property, exe, ex );
+				throw new NonExecutable( property, exe, module, ex );
 			}
 			
 		}else {

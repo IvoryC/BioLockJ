@@ -14,9 +14,8 @@ public class NonExecutable extends SpecialPropertiesException {
 		super( property, buildMsg( property, val ) );
 	}
 	
-	public NonExecutable( String property, String val, Exception ex ) {
-		super( property, buildMsg( property, val ) );
-		ex.printStackTrace();
+	public NonExecutable( String property, String val, BioModule module, Exception ex ) {
+		super( property, buildMsg( property, val, null ) + System.lineSeparator() + ex.getMessage() );
 	}
 	
 	public NonExecutable( String property, String val, BioModule module ) {
