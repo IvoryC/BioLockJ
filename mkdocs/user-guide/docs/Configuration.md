@@ -97,9 +97,11 @@ metadata.filePath=./metadata.txt
 sra.sraAccList=./sra/SraAccList.txt                   
 ``` 
 
-Note: `../` is also supported but it does not stack ( ../../../data/ is not supported). 
-
 With this design, the "analysis01" folder could be shared or moved and the configuration file would not need to be updated to reflect the new location of the project files it references.
+
+Note: `../` is also supported but it does not stack ( ../../../data/ is not supported).
+
+Note: Only `filepath` properties can use relative file paths.  Some other properties my optionally take a file path, but if they are not disignated as `filepath` propterties they may not support the relative path format.
 
 ## Special properties
 
