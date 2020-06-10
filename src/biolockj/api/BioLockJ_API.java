@@ -1,11 +1,18 @@
 package biolockj.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,6 +78,7 @@ public class BioLockJ_API {
 			String reply = "";
 			switch( query ) {
 				case LIST_MODULES:
+					System.out.println("READY TO LIST MODULES!"); //TODO: remove this
 					unsupportedOption(query, options, new String[0]);
 					reply = listToString( listModules() );
 					break;
@@ -212,56 +220,201 @@ public class BioLockJ_API {
 	}
 	
 	
+	
+	
+	
+	
+	
+	/////////
+	
+	
+	
 	/**
 	 * Return a list of all the modules on the class path.
+	 * 
 	 * @param prefix - Single argument passed to the constructor of the Reflections class.
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public static List<String> listModules(String prefix) throws Exception {
+	public static List<String> listModules( String prefix ) throws Exception {
 		List<String> allBioModules = new ArrayList<>();
 
-		Reflections reflections = supressStdOut_createReflections(prefix);
+		// Reflections reflections = supressStdOut_createReflections(prefix);
+		//
+		// Set<Class<? extends BioModule>> subTypes = reflections.getSubTypesOf( BioModule.class );
+		// for (Class<? extends BioModule> st : subTypes ) {
+		// try {
+		// BioModule tmp = (BioModule) Class.forName( st.getName() ).newInstance();
+		// allBioModules.add( tmp.getClass().getName() );
+		// }catch(InstantiationException | ExceptionInInitializerError ex) {
+		// //System.err.println("The class [" + st.getName() + "] is in scope, but cannot be instantiated.");
+		// }
+		// }
+
 		
-		Set<Class<? extends BioModule>> subTypes = reflections.getSubTypesOf( BioModule.class );
-		for (Class<? extends BioModule> st : subTypes ) {
-			try {
-				BioModule tmp = (BioModule) Class.forName( st.getName() ).newInstance();
-				allBioModules.add( tmp.getClass().getName() );
-			}catch(InstantiationException | ExceptionInInitializerError ex) {
-				//System.err.println("The class [" + st.getName() + "] is in scope, but cannot be instantiated.");
-			}	
+//		getClasses("biolockj.module.diy");			
+//		System.out.println("That was my best-chance test.");
+		
+		for( Package p: Package.getPackages() ) {
+			System.out.println("Consider package: " + p.getName());
+			if( p.getName().contains( prefix ) ) {
+				System.out.println("This packges has the prefix...");
+				//Class[] classes = getClasses( p.getName() );
+				Class[] classes = getClasses( p.getName() );
+				for( Class c: classes ) {
+					System.out.println("Consider class: " + c.getName());
+					System.out.println( c.getName() );
+					if( BioModule.class.isAssignableFrom( c ) ) {
+						System.out.println("This class implements BioModule");
+						try {
+							BioModule tmp = (BioModule) Class.forName( c.getName() ).newInstance();
+							allBioModules.add( tmp.getClass().getName() );
+							System.out.println("We created an instace without errors, so we added that biomodule to the list.");
+						} catch( InstantiationException | ExceptionInInitializerError ex ) {
+							// System.err.println("The class [" + c.getName() + "] is in scope and implements BioModule,
+							// but cannot be instantiated.");
+							System.out.println("We can't make an instance of that class.");
+						}
+					}
+				}
+			}
 		}
-		
-		Collections.sort(allBioModules);
+
+		////
+		Collections.sort( allBioModules );
+		System.out.println("We found " + allBioModules.size() + " BioModules in scope.");
 		return allBioModules;
 	}
+
 	public static List<String> listModules() throws Exception {
-		return listModules("");
+		System.out.println("Defaulting to prefix='' ");
+		return listModules( "" );
+	}
+
+	/* 
+	 * This method was taken originally from http://snippets.dzone.com/posts/show/4831, which was archived by the
+	 * Internet Archive, as linked to now. The snippet is also available at
+	 * https://dzone.com/articles/get-all-classes-within-package. 
+	 * Found by way of 'Ahmed Ashour's post stack overflow topic: https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection
+	 */
+	private static Class[] getClasses( String packageName ) throws ClassNotFoundException, IOException, URISyntaxException {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		assert classLoader != null;
+		String path = packageName.replace( '.', '/' );
+		Enumeration<URL> resources = classLoader.getResources( path );
+		
+		List<File> dirs = new ArrayList<File>();
+
+		while( resources.hasMoreElements() ) {
+			URL resource = resources.nextElement();
+			System.out.println("Found resource: " + resource );
+			File file = new File( resource.getFile() );
+			// File file = Paths.get(resource.toURI()).toFile();
+			// File file = Paths.get(classLoader.getResource( resource.getFile() ).toURI()).toFile() ;
+			// FileSystem fileSystem = FileSystems.newFileSystem(resource.toURI(), Collections.<String, Object>emptyMap());//resource, Collections.<String, Object>emptyMap());
+			// File file = new File( resource.getFile().replaceFirst( ".*!/", "" ) );
+			
+			System.out.println("Pass that as file: " + file );
+			
+			dirs.add( file );
+			System.out.println("file exists: " + (file.exists() ? "yes" : "no") );
+		}
+		ArrayList<Class> classes = new ArrayList<Class>();
+		for( File directory: dirs ) {
+			System.out.println("Package " + packageName + " has resource: " + directory);
+			classes.addAll( findClasses( directory, packageName ) );
+		}
+		return classes.toArray( new Class[ classes.size() ] );
+	}
+
+	/* 
+	 * This method was taken originally from http://snippets.dzone.com/posts/show/4831, which was archived by the
+	 * Internet Archive, as linked to now. The snippet is also available at
+	 * https://dzone.com/articles/get-all-classes-within-package. 
+	 * Found by way of 'Ahmed Ashour's post stack overflow topic: https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection
+	 */
+	private static List<Class> findClasses( File directory, String packageName ) throws ClassNotFoundException {
+		System.out.println("Finding classes in dir: " + directory.getPath() + "; package: " + packageName);
+		List<Class> classes = new ArrayList<Class>();
+		if( !directory.exists() ) { System.out.println("directory does not exist."); return classes; }
+		File[] files = directory.listFiles();
+		System.out.println("There are " + files.length + " files in this package.");
+		for( File file: files ) {
+			if( file.isDirectory() ) {
+				System.out.println("The file [" + file.getName() + "] is a directory.........look for classes...");
+				assert !file.getName().contains( "." );
+				classes.addAll( findClasses( file, packageName + "." + file.getName() ) );
+			} else if( file.getName().endsWith( ".class" ) ) {
+				classes.add(
+					Class.forName( packageName + '.' + file.getName().substring( 0, file.getName().length() - 6 ) ) );
+			}
+		}
+		return classes;
 	}
 	
-	private static Reflections supressStdOut_createReflections(String prefix) {
-		PrintStream classicOut = System.out;
-		PrintStream classicErr = System.err;
-		
-		if (verbose) {
-			System.setOut( classicErr );
-		}else {
-			System.setOut(new PrintStream(new OutputStream() {
-				  public void write(int b) {}
-				}));
-			System.setErr( new PrintStream(new OutputStream() {
-				  public void write(int b) {}
-				}));
-		}
-		
-		Reflections reflections = new Reflections(prefix);
-
-		System.setOut(classicOut);
-		System.setErr(classicErr);
-		
-		return reflections;
-	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	
+//	/**
+//	 * Return a list of all the modules on the class path.
+//	 * @param prefix - Single argument passed to the constructor of the Reflections class.
+//	 * @return
+//	 * @throws Exception 
+//	 */
+//	public static List<String> listModules(String prefix) throws Exception {
+//		List<String> allBioModules = new ArrayList<>();
+//
+//		Reflections reflections = supressStdOut_createReflections(prefix);
+//		
+//		Set<Class<? extends BioModule>> subTypes = reflections.getSubTypesOf( BioModule.class );
+//		for (Class<? extends BioModule> st : subTypes ) {
+//			try {
+//				BioModule tmp = (BioModule) Class.forName( st.getName() ).newInstance();
+//				allBioModules.add( tmp.getClass().getName() );
+//			}catch(InstantiationException | ExceptionInInitializerError ex) {
+//				//System.err.println("The class [" + st.getName() + "] is in scope, but cannot be instantiated.");
+//			}	
+//		}
+//		
+//		Collections.sort(allBioModules);
+//		return allBioModules;
+//	}
+//	public static List<String> listModules() throws Exception {
+//		return listModules("");
+//	}
+//	
+//	private static Reflections supressStdOut_createReflections(String prefix) {
+//		PrintStream classicOut = System.out;
+//		PrintStream classicErr = System.err;
+//		
+//		if (verbose) {
+//			System.setOut( classicErr );
+//		}else {
+//			System.setOut(new PrintStream(new OutputStream() {
+//				  public void write(int b) {}
+//				}));
+//			System.setErr( new PrintStream(new OutputStream() {
+//				  public void write(int b) {}
+//				}));
+//		}
+//		
+//		Reflections reflections = new Reflections(prefix);
+//
+//		System.setOut(classicOut);
+//		System.setErr(classicErr);
+//		
+//		return reflections;
+//	}
 	
 	/**
 	 * Like listModules, but only include modules that implement the ApiModule interface.
