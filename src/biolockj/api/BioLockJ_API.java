@@ -11,12 +11,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import biolockj.Config;
+import biolockj.Log;
 import biolockj.Properties;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigException;
 import biolockj.module.BioModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.ModuleUtil;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.reflections.Reflections;
@@ -219,6 +222,12 @@ public class BioLockJ_API {
 	 * @throws Exception 
 	 */
 	public static List<String> listModules(String prefix) throws Exception {
+		
+		if ( !Log.isInitialized() ) {
+			System.setProperty( "LOG_FILE", "/dev/null" );
+			Logger.getRootLogger().setLevel(Level.OFF);
+		}
+		
 		List<String> allBioModules = new ArrayList<>();
 
 		Reflections reflections = supressStdOut_createReflections(prefix);

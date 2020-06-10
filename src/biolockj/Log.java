@@ -333,7 +333,7 @@ public class Log {
 		return alwaysDebugClasses;
 	}
 
-	private static boolean isInitialized() {
+	public static boolean isInitialized() {
 		return logFile != null && logFile.isFile();
 	}
 
