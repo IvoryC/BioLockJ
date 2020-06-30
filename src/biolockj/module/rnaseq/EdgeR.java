@@ -113,7 +113,7 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 	@Override
 	public String getSummary() throws Exception {
 		return super.getSummary() + System.lineSeparator() 
-			+ "design parameter for DESeq2: " + Config.getString( this, DESIGN );
+			+ "design parameter for edgeR: " + Config.getString( this, DESIGN );
 	}
 
 	@Override
