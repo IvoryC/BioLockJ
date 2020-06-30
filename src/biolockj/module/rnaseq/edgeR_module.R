@@ -3,8 +3,8 @@
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # 
-# BiocManager::install("DESeq2")
-# browseVignettes("DESeq2")
+# BiocManager::install("edgeR")
+# browseVignettes("edgeR")
 library(edgeR)
 
 source("../BioLockJ_Lib.R")
@@ -28,7 +28,7 @@ writeLines(paste("counts table:", args[1]))
 writeLines(paste("metadata:", args[2]))
 writeLines(paste("script string:", args[3]))
 
-designString = getProperty("deseq2.designFormula")
+designString = getProperty("edger.designFormula")
 writeLines(paste("design:", designString))
 design = as.formula(designString) 
 
@@ -65,7 +65,11 @@ writeLines(c("", "Extracting and writting results..."))
   
 res <- lrt$table
 resOrdered <- res[order(res$PValue),]
-outfile <- paste0(c("../output/", args[3], ".tsv"), collapse = "")
+
+out_design_name<-gsub("[+]","_",design)
+out_design_name<-gsub("~","",out_design_name)
+
+outfile <- paste0(c("../output/", args[3], out_design_name, ".tsv"), collapse = "")
 write.table(cbind(row.names(resOrdered), as.data.frame(resOrdered)),
     file=outfile,
     sep="\t",
