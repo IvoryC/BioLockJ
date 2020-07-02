@@ -133,7 +133,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 				break;
 			case DESIGN:
 				String d = Config.getString( this, DESIGN );
-				if ( d != null && !d.contains( "~" )) throw new ConfigFormatException( DESIGN, "The design should contain a '~', whole value should be in quotes." );
+				if ( d != null && !d.contains( "~" )) throw new ConfigFormatException( DESIGN, "The design should contain a '~'." );
 				else isValid = true;
 				break;
 		}
@@ -174,7 +174,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 			"* is used as an exact string to pass as the design argument to DESeqDataSetFromMatrix(); example:  ~ Location:SoilType . " );
 		sb.append( "*" + FACTORS +
 			"* is a list (such as \"fist,second\") of one or more metadata columns to use in a formula. " );
-		sb.append( "Using this method, the formula will take the form: \" ~ first + second \" <br>" );
+		sb.append( "Using this method, the formula will take the form:  ~ first + second  <br>" );
 		sb.append( "The following two lines are equivilent:<br>" );
 		sb.append( "`" + DESIGN + " = ~ treatment + batch`<br>" );
 		sb.append( "`" + FACTORS + " = treatment,batch `" );
