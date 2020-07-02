@@ -948,7 +948,7 @@ public class Config {
 	}
 
 	private static boolean hasEnvVar( final String val ) {
-		return val.startsWith( "~" ) ||
+		return val.startsWith( "~/" ) ||
 			val.contains( "${" ) && val.contains( "}" ) && val.indexOf( "${" ) < val.indexOf( "}" );
 	}
 
