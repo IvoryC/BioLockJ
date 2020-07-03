@@ -81,7 +81,7 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 				String symbol = design.length()==0 ? " ~ " : " + " ;
 				design += ( symbol + factor);
 			}
-			Config.setConfigProperty( DESIGN, "\"" + design + "\"" );
+			Config.setConfigProperty( DESIGN,  design  );
 			MasterConfigUtil.saveMasterConfig();
 		}else {
 			throw new ConfigViolationException( "Must specifiy one of [" + DESIGN + "] or [" + FACTORS + "]." );
@@ -133,7 +133,7 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 				break;
 			case DESIGN:
 				String d = Config.getString( this, DESIGN );
-				if ( d != null && !d.contains( "~" )) throw new ConfigFormatException( DESIGN, "The design should contain a '~', whole value should be in quotes." );
+				if ( d != null && !d.contains( "~" )) throw new ConfigFormatException( DESIGN, "The design should contain a '~'." );
 				else isValid = true;
 				break;
 		}
@@ -171,12 +171,12 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 		StringBuilder sb = new StringBuilder();
 		sb.append( "The two methods of expresison the design are mutually exclusive.<br>" );
 		sb.append( "*" + DESIGN +
-			"* is used as an exact string to pass as the design argument to model.matrix(); example: \" ~ Location:SoilType\" (DO include quotes around the formula). " );
+			"* is used as an exact string to pass as the design argument to model.matrix(); example:  ~ Location:SoilType. " );
 		sb.append( "*" + FACTORS +
 			"* is a list (such as \"fist,second\") of one or more metadata columns to use in a formula. " );
-		sb.append( "Using this method, the formula will take the form: \" ~ first + second \" <br>" );
+		sb.append( "Using this method, the formula will take the form:  ~ first + second  <br>" );
 		sb.append( "The following two lines are equivilent:<br>" );
-		sb.append( "`" + DESIGN + " =\"~ treatment + batch\"`<br>" );
+		sb.append( "`" + DESIGN + " = ~ treatment + batch`<br>" );
 		sb.append( "`" + FACTORS + " = treatment,batch `" );
 		sb.append( System.lineSeparator() + System.lineSeparator() );
 		sb.append( "Advanced users may want to make more advanced modifications to the call to the edgeR functions.  " );
@@ -192,8 +192,8 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 						+ "BioLockJ " + BioLockJUtil.getVersion();
 	}
 
-	private static final String DESIGN = "edgeR.singleFactor";
-	private static final String FACTORS = "edgeR.multipleFactors";
+	private static final String DESIGN = "edgeR.designFormula";
+	private static final String FACTORS = "edgeR.designFactors";
 	private static final String SCRIPT_PATH = "edgeR.scriptPath";
 	private static final String SCRIPT_NAME = "edgeR_module.R";
 	private static String DEFAULT_CITATION = "R Core Team (2019). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/." 
