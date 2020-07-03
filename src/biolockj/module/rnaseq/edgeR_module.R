@@ -28,7 +28,7 @@ writeLines(paste("counts table:", args[1]))
 writeLines(paste("metadata:", args[2]))
 writeLines(paste("script string:", args[3]))
 
-designString = getProperty("edger.designFormula")
+designString = getProperty("edgeR.designFormula")
 writeLines(paste("design:", designString))
 design = as.formula(designString) 
 
@@ -51,8 +51,9 @@ countCheck <- countsPerMillion > 1
 keep <- which(rowSums(countCheck) >= 2)
 dgList <- dgList[keep,]
 dgList <- calcNormFactors(dgList, method="TMM")
-sampleType<-metaData$design
-designMat <- model.matrix(~sampleType)
+#sampleType<-metaData$design
+design_strip<-gsub("\"", "", design)
+designMat <- model.matrix(design, data=metaData)
 dgList <- estimateGLMCommonDisp(dgList, design=designMat)
 dgList <- estimateGLMTrendedDisp(dgList, design=designMat)
 dgList <- estimateGLMTagwiseDisp(dgList, design=designMat)
@@ -89,7 +90,7 @@ summary(resOrdered)
 writeLines(c("", "Getting citation info ..."))
 
 citeR = citation()
-cite = citation("edgeR")
+cite = citation("edgeR", auto=TRUE)
 writeLines(c(citeR$textVersion, cite$textVersion))
 writeLines(c(citeR$textVersion, cite$textVersion), "../temp/citation.txt")
 
