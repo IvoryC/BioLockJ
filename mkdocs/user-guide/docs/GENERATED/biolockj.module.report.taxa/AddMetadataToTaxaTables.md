@@ -55,5 +55,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda and Anthony Fodor                   
-BioLockJ v1.3.5-dev
+BioLockJ v1.3.5
 

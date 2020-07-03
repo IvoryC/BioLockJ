@@ -208,9 +208,94 @@
                 <h1 id="addmetadatatotaxatables">AddMetadataToTaxaTables<a class="headerlink" href="#addmetadatatotaxatables" title="Permanent link">#</a></h1>
 <p>Add to module run order:                  <br />
 <code>#BioModule biolockj.module.report.taxa.AddMetadataToTaxaTables</code></p>
-<p><em>This page is a place holder.</em>                 <br />
-<em>This module does not have a properly generated user guide page because it does not implement the ApiModule interface.</em>                 <br />
-<em>There may be a manually created page elsewhere.</em></p>
+<h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">#</a></h2>
+<p>Map metadata onto taxa tables using sample ID.</p>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">#</a></h2>
+<p><em>Properties are the <code>name=value</code> pairs in the <a href="../../../Configuration#properties">configuration</a> file.</em>                   </p>
+<h3 id="addmetadatatotaxatables-properties">AddMetadataToTaxaTables properties:<a class="headerlink" href="#addmetadatatotaxatables-properties" title="Permanent link">#</a></h3>
+<p><em>none</em></p>
+<h3 id="general-properties-applicable-to-this-module">General properties applicable to this module:<a class="headerlink" href="#general-properties-applicable-to-this-module" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><em>cluster.batchCommand</em></td>
+<td align="left"><em>string</em> <br>Terminal command used to submit jobs on the cluster<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.jobHeader</em></td>
+<td align="left"><em>string</em> <br>Header written at top of worker scripts<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.modules</em></td>
+<td align="left"><em>list</em> <br>List of cluster modules to load at start of worker scripts<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.prologue</em></td>
+<td align="left"><em>string</em> <br>To run at the start of every script after loading cluster modules (if any)<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.statusCommand</em></td>
+<td align="left"><em>string</em> <br>Terminal command used to check the status of jobs on the cluster<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.saveContainerOnExit</em></td>
+<td align="left"><em>boolean</em> <br>If Y, docker run command will NOT include the --rm flag<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.verifyImage</em></td>
+<td align="left"><em>boolean</em> <br>In check dependencies, run a test to verify the docker image.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>metadata.columnDelim</em></td>
+<td align="left"><em>string</em> <br>defines how metadata columns are separated; Typically files are tab or comma separated.<br><em>default:</em>  \t</td>
+</tr>
+<tr>
+<td align="left"><em>metadata.commentChar</em></td>
+<td align="left"><em>string</em> <br>metadata file comment indicator; Empty string is a valid option indicating no comments in metadata file.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>metadata.filePath</em></td>
+<td align="left"><em>string</em> <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>metadata.nullValue</em></td>
+<td align="left"><em>string</em> <br>metadata cells with this value will be treated as empty<br><em>default:</em>  NA</td>
+</tr>
+<tr>
+<td align="left"><em>report.taxonomyLevels</em></td>
+<td align="left"><em>list</em> <br>Options: domain,phylum,class,order,family,genus,species. Generate reports for listed taxonomy levels<br><em>default:</em>  phylum,class,order,family,genus</td>
+</tr>
+<tr>
+<td align="left"><em>script.defaultHeader</em></td>
+<td align="left"><em>string</em> <br>Store default script header for MAIN script and locally run WORKER scripts.<br><em>default:</em>  #!/bin/bash</td>
+</tr>
+<tr>
+<td align="left"><em>script.numThreads</em></td>
+<td align="left"><em>integer</em> <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br><em>default:</em>  8</td>
+</tr>
+<tr>
+<td align="left"><em>script.numWorkers</em></td>
+<td align="left"><em>integer</em> <br>Set number of samples to process per script (if parallel processing)<br><em>default:</em>  1</td>
+</tr>
+<tr>
+<td align="left"><em>script.permissions</em></td>
+<td align="left"><em>string</em> <br>Used as chmod permission parameter (ex: 774)<br><em>default:</em>  770</td>
+</tr>
+<tr>
+<td align="left"><em>script.timeout</em></td>
+<td align="left"><em>integer</em> <br>Sets # of minutes before worker scripts times out.<br><em>default:</em>  <em>null</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
+<p>The output of this module will have a row for each sample (just like the metadata and the taxa tables) and columns for data AND metadata.                 <br />
+<em>If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.</em></p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
 <em>pipeline-dependent</em>                 <br />
@@ -218,13 +303,16 @@
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/biolockj_controller:v1.3.4
+<pre><code>biolockjdevteam/biolockj_controller:v1.3.5
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
 <code>AddMetadataToTaxaTables.imageOwner</code><br>
 <code>AddMetadataToTaxaTables.imageName</code><br>
 <code>AddMetadataToTaxaTables.imageTag</code><br></p>
+<h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
+<p>Module developed by Mike Sioda and Anthony Fodor                 <br />
+BioLockJ v1.3.5</p>
               
             </div>
           </div>

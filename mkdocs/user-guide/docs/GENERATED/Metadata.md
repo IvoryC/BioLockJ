@@ -9,7 +9,7 @@ BioLockJ pipelines do not separate biological information from technical informa
 | *metadata.barcodeColumn* | _string_ <br>metadata column with identifying barcodes<br>*default:*  BarcodeSequence |
 | *metadata.columnDelim* | _string_ <br>defines how metadata columns are separated; Typically files are tab or comma separated.<br>*default:*  \t |
 | *metadata.commentChar* | _string_ <br>metadata file comment indicator; Empty string is a valid option indicating no comments in metadata file.<br>*default:*  *null* |
-| *metadata.fileNameColumn* | _string_ <br>name of the metadata column with input file names<br>*default:*  InputFileName |
+| *metadata.fileNameColumn* | _list_ <br>name of the metadata column(s) with input file names<br>*default:*  *null* |
 | *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
 | *metadata.nullValue* | _string_ <br>metadata cells with this value will be treated as empty<br>*default:*  NA |
 | *metadata.required* | _boolean_ <br>If Y, require metadata row for each sample with sequence data in input dirs; If N, samples without metadata are ignored.<br>*default:*  Y |

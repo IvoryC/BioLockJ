@@ -231,6 +231,10 @@
 <td align="left"><em>metadata.filePath</em></td>
 <td align="left"><em>string</em> <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br><em>default:</em>  <em>null</em></td>
 </tr>
+<tr>
+<td align="left"><em>metadata.useEveryRow</em></td>
+<td align="left"><em>boolean</em> <br>If Y, require a sequence file for every SampleID (every row) in metadata file; If N, metadata can include extraneous SampleIDs.<br><em>default:</em>  <em>null</em></td>
+</tr>
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
@@ -243,7 +247,7 @@ This module ensures that every pipeline has a metadata file, which is requried f
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/biolockj_controller:v1.3.4
+<pre><code>biolockjdevteam/biolockj_controller:v1.3.5
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -252,7 +256,7 @@ This module ensures that every pipeline has a metadata file, which is requried f
 <code>ImportMetadata.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
 <p>Module developed by Mike Sioda                 <br />
-BioLockJ v1.3.4</p>
+BioLockJ v1.3.5</p>
               
             </div>
           </div>

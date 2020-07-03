@@ -8,7 +8,7 @@
   
   <meta name="author" content="Ivory Blakley">
   <link rel="shortcut icon" href="../../../img/favicon.ico">
-  <title>Module.report.taxa - BioLockJ User Guide</title>
+  <title>Rmarkdown - BioLockJ User Guide</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../../../css/theme.css" type="text/css" />
@@ -17,8 +17,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Module.report.taxa";
-    var mkdocs_page_input_path = "module/report/module.report.taxa.md";
+    var mkdocs_page_name = "Rmarkdown";
+    var mkdocs_page_input_path = "GENERATED/biolockj.module.diy/Rmarkdown.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -68,7 +68,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../../GENERATED/General-Properties/">General Properties</a>
+    <a class="" href="../../General-Properties/">General Properties</a>
                 </li>
                 <li class="">
                     
@@ -88,35 +88,35 @@
     <ul class="subnav">
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Cluster/">cluster</a>
+    <a class="" href="../../Cluster/">cluster</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Docker/">docker</a>
+    <a class="" href="../../Docker/">docker</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Input/">input</a>
+    <a class="" href="../../Input/">input</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Metadata/">metadata</a>
+    <a class="" href="../../Metadata/">metadata</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/R/">r</a>
+    <a class="" href="../../R/">r</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Report.md">report</a>
+    <a class="" href="../../Report.md">report</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Script/">script</a>
+    <a class="" href="../../Script/">script</a>
                 </li>
                 <li class="toctree-l3">
                     
-    <a class="" href="../../../GENERATED/Validation/">validation</a>
+    <a class="" href="../../Validation/">validation</a>
                 </li>
     </ul>
                 </li>
@@ -141,7 +141,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../../GENERATED/Validation/">Validation</a>
+    <a class="" href="../../Validation/">Validation</a>
                 </li>
                 <li class="">
                     
@@ -149,11 +149,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../../GENERATED/BioLockJ-Api/">BioLockJ API</a>
+    <a class="" href="../../BioLockJ-Api/">BioLockJ API</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../../../GENERATED/biolockj-help/">BioLockJ help menu</a>
+    <a class="" href="../../biolockj-help/">BioLockJ help menu</a>
                 </li>
     </ul>
 	    </li>
@@ -195,7 +195,7 @@
     
       
     
-    <li>Module.report.taxa</li>
+    <li>Rmarkdown</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -205,77 +205,114 @@
           <div role="main">
             <div class="section">
               
-                <p>Modules in the <strong><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/report/package-summary.html">biolockj.module.report.taxa</a></strong> package process <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/implicit/parser/ParserModule.html">ParserModule</a> output to produce or process taxa tables.</p>
-<hr />
-<h4 id="addmetadatatotaxatables">AddMetadataToTaxaTables<a class="headerlink" href="#addmetadatatotaxatables" title="Permanent link">#</a></h4>
-<p><code>#BioModule biolockj.module.report.taxa.AddMetadataToTaxaTables</code></p>
-<p><strong>Description:</strong>  Map metadata onto taxa tables using sample ID.</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><em>metadata.columnDelim</em> </li>
-<li><em>metadata.commentChar</em></li>
-<li><em>metadata.filePath</em></li>
-<li><em>metadata.nullValue</em></li>
-<li><em>report.taxonomyLevels</em></li>
-</ul>
-<hr />
-<h4 id="addpseudocount">AddPseudoCount<a class="headerlink" href="#addpseudocount" title="Permanent link">#</a></h4>
-<p><code>#BioModule biolockj.module.report.taxa.AddPseudoCount</code></p>
-<p><strong>Description:</strong>  Add 1.0 to every value in each table.  This is typically done to avoid the mathmatecal consequences of 0's, and is generally only done on raw counts data.</p>
-<p><strong>Options:</strong></p>
+                <h1 id="rmarkdown">Rmarkdown<a class="headerlink" href="#rmarkdown" title="Permanent link">#</a></h1>
+<p>Add to module run order:                  <br />
+<code>#BioModule biolockj.module.diy.Rmarkdown</code></p>
+<h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">#</a></h2>
+<p>Render a custom R markdown.</p>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">#</a></h2>
+<p><em>Properties are the <code>name=value</code> pairs in the <a href="../../../Configuration#properties">configuration</a> file.</em>                   </p>
+<h3 id="rmarkdown-properties">Rmarkdown properties:<a class="headerlink" href="#rmarkdown-properties" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><em>rmarkdown.resources</em></td>
+<td align="left"><em>list of file paths</em> <br>path to one or more files to be copied to the module resource folder.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>rmarkdown.rmarkdown</em></td>
+<td align="left"><em>file path</em> <br>path to an R markdown file (.Rmd) to be rendered.<br><em>default:</em>  <em>null</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="general-properties-applicable-to-this-module">General properties applicable to this module:<a class="headerlink" href="#general-properties-applicable-to-this-module" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><em>cluster.batchCommand</em></td>
+<td align="left"><em>string</em> <br>Terminal command used to submit jobs on the cluster<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.jobHeader</em></td>
+<td align="left"><em>string</em> <br>Header written at top of worker scripts<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.modules</em></td>
+<td align="left"><em>list</em> <br>List of cluster modules to load at start of worker scripts<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.prologue</em></td>
+<td align="left"><em>string</em> <br>To run at the start of every script after loading cluster modules (if any)<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.statusCommand</em></td>
+<td align="left"><em>string</em> <br>Terminal command used to check the status of jobs on the cluster<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.saveContainerOnExit</em></td>
+<td align="left"><em>boolean</em> <br>If Y, docker run command will NOT include the --rm flag<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.verifyImage</em></td>
+<td align="left"><em>boolean</em> <br>In check dependencies, run a test to verify the docker image.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>exe.Rscript</em></td>
+<td align="left"><em>executable</em> <br>Path for the "Rscript" executable; if not supplied, any script that needs the Rscript command will assume it is on the PATH.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>script.defaultHeader</em></td>
+<td align="left"><em>string</em> <br>Store default script header for MAIN script and locally run WORKER scripts.<br><em>default:</em>  #!/bin/bash</td>
+</tr>
+<tr>
+<td align="left"><em>script.numThreads</em></td>
+<td align="left"><em>integer</em> <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br><em>default:</em>  8</td>
+</tr>
+<tr>
+<td align="left"><em>script.numWorkers</em></td>
+<td align="left"><em>integer</em> <br>Set number of samples to process per script (if parallel processing)<br><em>default:</em>  1</td>
+</tr>
+<tr>
+<td align="left"><em>script.permissions</em></td>
+<td align="left"><em>string</em> <br>Used as chmod permission parameter (ex: 774)<br><em>default:</em>  770</td>
+</tr>
+<tr>
+<td align="left"><em>script.timeout</em></td>
+<td align="left"><em>integer</em> <br>Sets # of minutes before worker scripts times out.<br><em>default:</em>  <em>null</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
 <p><em>none</em></p>
-<hr />
-<h4 id="buildtaxatables">BuildTaxaTables<a class="headerlink" href="#buildtaxatables" title="Permanent link">#</a></h4>
-<p><code>#BioModule biolockj.module.report.taxa.BuildTaxaTables</code></p>
-<p><strong>Description:</strong>  Process <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/implicit/parser/ParserModule.html">ParserModule</a> output to produce taxa tables.  This module reads the most recent OTU count files generated by any previous BioModule and re-writes the data as separate tables containing taxa counts for each taxonomy level.</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><em>report.taxonomyLevels</em></li>
-</ul>
-<hr />
-<h4 id="logtransformtaxatables">LogTransformTaxaTables<a class="headerlink" href="#logtransformtaxatables" title="Permanent link">#</a></h4>
-<p><code>#BioModule biolockj.module.report.taxa.LogTransformTaxaTables</code></p>
-<p><strong>Description:</strong>  Log-transform the raw taxa counts on Log10 or Log-e scales.</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><em>report.logBase</em> </li>
-</ul>
-<hr />
-<h4 id="normalizebyreadspermillion">NormalizeByReadsPerMillion<a class="headerlink" href="#normalizebyreadspermillion" title="Permanent link">#</a></h4>
-<p><code>#BioModule biolockj.module.report.taxa.NormalizeByReadsPerMillion</code></p>
-<p><strong>Description:</strong>  Normalize each sample for sequencing depth by reporting each value as the number of counts per million counts in a given sample.</p>
-<p><strong>Options:</strong></p>
-<p><em>none</em></p>
-<hr />
-<h4 id="normalizetaxatables">NormalizeTaxaTables<a class="headerlink" href="#normalizetaxatables" title="Permanent link">#</a></h4>
-<p><code>#BioModule biolockj.module.report.taxa.NormalizeTaxaTables</code></p>
-<p><strong>Description:</strong>  Normalize taxa tables based on formula:</p>
-<p>
-<script type="math/tex; mode=display"> counts_{normalized} = \frac{counts_{raw}}{n} \frac{\sum (x)}{N} +1 </script>
-</p>
-<p>Where:                                      </p>
-<ul>
-<li>
-<script type="math/tex"> counts_{raw} </script> = raw count; the cell value before normalizing </li>
-<li>
-<script type="math/tex"> n </script> = number of sequences in the sample (total within a sample)</li>
-<li>
-<script type="math/tex"> \sum (x) </script> = total number of counts in the table (total across samples)</li>
-<li>
-<script type="math/tex"> N </script> = total number of samples</li>
-</ul>
-<p>Typically the data is put on a <script type="math/tex"> Log_{10} </script> scale, so the full forumula is:</p>
-<p>
-<script type="math/tex; mode=display"> counts_{final} = Log_{10} \biggl( \frac{counts_{raw}}{n} \frac{\sum (x)}{N} +1 \biggr) </script>
-</p>
-<p>The <script type="math/tex"> counts_{final} </script> values will be in output dir of the <code>LogTransformTaxaTables</code> module.  The <script type="math/tex"> counts_{normalized} </script> values will be in the output of the <code>NormalizeTaxaTables</code> module.</p>
-<p>For further explanation regarding the normalization scheme, please read The ISME Journal 2013 paper by Dr. Anthony Fodor: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3806260/">"Stochastic changes over time and not founder effects drive cage effects in microbial community assembly in a mouse model"</a></p>
-<p>If report.logBase is not null, then the LogTransformTaxaTables will be added as a post-requisit module.</p>
-<p><strong>Options:</strong></p>
-<ul>
-<li><em>report.logBase</em> </li>
-</ul>
-<hr />
+<h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
+<p><strong>pre-requisite modules</strong>                  <br />
+<em>none found</em>                 <br />
+<strong>post-requisite modules</strong>                  <br />
+<em>none found</em>                   </p>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
+<p>If running in docker, this module will run in a docker container from this image:<br></p>
+<pre><code>rocker/r-rmd:latest
+</code></pre>
+
+<p>This can be modified using the following properties:<br>
+<code>Rmarkdown.imageOwner</code><br>
+<code>Rmarkdown.imageName</code><br>
+<code>Rmarkdown.imageTag</code><br></p>
+<h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
+<p>Module created by Ivory Blakley                 <br />
+BioLockJ v1.3.5</p>
               
             </div>
           </div>

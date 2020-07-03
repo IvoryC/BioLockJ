@@ -28,7 +28,8 @@ new counts = counts / (total counts in sample / 1 million)
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-Represent each count value in the table as: counts / (total counts in sample / 1 million)
+Represent each count value in the table as: counts / (total counts in sample / 1 million)                   
+If report log base is not null, *LogTransformTaxaTables* is added as a post-requisite to do the log transformation and *AddPseudoCount* is added as a pre-requisite before normalization to avoid taking the log of 0.                   
 *If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.*
 
 
@@ -50,5 +51,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Ivory Blakley                   
-BioLockj v1.3.5-dev
+BioLockj v1.3.5
 

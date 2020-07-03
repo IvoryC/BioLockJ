@@ -208,9 +208,77 @@
                 <h1 id="logtransformtaxatables">LogTransformTaxaTables<a class="headerlink" href="#logtransformtaxatables" title="Permanent link">#</a></h1>
 <p>Add to module run order:                  <br />
 <code>#BioModule biolockj.module.report.taxa.LogTransformTaxaTables</code></p>
-<p><em>This page is a place holder.</em>                 <br />
-<em>This module does not have a properly generated user guide page because it does not implement the ApiModule interface.</em>                 <br />
-<em>There may be a manually created page elsewhere.</em></p>
+<h2 id="description">Description<a class="headerlink" href="#description" title="Permanent link">#</a></h2>
+<p>Log-transform the raw taxa counts on Log10 or Log-e scales.</p>
+<h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">#</a></h2>
+<p><em>Properties are the <code>name=value</code> pairs in the <a href="../../../Configuration#properties">configuration</a> file.</em>                   </p>
+<h3 id="logtransformtaxatables-properties">LogTransformTaxaTables properties:<a class="headerlink" href="#logtransformtaxatables-properties" title="Permanent link">#</a></h3>
+<p><em>none</em></p>
+<h3 id="general-properties-applicable-to-this-module">General properties applicable to this module:<a class="headerlink" href="#general-properties-applicable-to-this-module" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><em>cluster.batchCommand</em></td>
+<td align="left"><em>string</em> <br>Terminal command used to submit jobs on the cluster<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.jobHeader</em></td>
+<td align="left"><em>string</em> <br>Header written at top of worker scripts<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.modules</em></td>
+<td align="left"><em>list</em> <br>List of cluster modules to load at start of worker scripts<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.prologue</em></td>
+<td align="left"><em>string</em> <br>To run at the start of every script after loading cluster modules (if any)<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>cluster.statusCommand</em></td>
+<td align="left"><em>string</em> <br>Terminal command used to check the status of jobs on the cluster<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.saveContainerOnExit</em></td>
+<td align="left"><em>boolean</em> <br>If Y, docker run command will NOT include the --rm flag<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>docker.verifyImage</em></td>
+<td align="left"><em>boolean</em> <br>In check dependencies, run a test to verify the docker image.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
+<td align="left"><em>report.logBase</em></td>
+<td align="left"><em>string</em> <br>Options: 10,e,null. If e, use natural log (base e); if 10, use log base 10; if not set, counts will not be converted to a log scale.<br><em>default:</em>  10</td>
+</tr>
+<tr>
+<td align="left"><em>script.defaultHeader</em></td>
+<td align="left"><em>string</em> <br>Store default script header for MAIN script and locally run WORKER scripts.<br><em>default:</em>  #!/bin/bash</td>
+</tr>
+<tr>
+<td align="left"><em>script.numThreads</em></td>
+<td align="left"><em>integer</em> <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br><em>default:</em>  8</td>
+</tr>
+<tr>
+<td align="left"><em>script.numWorkers</em></td>
+<td align="left"><em>integer</em> <br>Set number of samples to process per script (if parallel processing)<br><em>default:</em>  1</td>
+</tr>
+<tr>
+<td align="left"><em>script.permissions</em></td>
+<td align="left"><em>string</em> <br>Used as chmod permission parameter (ex: 774)<br><em>default:</em>  770</td>
+</tr>
+<tr>
+<td align="left"><em>script.timeout</em></td>
+<td align="left"><em>integer</em> <br>Sets # of minutes before worker scripts times out.<br><em>default:</em>  <em>null</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
+<p><em>If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.</em></p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
 <em>pipeline-dependent</em>                 <br />
@@ -218,13 +286,16 @@
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/biolockj_controller:v1.3.4
+<pre><code>biolockjdevteam/biolockj_controller:v1.3.5
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
 <code>LogTransformTaxaTables.imageOwner</code><br>
 <code>LogTransformTaxaTables.imageName</code><br>
 <code>LogTransformTaxaTables.imageTag</code><br></p>
+<h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
+<p>Module developed by Mike Sioda                 <br />
+BioLockJ v1.3.5</p>
               
             </div>
           </div>
