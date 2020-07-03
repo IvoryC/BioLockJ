@@ -12,7 +12,7 @@ BioLockJ pipelines do not separate biological information from technical informa
 | *metadata.fileNameColumn* | _list_ <br>name of the metadata column(s) with input file names<br>*default:*  *null* |
 | *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
 | *metadata.nullValue* | _string_ <br>metadata cells with this value will be treated as empty<br>*default:*  NA |
-| *metadata.required* | _boolean_ <br>If Y, require metadata row for each sample with sequence data in input dirs; If N, samples without metadata are ignored.<br>*default:*  Y |
+| *metadata.required* | _boolean_ <br>If Y, require metadata row for each sample with sequence data in input dirs; If N, samples without metadata are ignored.<br>*default:*  N |
 | *metadata.useEveryRow* | _boolean_ <br>If Y, require a sequence file for every SampleID (every row) in metadata file; If N, metadata can include extraneous SampleIDs.<br>*default:*  *null* |
                    
 If no metadata table is supplied to the pipeline, then the ImportMetaData module (which is implicitly added to all pipelines) will look at the input samples and create an empty metadata file.                   

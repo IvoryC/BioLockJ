@@ -155,7 +155,14 @@ public class ModuleUtil {
 	private static void initClassMap() throws Exception {
 		if (classMap == null) {
 			classMap = new HashMap<>();
-			List<String> allModules = BioLockJ_API.listModules();
+			List<String> allModules;
+			try {
+				allModules = BioLockJ_API.listModules();
+			}catch(RuntimeException re) {
+				Log.warn(ModuleUtil.class, "Extra modules are currently ignored for class-lookup.");
+				allModules = BioLockJ_API.listModules("biolockj");
+			}
+			
 			for (String longName : allModules ) {
 				String shortName = Class.forName( longName ).getSimpleName();
 				if (classMap.containsKey( shortName )) {
