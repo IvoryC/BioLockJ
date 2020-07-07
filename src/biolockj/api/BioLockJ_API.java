@@ -247,50 +247,48 @@ public class BioLockJ_API {
 		return listModules("");
 	}
 	
-	private static Reflections supressStdOut_createReflections(String prefix) {
+	private static Reflections supressStdOut_createReflections( String prefix ) {
 		PrintStream classicOut = System.out;
 		PrintStream classicErr = System.err;
-		
-		if (verbose) {
-			System.setOut( classicErr );
-		}else {
-			System.setOut(new PrintStream(new OutputStream() {
-				  public void write(int b) {}
-				}));
-			System.setErr( new PrintStream(new OutputStream() {
-				  public void write(int b) {}
-				}));
-		}
-		
-		
-		  Reflections reflections = null;
-		  
-		  if( prefix.trim().length() == 0)
-		  {
-			  
-			//example code modified from https://www.codota.com/code/java/classes/org.reflections.util.ConfigurationBuilder
-			  Set<URL> classpath = new HashSet<>();
-			  classpath.addAll(ClasspathHelper.forClassLoader());
-			  classpath.addAll(ClasspathHelper.forJavaClassPath());
-			  classpath.addAll(ClasspathHelper.forManifest());
-			  classpath.addAll(ClasspathHelper.forPackage(""));
-			
-			  reflections = new Reflections(new ConfigurationBuilder()
-			      .setUrls(classpath)
-			      .useParallelExecutor()
-			      .filterInputsBy(FilterBuilder.parsePackages("-java, -javax, -sun, -com.sun"))
-			      .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
-			
-		  }
-		  else
-		  {
-			  reflections = new Reflections(prefix);
-		  }
-		  
 
-		System.setOut(classicOut);
-		System.setErr(classicErr);
-		
+		if( verbose ) {
+			System.setOut( classicErr );
+		} else {
+			System.setOut( new PrintStream( new OutputStream() {
+				public void write( int b ) {}
+			} ) );
+			System.setErr( new PrintStream( new OutputStream() {
+				public void write( int b ) {}
+			} ) );
+		}
+
+		Reflections reflections = null;
+
+		try {
+			if( prefix.trim().length() == 0 ) {
+
+				// example code modified from
+				// https://www.codota.com/code/java/classes/org.reflections.util.ConfigurationBuilder
+				Set<URL> classpath = new HashSet<>();
+				classpath.addAll( ClasspathHelper.forClassLoader() );
+				classpath.addAll( ClasspathHelper.forJavaClassPath() );
+				classpath.addAll( ClasspathHelper.forManifest() );
+				classpath.addAll( ClasspathHelper.forPackage( "" ) );
+
+				reflections = new Reflections( new ConfigurationBuilder().setUrls( classpath ).useParallelExecutor()
+					.filterInputsBy( FilterBuilder.parsePackages( "-java, -javax, -sun, -com.sun" ) )
+					.setScanners( new SubTypesScanner(), new TypeAnnotationsScanner() ) );
+
+			} else {
+				reflections = new Reflections( prefix );
+			}
+		} catch( Exception ex ) {
+
+		}
+
+		System.setOut( classicOut );
+		System.setErr( classicErr );
+
 		return reflections;
 	}
 	
