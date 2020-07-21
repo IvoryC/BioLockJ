@@ -261,7 +261,7 @@
 <h3 id="question-i-get-an-error-message-about-a-property-but-i-have-that-property-configured-correctly-what-gives"><strong>Question:</strong> I get an error message about a property, but I have that property configured correctly.  What gives?<a class="headerlink" href="#question-i-get-an-error-message-about-a-property-but-i-have-that-property-configured-correctly-what-gives" title="Permanent link">#</a></h3>
 <hr />
 <p><strong>Answer:</strong> Use <code>-u</code>.</p>
-<p>This is often the result of a typo somewhere.  Generally, BioLockJ runs a check-dependencies protocol on each module, and all required properties should be checked during that process, and it stops when it first finds a problem.  With the <code>--unused-props</code> or <code>-u</code> option, biolockj will check dependencies for all modules, even after one fails, and any properties that were never used will be printed to the screen.  This often highlights typos in property names, or properties that are not used by the currenlty configured moudles.  Keep in mind, this only reports properties in your primary config file, not in any of your defaultProps files.</p>
+<p>This is often the result of a typo somewhere.  Generally, BioLockJ runs a check-dependencies protocol on each module, and all required properties should be checked during that process, and it stops when it first finds a problem.  With the <code>--unused-props</code> or <code>-u</code> option, biolockj will check dependencies for all modules, even after one fails, and any properties that were never used will be printed to the screen.  This often highlights typos in property names, or properties that are not used by the currenlty configured modules.  Keep in mind, this only reports properties in your primary config file, not in any of your defaultProps files.</p>
 <hr />
 <h3 id="question-on-a-cluster-system-i-need-a-particular-module-to-run-on-the-head-node"><strong>Question:</strong> On a cluster system, I need a particular module to run on the head node.<a class="headerlink" href="#question-on-a-cluster-system-i-need-a-particular-module-to-run-on-the-head-node" title="Permanent link">#</a></h3>
 <hr />
@@ -287,6 +287,34 @@ SraDownload.batchCommand = /bin/bash
 <p><strong>Answer1:</strong> BioLockJ can extract the sample name from the filename; see <a href="../GENERATED/Input/"> Input</a>.</p>
 <p>OR </p>
 <p><strong>Answer2:</strong> BioLockJ can connect the sample id to the file name given in one or more columns in the metadata; see <a href="../GENERATED/Metadata/">Metadata</a>.</p>
+<hr />
+<h3 id="question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running">Question: Shutting down a pipeline.  How do I stop a pipeline that is running?<a class="headerlink" href="#question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running" title="Permanent link">#</a></h3>
+<hr />
+<p><strong>Answer:</strong> Use <code>kill</code>, <code>docker stop</code> and possibly scheduler commands such as <code>qdel</code>.</p>
+<p>BioLockJ will shut down appropriately on its own when a pipeline either completes or fails.  </p>
+<p><em>Sometimes</em>, it is necessary to shut down the program pre-maturely.</p>
+<p>This is not an ideal exit and the steps depend on your environment.  The main program is terminated by killing the java process.  Any worker-processes that are still in progress will need to be shut down directly (or allowed to time out). <em>If you are allowing worker-processess to time, you must NOT delete the pipeline folder. Those processes will write to that pipeline folder, and any new pipeline you make will get a new folder as long as the original still exists.</em></p>
+<p>To kill the BioLockJ program on a local system, get the id of the java process and kill it:</p>
+<pre><code class="bash">ps
+#  PID TTY          TIME CMD
+#   1776 pts/0    00:00:00 bash
+#   1728 pts/0    00:00:00 ps
+#   4437 pts/0    00:00:00 java
+kill 4437
+</code></pre>
+
+<p>On a local system, workers are under the main program, so they will also be terminated. </p>
+<p>To kill the BioLockJ program running in docker, get the ID of the docker container and use <code>docker stop</code>.</p>
+<pre><code class="bash">docker ps
+# CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+# f55a39311eb5        ubuntu              &quot;/bin/bash&quot;         16 minutes ago      Up 16 minutes                           brave_cori
+docker stop f55a39311eb5
+</code></pre>
+
+<p>In a docker pipeline, the container IDs for workers will also appear under ps.
+If you need to distinguish the BioLockJ containers from other docker containers running on your machine, you can see a list of them in the current modules script directory in a file named <code>MAIN*.sh_Started</code>.</p>
+<p>To kill the BioLockJ program that is run in the foreground (ie, the <code>-f</code> arg was used), then killing the current process will kill the program.  This is usually done with <code>ctrl</code>+<code>c</code> .</p>
+<p>To kill the BioLockJ program on a cluster environment, use <code>kill</code> just like the local case to stop a process on the head node, and use <code>qdel</code> (or the equivilent on your scheduler) to terminate workers running on compute nodes.</p>
               
             </div>
           </div>

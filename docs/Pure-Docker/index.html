@@ -206,57 +206,113 @@
             <div class="section">
               
                 <h2 id="pure-docker-experimental">Pure Docker (experimental)<a class="headerlink" href="#pure-docker-experimental" title="Permanent link">#</a></h2>
-<p>This option is still in the early experimental stages.</p>
+<p>This option is still in the experimental stages.</p>
 <p>If you are running from any system that supports docker, you can run all commands through docker containers.</p>
-<h4 id="1-install-docker-and-make-sure-the-hello-world-image-runs-correctly-see-above">1. Install docker and make sure the hello world image runs correctly. (see above)<a class="headerlink" href="#1-install-docker-and-make-sure-the-hello-world-image-runs-correctly-see-above" title="Permanent link">#</a></h4>
-<h4 id="2-enable-file-sharing-see-above">2. Enable file sharing. (see above)<a class="headerlink" href="#2-enable-file-sharing-see-above" title="Permanent link">#</a></h4>
-<h4 id="3-create-a-directory-where-your-pipelines-will-be-saved-this-directory-will-be-referred-to-as-blj_proj-and-it-must-be-under-a-share-enabled-directory">3. Create a directory where your pipelines will be saved; this directory will be referred to as <code>$BLJ_PROJ</code> and it must be under a share-enabled directory.<a class="headerlink" href="#3-create-a-directory-where-your-pipelines-will-be-saved-this-directory-will-be-referred-to-as-blj_proj-and-it-must-be-under-a-share-enabled-directory" title="Permanent link">#</a></h4>
-<pre><code class="bash">mkdir pipelines
-BLJ_PROJ=`pwd`/pipelines
+<p>This assumes that you have docker up and running. 
+Double check that docker is working on your system:</p>
+<pre><code>docker run hello-world
 </code></pre>
 
-<h4 id="4-run-the-test-pipeline-in-pure-docker">4. Run the test pipeline in pure docker<a class="headerlink" href="#4-run-the-test-pipeline-in-pure-docker" title="Permanent link">#</a></h4>
-<p>To test your all-docker BioLockJ, run:</p>
-<pre><code class="bash">docker run --rm \
+<p>Notice that many of these commands require a full path.  Here we use <strong>$PWD</strong> so that the commands in code blocks can be copy/pasted.  Be mindful of your current working directory.</p>
+<h2 id="step-1">Step 1:<a class="headerlink" href="#step-1" title="Permanent link">#</a></h2>
+<p>In powershell or terminal, navigate to a directory where you would like to store all of your BioLockJ materials, and enter the command below.</p>
+<p>Docker may prompt you to grant permission to access the <code>workspace/</code> folder.
+If docker does not allow you to map in the folder, and does not prompt you, you may need to open the file sharing section of your docker preferences and add this folder to the list of files docker is allowed to share.</p>
+<p><strong>Mac / unix</strong>                          </p>
+<pre><code>mkdir workspace
+docker run --rm \
 -v /var/run/docker.sock:/var/run/docker.sock \
--v $BLJ_PROJ:/mnt/efs/pipelines \
-biolockjdevteam/biolockj_controller:v1.2.7 \
-biolockj -df /app/biolockj/templates/myFirstPipeline/myFirstPipeline.properties
+-v $PWD/workspace:/workspace \
+-e HOST_OS_SCRIPT=bash \
+biolockjdevteam/biolockj_controller:v1.3.7 setup_workspace
 </code></pre>
 
-<p>You should see a pipeline named <code>myFirstPipeline_&lt;DATE&gt;</code> in your <code>$BLJ_PROJ</code> folder.</p>
-<p>The above example uses a config file that is in the docker container.  To use a file from your own machine, mount the parent directory, and use the in-container path to reach it.  To test this, extract the <code>myFirstPipeline.properties</code> file from the docker container and use it from the outside:</p>
-<pre><code class="bash">ID=$(docker run -d biolockjdevteam/biolockj_controller:v1.2.7 /bin/bash)
-docker cp $ID:/app/biolockj/templates/myFirstPipeline/myFirstPipeline.properties ~/Downloads/origTest.properties
+<p><strong>PowerShell</strong>                          </p>
+<pre><code>mkdir workspace
+docker run --rm `
+-v /var/run/docker.sock:/var/run/docker.sock `
+-v $PWD\workspace:/workspace `
+-e HOST_OS_SCRIPT=ps1 `
+biolockjdevteam/biolockj_controller:v1.3.7 setup_workspace
 </code></pre>
 
-<p>Alternatively, create a file, and copy this text into it:</p>
-<pre><code class="text">#BioModule biolockj.module.implicit.RegisterNumReads
-#BioModule biolockj.module.seq.RarefySeqs
-#BioModule biolockj.module.seq.Multiplexer
-
-input.dirPaths=${BLJ}/templates/myFirstPipeline/rhizosphere_16S_data
-
-rarefySeqs.max=500
+<p>This will create your docker preamble command.<br />
+The docker preamble passes your biolockj commands into a docker environment.
+The command is saved as a docker-wrapper script.</p>
+<h2 id="step-2">Step 2:<a class="headerlink" href="#step-2" title="Permanent link">#</a></h2>
+<p>Make your system treat the docker-wrapper script as an executable file.</p>
+<p>You could choose to name the alias something other than "biolockj" if you also call the biolockj command locally and want to avoid ambiguity. </p>
+<p>Notice that these commands use <strong>$PWD</strong> with the assumption that your working directory has not changed since step 1.</p>
+<p><strong>Mac / unix</strong>     </p>
+<p>Depending on your system, you may use <code>~/.bash_profile</code> or <code>~/.bashrc</code> or <code>~/.zshrc</code>, etc.</p>
+<pre><code>echo 'PATH='&quot;$PWD&quot;'/workspace/script:$PATH' &gt;&gt; ~/.bash_profile
 </code></pre>
 
-<p>Run biolockj using this config file.</p>
-<pre><code class="bash">docker run --rm \
--v /var/run/docker.sock:/var/run/docker.sock \
--e HOME=~ \
-biolockjdevteam/biolockj_controller:v1.2.7 \
-biolockj -df --blj_proj $BLJ_PROJ /Downloads/origTest.properties
+<p>(optional) Aliases are not universally supported; but where they are supported they are convenient and you will be able to copy/paste example commands that designed for local system calls.</p>
+<pre><code>echo 'alias biolockj='&quot;$PWD&quot;'/workspace/script/docker-biolockj' &gt;&gt; ~/.bash_profile
+echo 'alias biolockj-api='&quot;$PWD&quot;'/workspace/script/docker-biolockj-api' &gt;&gt; ~/.bash_profile
 </code></pre>
 
-<p>This should make a new pipeline called <code>origTest_&lt;DATE&gt;</code> in your <code>$BLJ_PROJ</code> folder.</p>
-<p>Finally, run the container interactively:</p>
-<pre><code class="bash">docker run --rm \
--v /var/run/docker.sock:/var/run/docker.sock \
--v $BLJ_PROJ:/mnt/efs/pipelines \
--it biolockjdevteam/biolockj_controller:v1.2.7 /bin/bash
+<p>Start a new session, or simply source your profile:</p>
+<pre><code>. ~/.bash_profile
 </code></pre>
 
-<p>A general difficulty of the <em>Pure Docker</em> path is managing the volume mounts.  Calling <code>biolockj</code> locally allows the biolockj script to handle this for you.  Variable path support may make this eaiser. (TODO: add link to config variable descriptions)</p>
+<p><strong>PowerShell</strong>                        <br />
+Allow powershell to execute scripts created on this machine:</p>
+<pre><code>Set-ExecutionPolicy RemoteSigned
+</code></pre>
+
+<p>This only affects the current session:</p>
+<pre><code>Set-Alias -Name biolockj -Value $PWD\workspace\script\docker-biolockj.ps1
+Set-Alias -Name biolockj-api -Value $PWD\workspace\script\docker-biolockj-api.ps1
+</code></pre>
+
+<p>This makes the command available to future sessions:</p>
+<pre><code>Add-Content $profile &quot;Set-Alias -Name biolockj -Value $PWD\workspace\script\docker-biolockj.ps1&quot;
+Add-Content $profile &quot;Set-Alias -Name biolockj-api -Value $PWD\workspace\script\docker-biolockj-api.ps1&quot;
+</code></pre>
+
+<p><em>If that command throws an error “could not find part of the path”, you may need to create the parent folder and try again, for example:</em>
+<code>mkdir $HOME\Documents\WindowsPowerShell\</code></p>
+<h2 id="step-3-optional">Step 3: (optional)<a class="headerlink" href="#step-3-optional" title="Permanent link">#</a></h2>
+<p>Run the test pipeline.</p>
+<p><strong>Mac / unix AND PowerShell</strong>                        <br />
+This command does NOT use $PWD.  If you completed step 2, then this is how the command will look regardless of your system, or where you are in the file system.</p>
+<p>Notice that the path to the property file is given from the /workspace/, and all file-separators are “/”.</p>
+<pre><code>biolockj /workspace/templates/myFirstPipeline/myFirstPipeline.properties
+</code></pre>
+
+<p>If you did not complete step 2, then you will need to give the full path to the docker-wrapper, or even copy the command from there to the terminal.</p>
+<h2 id="ever-after">Ever after:<a class="headerlink" href="#ever-after" title="Permanent link">#</a></h2>
+<p>Use biolockj exactly the way that it is described in the rest the documentation WITH THESE EXCEPTIONS:             </p>
+<ul>
+<li>The path to your properties file (or restart dir) given in your biolockj command must be under <code>/workspace/</code> (the workspace directory you created in step 1). The path can be given by starting with "/workspace/" or by using the 'dockerified' absolute file path.</li>
+<li>If you used a different name for your alias in step 2 (or chose not use the alias at all), you will call the <code>docker-biolockj</code> script (or <code>docker-biolockj.ps1</code> script) in place of “biolockj”.</li>
+</ul>
+<p>File paths in your property file <em>CAN</em> use:     </p>
+<ul>
+<li>(recommended) The “./” relative path format relative to the property file's directory. Relative paths should always use / as the file separator, regardless of host system.  For files in the project folder, file paths given in this format will work consistenetly when the pipeline is run locally, in docker, or on the cloud; and when the project is copied to a different location in the file system or to a different machine.</li>
+<li>Full file paths using dockerified file paths: <ul>
+<li>(mac) /Users/user/Documents/file.txt</li>
+<li>(windows) /host_mnt/c/Users/user/Documents/file.txt</li>
+</ul>
+</li>
+<li>Full file paths using your native system (work in progress)<ul>
+<li>(mac) /Users/user/Documents/file.txt</li>
+<li>(windows) C:\Users\user\Documents\file.txt</li>
+</ul>
+</li>
+<li>Variables that are defined in the property file. <ul>
+<li>VAR=/Users/user/Documents/file.txt</li>
+<li>file.path=${VAR}/data/file.txt</li>
+</ul>
+</li>
+</ul>
+<h3 id="tips-for-the-pure-docker-user">Tips for the pure-docker user:<a class="headerlink" href="#tips-for-the-pure-docker-user" title="Permanent link">#</a></h3>
+<p>Your property file may include file paths that are not under the project, or even under the workspace directory; but you will need to make sure that docker is configured to share those folders.  It is generally simpler to keep everything under the workspace folder.</p>
+<p>Use <code>biolockj-api listMounts --config /workspace/&lt;path/to/file&gt;</code> to see what is going to be mapped in based on a given property file. If any paths are missing, you may need to add them to your file sharing preferences.</p>
+<h3 id="developers-working-in-pure-docker">Developers working in pure-docker:<a class="headerlink" href="#developers-working-in-pure-docker" title="Permanent link">#</a></h3>
+<p>After making changes to the source code, build the program by building the docker image. Use <code>$BLJ/resources/docker/docker_build_scripts/buildDockerImages.sh controller</code> if you can use that script, or copy/paste the build commands from it. This will make a local copy of the docker image with the compiled changes. The image will be tagged with the current development version number (one ahead of the current public release).  This is independent of any build you might have on your local system.</p>
               
             </div>
           </div>

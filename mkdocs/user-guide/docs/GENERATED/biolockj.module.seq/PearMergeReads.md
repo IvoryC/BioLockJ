@@ -42,7 +42,7 @@ Run pear, the Paired-End reAd mergeR
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/pear:v1.3.6
+biolockjdevteam/pear:v1.3.7
 ```
 This can be modified using the following properties:<br>
 `PearMergeReads.imageOwner`<br>

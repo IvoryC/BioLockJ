@@ -83,8 +83,6 @@
         
             <li><a class="toctree-l3" href="#notes-about-environments">Notes about environments</a></li>
         
-            <li><a class="toctree-l3" href="#shutting-down-a-pipeline">Shutting down a pipeline</a></li>
-        
         </ul>
     
 
@@ -240,18 +238,16 @@
               
                 <h2 id="installation-and-test">Installation and test<a class="headerlink" href="#installation-and-test" title="Permanent link">#</a></h2>
 <h3 id="basic-installation">Basic installation<a class="headerlink" href="#basic-installation" title="Permanent link">#</a></h3>
-<p>The basic installation assumes a unix-like environment and a <strong>bash</strong> shell.
-To see what shell you currently using, run <code>echo $0</code>.
-<strong>If</strong> you are not in a bash shell, you can change your current session to a bash shell, run <code>chsh -s /bin/bash</code>.</p>
+<p>The basic installation assumes you have java 1.8+ and a unix-like environment.  Some features assume a bash shell, see <a href="#notes-about-environments">Notes about environments</a>.</p>
 <h4 id="1-download-the-latest-release-unpack-the-tarball">1. Download the <a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/releases/latest">latest release</a> &amp; unpack the tarball.<a class="headerlink" href="#1-download-the-latest-release-unpack-the-tarball" title="Permanent link">#</a></h4>
-<pre><code class="bash">tar -zxf BioLockJ-v1.2.8.tar.gz
+<pre><code class="bash">tar -zxf BioLockJ-v*.tar.gz
 </code></pre>
 
 <p>Save the folder wherever you like to keep executables.
 <strong>If</strong> you choose to download the source code, you will need to compile it by running <code>ant</code> with the <code>build.xml</code> file in the <code>resources</code> folder. </p>
 <h4 id="2-run-the-install-script">2. Run the install script<a class="headerlink" href="#2-run-the-install-script" title="Permanent link">#</a></h4>
 <p>The <code>install</code> script updates the $USER bash profile to call <strong><a href="https://github.com/msioda/BioLockJ/blob/master/script/blj_config?raw=true">blj_config</a></strong>.  See <strong><a href="../Commands">Commands</a></strong> for a full description of <strong><a href="https://github.com/msioda/BioLockJ/blob/master/script/blj_config?raw=true">blj_config</a></strong></p>
-<pre><code class="bash">cd BioLockJ*
+<pre><code class="bash">cd BioLockJ
 ./install
 #     Saved backup:  /users/joe/.bash_profile~
 #     Saved profile:  /users/joe/.bash_profile
@@ -286,6 +282,7 @@ biolockj ${BLJ}/templates/myFirstPipeline/myFirstPipeline.properties
 <p>The myFirstPipeline project is the first in the tutorial series designed to introduce new users to the layout of a BioLockJ pipeline.</p>
 <p>You should take a moment to <a href="../Getting-Started#review-your-first-pipeline">review your first pipeline</a>.</p>
 <h3 id="docker-installation">Docker installation<a class="headerlink" href="#docker-installation" title="Permanent link">#</a></h3>
+<p>This install runs the launch process on your host machine, and the main program and all modules are run in docker. To run even the launch process in docker, see <a href="../Pure-Docker/">Working in Pure Docker</a>.</p>
 <h4 id="1-install-docker">1. Install docker<a class="headerlink" href="#1-install-docker" title="Permanent link">#</a></h4>
 <p>See the current instructions for installing docker on your system: https://docs.docker.com/get-started/
 <br>You'll need to be able to run the docker hello world example:</p>
@@ -364,47 +361,26 @@ You may want to modify the example above, or look at others under <code>/templat
 <h2 id="other-notes-for-starting-out">Other notes for starting out<a class="headerlink" href="#other-notes-for-starting-out" title="Permanent link">#</a></h2>
 <p><strong>Install any/all software <a href="../Dependencies">Dependencies</a> required by the modules you wish to include in your pipeline.</strong></p>
 <p>BioLockJ is a pipeline manager, desigend to integrate and manage external tools.  These external tools are not packaged into the BioLockJ program.  BioLockJ must run in an environment where these other tools have been installed <strong>OR</strong> run through docker using the docker images that have the tools installed.  The core program, and all modules packaged with it, have corresponding docker images.</p>
+<p>BioLockJ will shut down appropriately on its own when a pipeline either completes or fails.  <em>Sometimes</em>, it is necessary to shut down the program pre-maturely. See the <a href="../FAQ">FAQ page</a> for more details.</p>
 <h3 id="notes-about-environments">Notes about environments<a class="headerlink" href="#notes-about-environments" title="Permanent link">#</a></h3>
 <p>The main BioLockJ program can be used in these environments: </p>
 <ul>
 <li>a local machine with a unix-like system</li>
-<li>any machine running docker *</li>
+<li>a local machine with a unix-like system running docker *</li>
 <li>a cluster, running a scheduler such as torque</li>
 <li>AWS cloud computing *</li>
+<li>any machine running docker (see <a href="../Pure-Docker/">Working in Pure Docker</a>)</li>
 </ul>
 <p>(* The launch scripts will still be run from your local machine.)</p>
 <p>The launch process requires a unix-like environment.  This includes linux, macOS, or an ubuntu environment running on Windows.</p>
 <p>If using <strong>docker</strong>, you will need to run the install script to create the variables used by the launch scripts, even though the main BioLockJ program will run within the biolockj_controller container.</p>
-<p>If using <strong>AWS</strong>, you will need to run the install script to create the variables used by the launch scripts, even though the main BioLockJ program will run on AWS.</p>
-<p>AWS is currently experimental. To ty it, see <a href="../Pure-Docker/">Working in Pure Docker</a></p>
+<p>If using <strong>AWS</strong>, you will need to run the install script to create the variables used by the launch scripts, even though the main BioLockJ program will run on AWS. This is still experimental.</p>
 <p>If you are using BioLockJ on a shared system where another user has already installed BioLockJ, <strong>you will need to run the install script</strong> to create the required variables in your own user profile.</p>
 <p>There is also the option to run purely in docker, without installing even the launch scripts on your local machine.  However this is considered a nitch case scenario and not well supported.</p>
 <p>For more information about the how/why to use each environment, see <a href="../Supported-Environments/">Supported Environments</a></p>
-<h3 id="shutting-down-a-pipeline">Shutting down a pipeline<a class="headerlink" href="#shutting-down-a-pipeline" title="Permanent link">#</a></h3>
-<p>BioLockJ will shut down appropriately on its own when a pipeline either completes or fails.  </p>
-<p><em>Sometimes</em>, it is necessary to shut down the program pre-maturely.</p>
-<p>This is not an ideal exit and the steps depend on your environment.  The main program is terminated by killing the java process.  Any worker-processes that are still in progress will need to be shut down directly (or allowed to time out).</p>
-<p>To kill the BioLockJ program on a local system, get the id of the java process and kill it:</p>
-<pre><code class="bash">ps
-#  PID TTY          TIME CMD
-#   1776 pts/0    00:00:00 bash
-#   1728 pts/0    00:00:00 ps
-#   4437 pts/0    00:00:00 java
-kill 4437
-</code></pre>
-
-<p>On a local system, workers are under the main program.</p>
-<p>To kill the BioLockJ program running in docker, get the ID of the docker container and use <code>docker stop</code>.</p>
-<pre><code class="bash">docker ps
-# CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-# f55a39311eb5        ubuntu              &quot;/bin/bash&quot;         16 minutes ago      Up 16 minutes                           brave_cori
-docker stop f55a39311eb5
-</code></pre>
-
-<p>In a docker pipeline, the container IDs for workers will also appear under ps.
-If you need to distinguish the BioLockJ containers from other docker containers running on your machine, you see a list of them in the current modules script directory in a file named <code>MAIN*.sh_Started</code>.</p>
-<p>To kill the BioLockJ program that is run in the foreground (ie, the <code>-f</code> arg was used), then killing the current process will kill the program.  This is usually done with <code>ctrl</code>+<code>c</code> .</p>
-<p>To kill the BioLockJ program on a cluster environment, use <code>kill</code> just like the local case to stop a process on the head node, and use <code>qdel</code> (or the equivilent on your scheduler) to terminate workers running on compute nodes.</p>
+<p>The helper commands (such as <code>cd-blj</code>) assume a bash shell, though others also work.
+To see what shell you currently using, run <code>echo $0</code>.
+<strong>If</strong> you are not in a bash shell, you can change your current session to a bash shell, run <code>chsh -s /bin/bash</code>.</p>
               
             </div>
           </div>

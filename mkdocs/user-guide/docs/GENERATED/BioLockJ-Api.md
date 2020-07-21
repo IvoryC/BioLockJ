@@ -8,7 +8,7 @@ For the most up-to-date information about how to use the API, see the help menu:
 `biolockj-api help`                   
                    
 ```                   
-BioLockJ API v1.3.6 - UNCC Fodor Lab                   
+BioLockJ API v1.3.7-dev - UNCC Fodor Lab                   
                    
 Usage:                   
 biolockj-api <query> [options...]                   
@@ -79,6 +79,14 @@ query:
         Returns a json formatted list of all modules and for each module that                    
         implements the ApiModule interface, it lists the props used by the module,                   
         and for each prop the type, descrption and default.                   
+                   
+  listMounts --config <file>                   
+        Returns a list of directories that would need to be mounted in order for                    
+        the files listed in the config file to be available to a pipeline running in docker.                   
+                   
+  listUploads --config <file>                   
+        Returns a list of file and directories that would need to be uploaded in order for                    
+        the files listed in the config file to be available to a pipeline running in the cloud.                   
                    
   help  (or no args)                   
         Print help menu.                   

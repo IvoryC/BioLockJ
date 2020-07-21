@@ -86,7 +86,7 @@
 | *pipeline.logLevel* | _string_ <br>Options: DEBUG, INFO, WARN, ERROR<br>*default:*  INFO |
 | *pipeline.permissions* | _string_ <br>Set chmod -R command security bits on pipeline root directory (Ex. 770)<br>*default:*  770 |
 | *pipeline.setSeed* | _integer_ <br>set the seed for a random process. Must be positive integer.<br>*default:*  *null* |
-| *pipeline.userProfile* | _file path_ <br>Bash profile - may be ~/.bash_profile or ~/.bashrc or others<br>*default:*  ${HOME}/.bash_profile |
+| *pipeline.userProfile* | _file path_ <br>Bash profile - may be ~/.bash_profile or ~/.bashrc or others<br>*default:*  *null* |
 
 ### qiime                   
 | Property| Description |

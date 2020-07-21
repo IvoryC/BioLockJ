@@ -63,5 +63,5 @@ PRODIGAL
 https://github.com/hyattpd/Prodigal/releases/download/v2.6.3/prodigal.linux                   
                    
 Module developed by Shan Sun                   
-BioLockJ v1.3.6
+BioLockJ v1.3.7-dev
 
