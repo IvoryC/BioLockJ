@@ -25,17 +25,16 @@ import biolockj.util.MasterConfigUtil;
 import biolockj.util.MetaUtil;
 import biolockj.util.TaxaUtil;
 
-public class DESeq2 extends ScriptModuleImpl implements ApiModule {
-
-	public DESeq2() {
+public class EdgeR extends ScriptModuleImpl implements ApiModule {
+	public EdgeR() {
 		super();
 		addGeneralProperty( Constants.EXE_RSCRIPT );
 		addNewProperty( FACTORS, Properties.LIST_TYPE,
-			"A comma-separated list of metadata columns to include as factors in the design forumula used with DESeq2." );
-		addNewProperty( DESIGN, Properties.STRING_TYPE, "The exact string to use as the design the call to DESeqDataSetFromMatrix()." );
-		addNewProperty( SCRIPT_PATH, Properties.FILE_PATH, "An R script to use in place of the default script to call DESeq2." );
+			"A comma-separated list of metadata columns to include as factors in the design forumula used with edgeR." );
+		addNewProperty( DESIGN, Properties.STRING_TYPE, "The exact string to use as the design the call to model.matrix()." );
+		addNewProperty( SCRIPT_PATH, Properties.FILE_PATH, "An R script to use in place of the default script to call edgeR." );
 	}
-
+	
 	@Override
 	protected List<File> findModuleInputFiles() {
 		List<File> allFiles = super.findModuleInputFiles();
@@ -54,11 +53,12 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		FileUtils.copyFileToDirectory( R_Module.getFunctionLib(), getModuleDir() );
 		setDesignString();
 	}
+		
 	
 	@Override
 	public List<List<String>> buildScript( List<File> files ) throws Exception {
 		List<List<String>> outer = new ArrayList<>();
-		String scriptName = copyDEseqScript();
+		String scriptName = copyEdgeRScript();
 		for( final File file: files ) {
 			List<String> inner = new ArrayList<>();
 			String line = Config.getExe( this, Constants.EXE_RSCRIPT ) + " ../" + scriptName + " "
@@ -81,15 +81,15 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 				String symbol = design.length()==0 ? " ~ " : " + " ;
 				design += ( symbol + factor);
 			}
-			Config.setConfigProperty( DESIGN, design );
+			Config.setConfigProperty( DESIGN,  design  );
 			MasterConfigUtil.saveMasterConfig();
 		}else {
 			throw new ConfigViolationException( "Must specifiy one of [" + DESIGN + "] or [" + FACTORS + "]." );
 		}
 	}
-
+	
 	/**
-	 * DESeq should only take raw values. So don't include '|| module instanceof TransformTaxaTables' even though that input is the right format.
+	 * edgeR should only take raw values. So don't include '|| module instanceof TransformTaxaTables' even though that input is the right format.
 	 */
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
@@ -113,7 +113,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 	@Override
 	public String getSummary() throws Exception {
 		return super.getSummary() + System.lineSeparator() 
-			+ "design parameter for DESeq2: " + Config.getString( this, DESIGN );
+			+ "design parameter for edgeR: " + Config.getString( this, DESIGN );
 	}
 
 	@Override
@@ -139,22 +139,22 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		}
 		return isValid;
 	}
-
+	
 	@Override
 	public String getDockerImageName() {
-		return "r_deseq2";
+		return "r_edger";
 	}
 
-	public String copyDEseqScript() throws IOException, ConfigPathException, DockerVolCreationException {
+	public String copyEdgeRScript() throws IOException, ConfigPathException, DockerVolCreationException {
 		String name;
 		File script = Config.getExistingFile( this, SCRIPT_PATH );
 		if ( script != null) {
 			name = script.getName();
-			Log.info(this.getClass(), "Using user-supplied R script [" + name + "] for DESeq2 module.");
+			Log.info(this.getClass(), "Using user-supplied R script [" + name + "] for edgeR module.");
 			FileUtils.copyFileToDirectory( script, getModuleDir() );
 		}else {
 			name = SCRIPT_NAME;
-			Log.info(this.getClass(), "Using standard R script [" + name + "] for DESeq2 module.");
+			Log.info(this.getClass(), "Using standard R script [" + name + "] for edgeR module.");
 			File scriptDest = new File( getModuleDir(), name );
 			Files.copy( this.getClass().getResourceAsStream( name ), scriptDest.toPath() );
 		}
@@ -163,7 +163,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 
 	@Override
 	public String getDescription() {
-		return "Determine statistically significant differences using DESeq2.";
+		return "Determine statistically significant differences using edgeR.";
 	}
 	
 	@Override
@@ -171,7 +171,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		StringBuilder sb = new StringBuilder();
 		sb.append( "The two methods of expresison the design are mutually exclusive.<br>" );
 		sb.append( "*" + DESIGN +
-			"* is used as an exact string to pass as the design argument to DESeqDataSetFromMatrix(); example:  ~ Location:SoilType . " );
+			"* is used as an exact string to pass as the design argument to model.matrix(); example:  ~ Location:SoilType. " );
 		sb.append( "*" + FACTORS +
 			"* is a list (such as \"fist,second\") of one or more metadata columns to use in a formula. " );
 		sb.append( "Using this method, the formula will take the form:  ~ first + second  <br>" );
@@ -179,7 +179,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		sb.append( "`" + DESIGN + " = ~ treatment + batch`<br>" );
 		sb.append( "`" + FACTORS + " = treatment,batch `" );
 		sb.append( System.lineSeparator() + System.lineSeparator() );
-		sb.append( "Advanced users may want to make more advanced modifications to the call to the DESeq2 functions.  " );
+		sb.append( "Advanced users may want to make more advanced modifications to the call to the edgeR functions.  " );
 		sb.append( "The easiest way to do this is to run the module with the default script, and treat that as a working template (ie, see how input/outputs are passed to/from the R script).  " );
 		sb.append( "Modify the script in that first pipeline, and save the modified script to a stable location.  Then run the pipeline with *"+ SCRIPT_PATH + "* giving the path to the modified script." );
 		return sb.toString();
@@ -192,12 +192,14 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 						+ "BioLockJ " + BioLockJUtil.getVersion();
 	}
 
-	private static final String DESIGN = "deseq2.designFormula";
-	private static final String FACTORS = "deseq2.designFactors";
-	private static final String SCRIPT_PATH = "deseq2.scriptPath";
-	private static final String SCRIPT_NAME = "DESeq2_module.R";
+	private static final String DESIGN = "edgeR.designFormula";
+	private static final String FACTORS = "edgeR.designFactors";
+	private static final String SCRIPT_PATH = "edgeR.scriptPath";
+	private static final String SCRIPT_NAME = "edgeR_module.R";
 	private static String DEFAULT_CITATION = "R Core Team (2019). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/." 
 					+ System.lineSeparator()
-					+ "Love, M.I., Huber, W., Anders, S. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology, 15:550. 10.1186/s13059-014-0550-8";
-
+					+ "Mark D. Robinson, Davis J. McCarthy, Gordon K. Smyth, edgeR: a Bioconductor package for differential expression analysis of digital gene expression data, Bioinformatics, Volume 26, Issue 1, 1 January 2010, Pages 139–140, https://doi.org/10.1093/bioinformatics/btp616";
+	
+	
 }
+
