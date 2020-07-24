@@ -10,6 +10,7 @@
 [CompileOtuCounts](biolockj.module.report.otu/CompileOtuCounts.md)                   
 [DESeq2](biolockj.module.rnaseq/DESeq2.md) - *Determine statistically significant differences using DESeq2.*                   
 [Demultiplexer](biolockj.module.implicit/Demultiplexer.md) - *Demultiplex samples into separate files for each sample.*                   
+[EdgeR](biolockj.module.rnaseq/EdgeR.md) - *Determine statistically significant differences using edgeR.*                   
 [Email](biolockj.module.report/Email.md) - *Send an email containing the pipeline summary when the pipeline either completes or fails.*                   
 [GenMod](biolockj.module.diy/GenMod.md) - *Allows user to add their own scripts into the BioLockJ pipeline.*                   
 [GenomeAssembly](biolockj.module.assembly/GenomeAssembly.md) - *Assemble WGS sequences with MetaSPAdes, bin contigs with Metabat2 and check quality with checkM.*                   

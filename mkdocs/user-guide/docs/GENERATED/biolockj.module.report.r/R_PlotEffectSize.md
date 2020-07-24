@@ -62,6 +62,6 @@ This can be modified using the following properties:<br>
 `R_PlotEffectSize.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.7-dev                   
+BioLockJ v1.3.7                   
 Module developted by Ivory Blakley.
 

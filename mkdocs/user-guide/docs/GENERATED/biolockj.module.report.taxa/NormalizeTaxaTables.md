@@ -74,5 +74,5 @@ This can be modified using the following properties:<br>
 ## Citation 
 ["Stochastic changes over time and not founder effects drive cage effects in microbial community assembly in a mouse model"](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3806260/)                   
 Module developed by Mike Sioda                   
-BioLockJ v1.3.7-dev
+BioLockJ v1.3.7
 

@@ -299,7 +299,7 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>The two methods of expresison the design are mutually exclusive.<br><em>deseq2.designFormula</em> is used as an exact string to pass as the design argument to DESeqDataSetFromMatrix(); example: " ~ Location:SoilType" (DO include quotes around the formula). <em>deseq2.designFactors</em> is a list (such as "fist,second") of one or more metadata columns to use in a formula. Using this method, the formula will take the form: " ~ first + second " <br>The following two lines are equivilent:<br><code>deseq2.designFormula ="~ treatment + batch"</code><br><code>deseq2.designFactors = treatment,batch</code></p>
+<p>The two methods of expresison the design are mutually exclusive.<br><em>deseq2.designFormula</em> is used as an exact string to pass as the design argument to DESeqDataSetFromMatrix(); example:  ~ Location:SoilType . <em>deseq2.designFactors</em> is a list (such as "fist,second") of one or more metadata columns to use in a formula. Using this method, the formula will take the form:  ~ first + second  <br>The following two lines are equivilent:<br><code>deseq2.designFormula = ~ treatment + batch</code><br><code>deseq2.designFactors = treatment,batch</code></p>
 <p>Advanced users may want to make more advanced modifications to the call to the DESeq2 functions.  The easiest way to do this is to run the module with the default script, and treat that as a working template (ie, see how input/outputs are passed to/from the R script).  Modify the script in that first pipeline, and save the modified script to a stable location.  Then run the pipeline with <em>deseq2.scriptPath</em> giving the path to the modified script.</p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
@@ -319,7 +319,7 @@
 <p>R Core Team (2019). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.                 <br />
 Love, M.I., Huber, W., Anders, S. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology, 15:550. 10.1186/s13059-014-0550-8                   </p>
 <p>Module developed by Ivory, Ke and Rosh                 <br />
-BioLockJ v1.3.7-dev</p>
+BioLockJ v1.3.7</p>
               
             </div>
           </div>

@@ -49,5 +49,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Anthony Fodor                   
-BioLockJ v1.3.7-dev
+BioLockJ v1.3.7
 

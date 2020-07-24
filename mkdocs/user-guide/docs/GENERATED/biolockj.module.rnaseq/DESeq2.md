@@ -33,7 +33,7 @@ Determine statistically significant differences using DESeq2.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-The two methods of expresison the design are mutually exclusive.<br>*deseq2.designFormula* is used as an exact string to pass as the design argument to DESeqDataSetFromMatrix(); example: " ~ Location:SoilType" (DO include quotes around the formula). *deseq2.designFactors* is a list (such as "fist,second") of one or more metadata columns to use in a formula. Using this method, the formula will take the form: " ~ first + second " <br>The following two lines are equivilent:<br>`deseq2.designFormula ="~ treatment + batch"`<br>`deseq2.designFactors = treatment,batch `
+The two methods of expresison the design are mutually exclusive.<br>*deseq2.designFormula* is used as an exact string to pass as the design argument to DESeqDataSetFromMatrix(); example:  ~ Location:SoilType . *deseq2.designFactors* is a list (such as "fist,second") of one or more metadata columns to use in a formula. Using this method, the formula will take the form:  ~ first + second  <br>The following two lines are equivilent:<br>`deseq2.designFormula = ~ treatment + batch`<br>`deseq2.designFactors = treatment,batch `
 
 Advanced users may want to make more advanced modifications to the call to the DESeq2 functions.  The easiest way to do this is to run the module with the default script, and treat that as a working template (ie, see how input/outputs are passed to/from the R script).  Modify the script in that first pipeline, and save the modified script to a stable location.  Then run the pipeline with *deseq2.scriptPath* giving the path to the modified script.
 
@@ -58,5 +58,5 @@ R Core Team (2019). R: A language and environment for statistical computing. R F
 Love, M.I., Huber, W., Anders, S. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biology, 15:550. 10.1186/s13059-014-0550-8                   
                    
 Module developed by Ivory, Ke and Rosh                   
-BioLockJ v1.3.7-dev
+BioLockJ v1.3.7
 

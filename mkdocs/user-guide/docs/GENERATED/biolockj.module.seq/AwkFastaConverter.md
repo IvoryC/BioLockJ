@@ -49,6 +49,6 @@ This can be modified using the following properties:<br>
 `AwkFastaConverter.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.7-dev                   
+BioLockJ v1.3.7                   
 Module developed by Mike Sioda
 

@@ -48,5 +48,5 @@ This can be modified using the following properties:<br>
 `AddPseudoCount.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.7-dev
+BioLockJ v1.3.7
 
