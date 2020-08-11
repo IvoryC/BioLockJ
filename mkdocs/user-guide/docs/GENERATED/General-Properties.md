@@ -76,7 +76,7 @@
 | *pipeline.defaultSeqMerger* | _string_ <br>Java class name for default module used combined paired read files<br>*default:*  biolockj.module.seq.PearMergeReads |
 | *pipeline.defaultStatsModule* | _string_ <br>Java class name for default module used generate p-value and other stats<br>*default:*  biolockj.module.report.r.R_CalculateStats |
 | *pipeline.deleteTempFiles* | _boolean_ <br>delete files in temp directories<br>*default:*  *null* |
-| *pipeline.detachJavaModules* | _boolean_ <br>If true Java modules do not run with main BioLockJ Java application. Instead they run on compute nodes on the CLUSTER or AWS environments.<br>*default:*  *null* |
+| *pipeline.detachJavaModules* | _boolean_ <br>If true Java modules do not run with main BioLockJ Java application. Instead they run on compute nodes on the CLUSTER or AWS environments.<br>*default:*  Y |
 | *pipeline.disableAddImplicitModules* | _boolean_ <br>If set to true, implicit modules will not be added to the pipeline.<br>*default:*  *null* |
 | *pipeline.disableAddPreReqModules* | _boolean_ <br>If set to true, prerequisite modules will not be added to the pipeline.<br>*default:*  *null* |
 | *pipeline.downloadDir* | _file path_ <br>local directory used as the destination in the download command<br>*default:*  $HOME/projects/downloads |

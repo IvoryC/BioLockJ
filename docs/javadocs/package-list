@@ -2,6 +2,7 @@ biolockj
 biolockj.api
 biolockj.dataTypes
 biolockj.exception
+biolockj.launch
 biolockj.module
 biolockj.module.assembly
 biolockj.module.classifier

@@ -219,10 +219,14 @@
 <p>BioLockJ comes with an API.                                      </p>
 <p>For the most up-to-date information about how to use the API, see the help menu:                                      </p>
 <p><code>biolockj-api help</code>                   </p>
-<pre><code>BioLockJ API v1.3.7 - UNCC Fodor Lab                   
+<pre><code>BioLockJ API v1.3.8 - UNCC Fodor Lab                   
 
 Usage:                   
+(bash)                   
 biolockj-api &lt;query&gt; [options...]                   
+
+(java)                   
+java -cp /path/to/BioLockJ.jar[:&lt;external-modules-dir&gt;] biolockj.api.BioLockJ_API &lt;query&gt; [options...]                   
 
 For some uses, redirecting stderr is recommended:                   
 biolockj-api &lt;query&gt; [options...]  2&gt; /dev/null                   
