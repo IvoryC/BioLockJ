@@ -1,30 +1,5 @@
 #!/bin/bash
-############################################################################
-##                                                                        ##
-##  This script prints the command needed to download analysis.           ##
-##  If the current directory is not a BioLockJ pipeline, print the        ##
-##  scp command for the most recent pipeline executed.                    ##
-##                                                                        ##
-##  Users can copy the command and execute it from a local workstation.   ##
-##                                                                        ##
-############################################################################
-. ${BLJ}/script/blj_functions
 
-pipeline=$(most_recent_pipeline)
-SUM=summary.txt
-MSG=
-if [ -f $SUM ]; then
-	val=$(grep -B 3 "rsync" $SUM)
-	[ ${#val} -gt 0 ] && MSG="$val"
-elif [ ${#pipeline} -gt 0 ]; then
-	val=$(grep -B 3 "rsync" "$pipeline/$SUM")
-	[ ${#val} -gt 0 ] && MSG="$val"
-else
-	MSG="No completed pipelines found in BLJ_PROJ: $BLJ_PROJ"
-fi
-
-if [ ${#MSG} -gt 0 ]; then
-	echo "$MSG"
-else
-	echo "Summary missing scp command (applicable for cluster pipelines only)" 
-fi
+echo "The 'blj_download' command is deprecated; and will be removed as of v1.4.0" 
+echo "You will need to review your pipelines summary file to find the download command."
+echo ""

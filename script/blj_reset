@@ -4,6 +4,10 @@
 ##  All modules numbered higher than the current module will also be reset.  ##
 ###############################################################################
 
+echo "The 'blj_reset' command is equivilent to:" 
+echo 'java -cp ${BLJ}/dist/BioLockJ.jar biolockj.launch.Reset ${PWD}'
+echo ""
+
 BLJ_JAR=${BLJ}/dist/BioLockJ.jar
 [ ! -f "${BLJ_JAR}" ] && exit_script "Error [ biolockj ]: BioLockJ Jar file \"${BLJ_JAR}\" not found."
-java -jar ${BLJ_JAR} biolockj.launch.Reset ${PWD}
+java -cp ${BLJ_JAR} biolockj.launch.Reset ${PWD}

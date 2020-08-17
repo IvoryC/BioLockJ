@@ -132,6 +132,12 @@
     <a class="current" href="./">Commands</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#bash-commands">Bash Commands</a></li>
+    
+
+    <li class="toctree-l3"><a href="#deprecated-commands">Deprecated Commands</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -215,6 +221,7 @@
                 <p>The BioLockJ program is launched through the <code>biolockj</code> script. See <a href="../GENERATED/biolockj-help/"><code>biolockj --help</code></a>.</p>
 <p>Support programs can access information about BioLockJ modules and properties through <a href="../GENERATED/BioLockJ-Api/"><code>biolockj-api</code></a>. </p>
 <p>There are also several helper scripts for small specific tasks, these are all found under $BLJ/script and added to the <code>$PATH</code> after the basic installation:</p>
+<h3 id="bash-commands">Bash Commands<a class="headerlink" href="#bash-commands" title="Permanent link">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -225,31 +232,50 @@
 <tbody>
 <tr>
 <td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/last-pipeline">last-pipeline</a></strong></td>
-<td align="left">Get the path to the most recent pipeline.</td>
+<td align="left">Get the path to the most recent pipeline.<br>ideal for: <br> <code>cd $(last-pipeline)</code><br><code>ls `last-pipeline`</code></td>
 </tr>
 <tr>
 <td align="left"><strong>cd-blj</strong></td>
-<td align="left">Go to most recent pipeline &amp; list contents.</td>
+<td align="left">Go to most recent pipeline &amp; list contents. This is not a script, it is an alias that is added to your bash profile by the install script.  The line defining it should look like:<br> <code>alias cd-blj='cd $(last-pipeline); quick_pipeline_view'</code></td>
 </tr>
 <tr>
-<td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/blj_log">blj_log</a></strong></td>
-<td align="left">Tail last 1K lines from current or most recent pipeline log file.</td>
-</tr>
-<tr>
-<td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/blj_summary">blj_summary</a></strong></td>
-<td align="left">Print current or most recent pipeline summary.</td>
-</tr>
-<tr>
-<td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/blj_complete">blj_complete</a></strong></td>
-<td align="left">Manually completes the current module and pipeline status.</td>
+<td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/quick_pipeline_view">quick_pipeline_view</a></strong></td>
+<td align="left">essentially just <code>pwd</code> and <code>ls</code>; designed for the cd-blj alias.</td>
 </tr>
 <tr>
 <td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/blj_reset">blj_reset</a></strong></td>
 <td align="left">Reset pipeline status to incomplete.<br>If restarted, execution will start with the current module.</td>
 </tr>
+</tbody>
+</table>
+<h3 id="deprecated-commands">Deprecated Commands<a class="headerlink" href="#deprecated-commands" title="Permanent link">#</a></h3>
+<table>
+<thead>
 <tr>
-<td align="left"><strong><a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/blob/master/script/blj_download">blj_downlaod</a></strong></td>
-<td align="left">If on cluster, print command syntax to download current or most recent pipeline results to your local workstation directory: <em>pipeline.downloadDir</em>.</td>
+<th align="left">Command</th>
+<th align="left">Description <br> (Replacement)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><strong>blj_log</strong></td>
+<td align="left">Tail last 1K lines from current or most recent pipeline log file. <br><strong>Replacement</strong>:<br> <code>cd $(last-pipeline); tail -1000 *.log</code></td>
+</tr>
+<tr>
+<td align="left"><strong>blj_summary</strong></td>
+<td align="left">Print current or most recent pipeline summary. <br><strong>Replacement</strong>:<br> <code>cd $(last-pipeline); cat summary.txt</code></td>
+</tr>
+<tr>
+<td align="left"><strong>blj_complete</strong></td>
+<td align="left">Manually completes the current module and pipeline status. This functionality should never be needed. For the rare occasions when it is appropriate, it can be done manually.<br><strong>Replacement</strong>:<br> <code>touch biolockjComplete</code></td>
+</tr>
+<tr>
+<td align="left"><strong>blj_reset</strong></td>
+<td align="left">Reset pipeline status to incomplete.<br>If restarted, execution will start with the current module.<br>The need for this functionality is common; and a bash wrapper script still exists.  <br><strong>Alternative</strong>:<br> <code>java -cp ${BLJ}/dist/BioLockJ.jar biolockj.launch.Reset ${PWD}</code></td>
+</tr>
+<tr>
+<td align="left"><strong>blj_download</strong></td>
+<td align="left">If on cluster, extract and print the command syntax from the summary.txt file to download pipeline results to your local workstation directory: <em>pipeline.downloadDir</em>. <br><strong>no replacement</strong>:<br> You will need to review your pipelines summary file to find the download command.</td>
 </tr>
 </tbody>
 </table>
