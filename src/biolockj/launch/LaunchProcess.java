@@ -497,13 +497,9 @@ public class LaunchProcess {
 	}
 
 	protected void printActionOptions() {
-		if( DockerUtil.inDockerEnv() ) {
-			System.out.println( "After an initial status check, all pipeline updates will be in the pipeline folder." );
-		} else {
+		System.out.println( "After an initial status check, all pipeline updates will be in the pipeline folder." );
+		if( ! DockerUtil.inDockerEnv() ) {
 			System.out.println( "cd-blj       -> Move to pipeline output directory" );
-			//TODO probably going to remove these options, they are hard to test, and don't offer very much value.
-			System.out.println( "blj_log      -> Tail pipeline log (accepts tail runtime parameters)" );
-			System.out.println( "blj_summary  -> View module execution summary" );
 		}
 	}
 	
