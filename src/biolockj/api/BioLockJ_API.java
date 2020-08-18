@@ -2,6 +2,7 @@ package biolockj.api;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -16,11 +17,9 @@ import java.util.Map;
 import java.util.Set;
 import biolockj.Config;
 import biolockj.Constants;
-import biolockj.Log;
 import biolockj.Properties;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigException;
-import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.module.BioModule;
 import biolockj.util.BioLockJUtil;
@@ -37,6 +36,7 @@ import org.reflections.util.FilterBuilder;
 
 public class BioLockJ_API {
 
+	private static String query = null;
 	// bash script
 	private static final String BASH_ENTRY = "biolockj-api";
 	
@@ -68,22 +68,44 @@ public class BioLockJ_API {
 
 	private BioLockJ_API() {}
 
+	
+	private static HashMap<String, String> parseOptions( String[] args ) throws API_Exception {
+		HashMap<String, String> options = new HashMap<>();
+		final String QUERY_KEY = "query";
+		String argname = QUERY_KEY;
+		for (String arg : args) {
+			if (argname == null ) { //expecting option name
+				if ( arg.startsWith( "--" ) ) {
+					argname = arg.substring( 2 );
+				}else{
+					throw new API_Exception("Looking for option name, found unnamed value [ " + arg + " ].");
+				}
+			}else if( argname.equals( QUERY_KEY ) ){
+				if (arg.startsWith( "--" )) throw new API_Exception("The query term should be given before any options. Option names start with \"--\", the query term does not.");
+				query=arg;
+				argname = null;
+			}else { // expecting arg value
+				options.put(argname, arg);
+				argname = null;
+			}
+		}
+		return options;
+	}
+	
 	public static void main( String[] args ) throws Exception {
 		try {
-			HashMap<String, String> options = new HashMap<>();
-			String query = null;
-			for (String arg : args) {
-				int sep = arg.indexOf( "=" );
-				if (sep == -1) {
-					if (query == null) query = arg;
-					else throw new API_Exception("All options after the query must be named." + System.lineSeparator() + "Cannot process [ " + arg + " ].");
-				}else {
-					options.put( arg.substring( 0, sep ).trim(), arg.substring( sep + 1 ).trim() );
-				}
+			if (args.length==0) {
+				System.out.println( getHelp() );
+				System.exit( 0 );
 			}
+			HashMap<String, String> options = parseOptions(args);
+			
 			if ( query == null ) throw new API_Exception("Cannot determine query.");
-			if ( options.get(EXT_MODS_ARG) != null) System.err.print("The [" + EXT_MODS_ARG + "] option may not have been handled correctly.");
 			if ( options.get(DEBUG_ARG) != null ) setVerbose( true );
+			
+			if ( options.get(EXT_MODS_ARG) != null) {
+				System.exit( runSubProcess(options) );
+			}
 			
 			String reply = "";
 			switch( query ) {
@@ -236,6 +258,35 @@ public class BioLockJ_API {
 			}
 		}
 		return( String.join( System.lineSeparator(), output ) );
+	}
+	
+	/**
+	 * The {@value #EXT_MODS_ARG} option allows the use to expect the class path. 
+	 * To use this, a new java instance much be called with the extended path.
+	 * @param options
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ConfigPathException
+	 */
+	private static int runSubProcess(HashMap<String, String> options) throws IOException, InterruptedException, ConfigPathException {
+		File BLJ_JAR = new File( (new File(BioLockJUtil.getBljDir(), "dist")), "BioLockJ.jar");
+		StringBuilder cmd = new StringBuilder();
+		cmd.append( "java -cp " + BLJ_JAR.getAbsolutePath() + ":" + options.get( EXT_MODS_ARG ) + "/*" + " biolockj.api.BioLockJ_API " + query ) ;
+		options.remove( EXT_MODS_ARG );
+		for (String key : options.keySet()) {
+			cmd.append( " --" + key + " " + options.get( key ) );
+		}
+		Process p = Runtime.getRuntime().exec( cmd.toString() );
+		final BufferedReader brOut = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+		final BufferedReader brErr = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
+		String out = null;
+		while( ( out = brOut.readLine() ) != null ) System.out.println(out);
+		String err = null;
+		while( ( err = brErr.readLine() ) != null ) System.err.println(err);
+		p.waitFor();
+		p.destroy();
+		return(p.exitValue());
 	}
 	
 	
@@ -643,7 +694,7 @@ public class BioLockJ_API {
 		String PROP_OPTION = "--" + PROP_ARG + " <property>";
 		String VALUE_OPTION = "--" + VALUE_ARG + " <value>";
 		String CONFIG_OPTION = "--" + CONFIG_ARG + " <file>";
-		String DEBUG_OPTION = "--" + DEBUG_ARG;
+		String DEBUG_OPTION = "--" + DEBUG_ARG + " true";
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append( "BioLockJ API " + BioLockJUtil.getVersion( ) + " - UNCC Fodor Lab" +System.lineSeparator() );
@@ -653,7 +704,7 @@ public class BioLockJ_API {
 		sb.append( BASH_ENTRY + " <query> [options...]" +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "(java)" +System.lineSeparator() );
-		sb.append( "java -cp /path/to/BioLockJ.jar[:<external-modules-dir>] biolockj.api.BioLockJ_API <query> [options...]" +System.lineSeparator() );
+		sb.append( "java -cp /path/to/BioLockJ.jar biolockj.api.BioLockJ_API <query> [options...]" +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "For some uses, redirecting stderr is recommended:" +System.lineSeparator() );
 		sb.append( BASH_ENTRY + " <query> [options...]  2> /dev/null" +System.lineSeparator() );

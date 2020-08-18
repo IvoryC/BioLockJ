@@ -5,118 +5,21 @@
 ###############################
 
 main(){
-
-	[ ${#BIOLOCKJ_TEST_MODE} -gt 0 ] && printf "\n ---------> Execute CMD [  biolockj-api $(echo ${@})  ]\n"
-	
 	BLJ_JAR=${BLJ}/dist/BioLockJ.jar
-	MAIN_CLASS="biolockj.api.BioLockJ_API"
-	
-	# Before anything else, check to see if the user just wants help or version info.
-	[ $# -eq 0 ] && display_help && exit 0
-	
-	take_standard_biolockj_args "$@"
-		
-	make_java_command
-	continue_after_command $CMD
-	
-	statusCode=$?
-    if [ ${statusCode} -ne 0 ]; then
-    	display_help
-    fi
-}
-
-. ${BLJ}/script/blj_functions
-. ${BLJ}/script/blj_user_arg_lib # note that several functions are over-written
-
-# Optionally print a message, then show help, then exit with status 1
-# over-witten from blj_functions
-exit_with_message(){
-	>&2 echo $1
-	>&2 echo "$(biolockj-api help)"
-	[ -f "/.dockerenv" ] && sleep 5
-	exit 1
-}
-
-# Make sure required variables exist and are valid
-check_env_vars(){
-	pls_use_install="\nThe install script packaged with BioLockJ sets this value. You may need to start a new terminal window.\n"
-	[ ${#BLJ_PROJ} -eq 0 ] && exit_with_message "Error [ biolockj-api ]: Required env variable BLJ_PROJ is not defined. $pls_use_install"
-	[ ! -d "${BLJ_PROJ}" ] && exit_with_message "Error [ biolockj-api ]: Required env variable BLJ_PROJ [\"${BLJ_PROJ}\"] must be a directory on the filesystem. $pls_use_install"
-	[ ${#BLJ} -eq 0 ] && exit_with_message "Error [ biolockj-api ]: Required env variable BLJ is not defined. $pls_use_install"
-	[ ! -d "${BLJ}" ] && exit_with_message "Error [ biolockj-api ]: Required env variable BLJ [\"${BLJ}\"] must be a directory on the filesystem. $pls_use_install"
 	[ ! -f "${BLJ_JAR}" ] && exit_script "Error [ biolockj-api ]: BioLockJ Jar file \"${BLJ_JAR}\" not found."
-}
-
-set_arg_names(){
-	CONFIG_ARG="config"
-	EXT_MODS_ARG="external-modules"
-	MODULE_ARG="module"
-	PROP_ARG="property"
-	VALUE_ARG="value"
-	DEBUG_ARG="verbose"
-}
-
-init_defaults(){
-	# Order does not matter for $longArgName or $takeShortArg, but it is easier to read if they match
-	# Order MATTERS for $shortArgName and $parameters ---they must match whatever order is in $longArgName.
-	longArgName=( $CONFIG_ARG $EXT_MODS_ARG $MODULE_ARG $PROP_ARG $VALUE_ARG $DEBUG_ARG)
-	takeShortArg=()
-	shortArgName=()
-	parameters=()
-	mustTakeValue=($CONFIG_ARG $EXT_MODS_ARG $MODULE_ARG $PROP_ARG $VALUE_ARG)
-	canTakeValue=(${mustTakeValue[@]})
-	for i in ${!longArgName[@]}; do
-		longName=${longArgName[ $i ]}
-		if containsElement $longName ${takeShortArg[@]}
-			then shortArgName[ $i ]=${longName:0:1}
-			else shortArgName[ $i ]=$longName # a place holder
-		fi 
-		parameters[ $i ]="default"
-		i=$((i+1))
-	done
-	argsFromUser=() # distinguish between the default, and the user supplying "default" as the value
-}
-
-# get the first argument, and call it mainArg
-# all other arguments are options
-split_main_arg_from_options(){
-	local args=( "$@" )	
-	local numArgs=${#args[@]}
-	mainArg=${args[0]}
-	options=()
-	if [ $numArgs -gt 1 ]; then
-		for i in $(seq 0 $((${#args[@]} - 2)) ); do
-			options[ $i ]=${args[ $i + 1 ]}
-		done
-	fi
-}
-
-java_cmd_core(){
-	if ifArgUsed $EXT_MODS_ARG ; then
-		local EXTRA=$(get_arg_value $EXT_MODS_ARG)
-		echo "java -cp ${BLJ_JAR}:${EXTRA}/* $MAIN_CLASS"
-	else	
-		echo "java -cp ${BLJ_JAR} $MAIN_CLASS"
-	fi
-}
-
-make_java_command(){
-    CMD="$(java_cmd_core)"
-    CMD="${CMD} $mainArg"
-	ifArgUsed $CONFIG_ARG && CMD="${CMD} $CONFIG_ARG=$(get_arg_value $CONFIG_ARG)"
-	ifArgUsed $MODULE_ARG && CMD="${CMD} $MODULE_ARG=$(get_arg_value $MODULE_ARG)"
-	ifArgUsed $PROP_ARG && CMD="${CMD} $PROP_ARG=$(get_arg_value $PROP_ARG)"
-	ifArgUsed $VALUE_ARG && CMD="${CMD} $VALUE_ARG=$(get_arg_value $VALUE_ARG)"
-	ifArgUsed $DEBUG_ARG && CMD="${CMD} $DEBUG_ARG=true"
-}
-
-function display_help(){ #this over-rides the function definition found in blj_user_arg_lib
-	CMD="java -cp ${BLJ_JAR} ${MAIN_CLASS} help"
-	continue_after_command $CMD     
+	CMD="java -cp ${BLJ_JAR} biolockj.api.BioLockJ_API ${@}"
+	[ ${#BIOLOCKJ_TEST_MODE} -gt 0 ] && echo "${BIOLOCKJ_TEST_MODE}$CMD" && exit
+	eval $CMD
 	statusCode=$?
     if [ ${statusCode} -ne 0 ]; then
     	display_help_without_java
     fi
+}
+
+# Display BioLockJ release version
+display_version() {
+	[ -f "${BLJ}/.version" ] && cat "${BLJ}/.version" && return
+	echo "Missing ${BLJ}/.version"
 }
 
 display_help_without_java(){
