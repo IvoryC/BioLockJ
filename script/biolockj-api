@@ -6,7 +6,7 @@
 
 main(){
 	BLJ_JAR=${BLJ}/dist/BioLockJ.jar
-	[ ! -f "${BLJ_JAR}" ] && exit_script "Error [ biolockj-api ]: BioLockJ Jar file \"${BLJ_JAR}\" not found."
+	[ ! -f "${BLJ_JAR}" ] && echo "Error [ biolockj-api ]: BioLockJ Jar file \"${BLJ_JAR}\" not found." && exit 1
 	CMD="java -cp ${BLJ_JAR} biolockj.api.BioLockJ_API ${@}"
 	[ ${#BIOLOCKJ_TEST_MODE} -gt 0 ] && echo "${BIOLOCKJ_TEST_MODE}$CMD" && exit
 	eval $CMD

@@ -10,6 +10,9 @@
 
 ### Basic bash conveniences
 
+echo "Warning: The blj_functions library is deprecated."
+echo "Warning: It will be removed as of version v1.4.0."
+
 # Check bash array for element exact match
 # Param 1 - Search pattern
 # Param @ = Remaining args = searchable array
