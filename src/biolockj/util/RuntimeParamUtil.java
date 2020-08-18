@@ -44,8 +44,11 @@ public class RuntimeParamUtil {
 	 */
 	public static File getFileParam(String paramName, boolean dockerize) throws DockerVolCreationException{
 		String filePath = params.get( paramName );
-		if ( dockerize && DockerUtil.inDockerEnv() ) 
+		if ( dockerize ) {
+			Log.debug(RuntimeParamUtil.class, "Raw file path passed at runtime: " + filePath);
 			filePath = DockerUtil.containerizePath( filePath );
+			Log.debug(RuntimeParamUtil.class, "Containerized file path: " + filePath);
+		}
 		return filePath == null ? null: new File( filePath );
 	}
 	
@@ -225,13 +228,6 @@ public class RuntimeParamUtil {
 
 		if( getDirectModuleDir() != null ) assignMasterConfig( DIRECT_MODE, assignDirectPipelineDir() );
 		else if( doRestart() && getConfigFile() == null ) assignMasterConfig( RESTART_DIR, getRestartDir() );
-		else try {
-			final File localConfig = Config.getLocalConfigFile( params.get( CONFIG_FILE ) );
-			params.put( CONFIG_FILE, localConfig.getAbsolutePath() );
-		} catch( final Exception ex ) {
-			throw new RuntimeParamException( CONFIG_FILE, params.get( CONFIG_FILE ),
-				"Failed to get local Confg file path: " + ex.getMessage() );
-		}
 
 		validateParams();
 	}

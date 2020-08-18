@@ -22,6 +22,7 @@ import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import biolockj.*;
@@ -321,13 +322,16 @@ public class DockerUtil {
 		}
 	}
 
-	public static String containerizePath( String path ) throws DockerVolCreationException {
+	public static String containerizePath( final String path ) throws DockerVolCreationException {
 		Log.debug( DockerUtil.class, "Containerizing path: " + path );
 		if( !DockerUtil.inDockerEnv() ) return path;
 		if( path == null || path.isEmpty() ) return null;
-		String innerPath = path;
-		TreeMap<String, String> vmap = getVolumeMap();
+		
+		String hostPath = path;
+		if (isWindowsHostPath(path)) hostPath = convertWindowsPath(path);
+		
 		String pipelineKey = null;
+		TreeMap<String, String> vmap = getVolumeMap();
 		for( String key: volumeMap.keySet() ) {
 			if( volumeMap.get( key ).equals( DOCKER_PIPELINE_DIR ) ) pipelineKey = key;
 			if( DockerUtil.inAwsEnv() && volumeMap.get( key ).equals( DOCKER_BLJ_MOUNT_DIR ) ) pipelineKey = key;
@@ -337,21 +341,23 @@ public class DockerUtil {
 		if( pipelineKey == null && BioLockJ.getPipelineDir() != null ) {
 			throw new DockerVolCreationException( "no pipeline dir !" );
 		}
-		if( pipelineKey != null && path.startsWith( pipelineKey ) )
-			return innerPath.replaceFirst( pipelineKey, vmap.get( pipelineKey ) );
-
+		if( pipelineKey != null && hostPath.startsWith( pipelineKey ) )
+			return hostPath.replaceFirst( pipelineKey, vmap.get( pipelineKey ) );
+		
+		String innerPath = path;
 		String bestMatch = null;
 		int bestMatchLen = 0;
 		for( String s: vmap.keySet() ) {
-			if( path.startsWith( s ) && s.length() > bestMatchLen &&
-				( path.equals( s ) || path.charAt( s.length() ) == File.separatorChar ) ) {
+			if( hostPath.startsWith( s ) && s.length() > bestMatchLen &&
+				( hostPath.equals( s ) || hostPath.charAt( s.length() ) == File.separatorChar ) ) {
 				bestMatch = String.valueOf( s );
 				bestMatchLen = s.length();
 			}
 		}
 		if( bestMatch != null ) {
-			innerPath = innerPath.replaceFirst( bestMatch, vmap.get( bestMatch ) );
+			innerPath = hostPath.replaceFirst( bestMatch, vmap.get( bestMatch ) );
 		}
+		Log.debug( DockerUtil.class, "Containerized path to: " + innerPath );
 		return innerPath;
 	}
 	public static File containerizePath(final File file) throws DockerVolCreationException {
@@ -380,6 +386,20 @@ public class DockerUtil {
 		if (args.length > 1 && args[1].equals("target") ) System.out.println( containerizePath( args[0] ) );
 		else if (args.length > 1 && args[1].equals("source") ) System.out.println( deContainerizePath( args[0] ) );
 		else System.out.println( deContainerizePath( args[0] ) );
+	}
+	
+	private static boolean isWindowsHostPath(final String path) {
+		return (path.contains( ":" ) 
+						&& path.indexOf( ":" ) == path.lastIndexOf( ":" )
+						&& FilenameUtils.separatorsToWindows(path).equals(path));
+	}
+	
+	private static String convertWindowsPath(final String path) {
+		String drive = path.substring( 0, path.indexOf( ":" ) ).toLowerCase();
+		String dirPath = path.substring( path.indexOf( ":" ) + 1 );
+		String mountPath = File.separator + "host_mnt" + File.separator + drive + FilenameUtils.separatorsToSystem( dirPath );
+		Log.debug( DockerUtil.class, "Converted Windows path [" + path + "] to docker mount form: " + mountPath );
+		return mountPath ;
 	}
 
 	public static String getContainerId() throws IOException, DockerVolCreationException {

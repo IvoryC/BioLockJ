@@ -584,10 +584,7 @@ public class BioLockJ_API {
 	}
 	
 	private static List<String> listFilesFromConfig(final String config, final String mountOrUpload) throws Exception {		
-		String configPath = Config.convertWindowsPathForDocker(config); 
-		configPath = DockerUtil.containerizePath( configPath ); 
-		
-		File configFile = new File(configPath);
+		File configFile = Config.getExistingFileObjectFromPath( config );
 		Set<String> mounts = new HashSet<>();
 		Set<String> uploads = new HashSet<>();
 		
@@ -604,13 +601,9 @@ public class BioLockJ_API {
 			//System.err.println("Reviewing " + vals.size() + " property values to see if any are files on the local system.");
 			for (String val : vals ) {
 				//System.err.println("Consider the value: " + val );
-				val = Config.convertWindowsPathForDocker(val); 
-				val = Config.convertRelativePath( val, configFile.getParent() );
-				val = DockerUtil.containerizePath( val ); 
-				//The built-in default config files will be available wherever BioLockJ is running.
-				if (val.equals( Config.replaceEnvVar( Constants.STANDARD_CONFIG_PATH) ) 
-								|| val.equals( Config.replaceEnvVar( Constants.DOCKER_CONFIG_PATH )) ) continue;
-				File testFile = new File(val);
+				File testFile = Config.getExistingFileObjectFromPath( val );
+				if (testFile.getAbsolutePath().equals( Config.replaceEnvVar( Constants.STANDARD_CONFIG_PATH) ) 
+								|| testFile.getAbsolutePath().equals( Config.replaceEnvVar( Constants.DOCKER_CONFIG_PATH )) ) continue;
 				boolean fileExists = testFile.exists();
 				if (!fileExists && DockerUtil.inDockerEnv()) fileExists = existsOnHost(testFile);
 				if (fileExists) {

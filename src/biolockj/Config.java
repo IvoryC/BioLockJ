@@ -749,13 +749,8 @@ public class Config {
 	 */
 	public static File getExistingFileObjectFromPath( final String filePath ) throws ConfigPathException, DockerVolCreationException {
 		if( filePath != null ) {
-			String path = filePath;
-			path = convertRelativePath( path );
-			path = convertWindowsPathForDocker(path); 
-			if ( DockerUtil.inDockerEnv() ) {
-				Log.debug(Config.class, "The file path \"" + filePath + "\" has been interpreted as host file: " + path );
-				path = DockerUtil.containerizePath( path );
-			} 
+			String path = convertRelativePath( filePath );
+			path = DockerUtil.containerizePath( path );
 			Log.debug(Config.class, "The file path \"" + filePath + "\" has been internally interpreted as: " + path );
 			final File f = new File( path );
 			if( f.exists() ) return f;
