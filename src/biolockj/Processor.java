@@ -13,7 +13,6 @@ package biolockj;
 
 import java.io.*;
 import java.util.*;
-import biolockj.exception.ConfigPathException;
 import biolockj.module.ScriptModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.NextflowUtil;
@@ -109,19 +108,7 @@ public class Processor {
 		String bashVarValue = null;
 		Log.info( Processor.class, "[ Get Bash Var (" + bashVar + ") ]: STARTING" );
 		try {
-			final String var = bashVar.startsWith( "$" ) || bashVar.equals( "~" ) ? bashVar: "$" + bashVar;
-			Log.info( Processor.class,
-				"[ Get Bash Var (" + bashVar + ") ]: CMD --> " + getArgsAsString( bashVarArgs( var ) ) );
-			final Process p = Runtime.getRuntime().exec( bashVarArgs( var ) );
-			final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
-			String s = null;
-			while( ( s = br.readLine() ) != null )
-				if( s.startsWith( BLJ_GET_ENV_VAR_KEY ) ) {
-					bashVarValue = s.replace( BLJ_GET_ENV_VAR_KEY, "" ).trim();
-					break;
-				}
-			p.waitFor();
-			p.destroy();
+			bashVarValue = System.getenv( bashVar );
 		} catch( final Exception ex ) {
 			Log.error( Processor.class, "Problem occurred looking up bash env. variable: " + bashVar, ex );
 		}
@@ -249,20 +236,6 @@ public class Processor {
 		return false;
 	}
 
-	private static String[] bashVarArgs( final String bashVar ) throws ConfigPathException {
-		final File profile = BioLockJUtil.getUserProfile();
-		if( profile != null )
-			return new String[] { bashVarScript().getAbsolutePath(), bashVar, profile.getAbsolutePath() };
-		return new String[] { bashVarScript().getAbsolutePath(), bashVar };
-	}
-
-	private static File bashVarScript() throws ConfigPathException {
-		final File script = new File( BioLockJUtil.getBljDir().getAbsolutePath() + File.separator +
-			Constants.SCRIPT_DIR + File.separator + BLJ_GET_ENV_VAR_SCRIPT );
-		if( script.isFile() ) return script;
-		throw new ConfigPathException( script );
-	}
-
 	private static String getArgsAsString( final String[] args ) {
 		final StringBuffer sb = new StringBuffer();
 		for( final String arg: args )
@@ -270,7 +243,5 @@ public class Processor {
 		return sb.toString();
 	}
 
-	private static final String BLJ_GET_ENV_VAR_KEY = "BLJ_GET_ENV_VAR";
-	private static final String BLJ_GET_ENV_VAR_SCRIPT = "get_env_var";
 	private static final Map<Thread, Long> threadRegister = new HashMap<>();
 }

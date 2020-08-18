@@ -870,8 +870,8 @@ public class Config {
 	}
 
 	private static String getBashVal( final String bashVar ) {
-		if( bashVarMap.get( bashVar ) != null ) {
-			return bashVarMap.get( bashVar );
+		if( envVarMap.get( bashVar ) != null ) {
+			return envVarMap.get( bashVar );
 		}
 		
 		String bashVal = null;
@@ -891,8 +891,9 @@ public class Config {
 				if( dir != null && dir.isDirectory() ) {
 					bashVal =  dir.getAbsolutePath();
 				}
-			}else {
-				bashVal = Processor.getBashVar( bashVar );
+			}
+			if ( bashVal == null ) {
+				bashVal = Processor.getBashVar( stripBashMarkUp( bashVar ) );
 			}
 		} catch( final Exception ex ) {
 			Log.warn( Config.class,
@@ -900,7 +901,7 @@ public class Config {
 		}
 		
 		if( bashVal != null && !bashVal.trim().isEmpty() ) {
-			bashVarMap.put( bashVar, bashVal );
+			envVarMap.put( bashVar, bashVal );
 			return bashVal;
 		}
 		return bashVar;
@@ -1017,7 +1018,7 @@ public class Config {
 	public static final String BLJ_PROJ_VAR = "${" + BLJ_PROJ_SIMPLE_VAR + "}";
 	
 	
-	private static final Map<String, String> bashVarMap = new HashMap<>();
+	private static final Map<String, String> envVarMap = new HashMap<>();
 	private static File configFile = null;
 	static Properties props = null;
 	private static Properties unmodifiedInputProps = new Properties();
