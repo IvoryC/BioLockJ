@@ -15,7 +15,6 @@ import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Properties;
 import biolockj.exception.BioLockJStatusException;
-import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.InvalidPipelineException;
 import biolockj.module.BioModule;
 
@@ -37,7 +36,10 @@ public class PipelineUtil {
 	}
 	
 	public static File getMostRecentPipeline(File projDir) {
-		List<File> pipelines = new ArrayList<>( Arrays.asList( projDir.listFiles() ) );
+		List<File> pipelines = new ArrayList<>();
+		if (projDir.exists()) {
+			pipelines.addAll( Arrays.asList( projDir.listFiles() ) );
+		}
 		Collections.sort( pipelines, new Comparator<File>() {
 			@Override
 			public int compare( File o1, File o2 ) {

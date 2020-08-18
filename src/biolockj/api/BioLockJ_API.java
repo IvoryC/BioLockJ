@@ -25,6 +25,7 @@ import biolockj.module.BioModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.DockerUtil;
 import biolockj.util.ModuleUtil;
+import biolockj.util.PipelineUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.reflections.Reflections;
@@ -41,6 +42,7 @@ public class BioLockJ_API {
 	private static final String BASH_ENTRY = "biolockj-api";
 	
 	// query 
+	private static final String LAST_PIPELINE = "last-pipeline";
 	private static final String LIST_MODULES = "listModules";
 	private static final String LIST_API_MODULES = "listApiModules";
 	private static final String LIST_PROPS = "listProps";
@@ -109,6 +111,10 @@ public class BioLockJ_API {
 			
 			String reply = "";
 			switch( query ) {
+				case LAST_PIPELINE:
+					File BLJ_PROJ_DIR = new File(Config.replaceEnvVar( "${BLJ_PROJ}" ));
+					reply = PipelineUtil.getMostRecentPipeline( BLJ_PROJ_DIR ).getAbsolutePath();
+					break;
 				case LIST_MODULES:
 					unsupportedOption(query, options, new String[0]);
 					reply = listToString( listModules() );
@@ -728,6 +734,9 @@ public class BioLockJ_API {
 		sb.append( "        flag indicating that all messages should go to standard err, including some that are typically disabled." +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "query:" + System.lineSeparator() );
+		sb.append( System.lineSeparator() );
+		sb.append( "  " + LAST_PIPELINE +System.lineSeparator() );
+		sb.append( "        Returns the path to the most recent pipeline." +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "  " + LIST_MODULES + " [ " + EXT_MODS_OPTION + " ]" +System.lineSeparator() );
 		sb.append( "        Returns a list of classpaths to the classes that extend BioModule." +System.lineSeparator() );
