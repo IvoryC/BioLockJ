@@ -2,9 +2,12 @@ package biolockj.launch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.util.RuntimeParamUtil;
+import sun.util.calendar.JulianCalendar;
 
 public class JavaLaunchProcess extends LaunchProcess {
 	
@@ -53,44 +56,53 @@ public class JavaLaunchProcess extends LaunchProcess {
 		System.out.print( "Initializing BioLockJ" );
 		try {
 			final Process p = Runtime.getRuntime().exec( cmd ); 
-			if (getFlag( FG_ARG )) {
-				showProcess(p);
-			}else {
-				confirmJavaStarted(p);
-			}
+			confirmStart(p);
 		} catch( final Exception ex ) {
 			System.err.println( "Problem occurred running command: " + cmd);
 			ex.printStackTrace();
 		}
-		pipeDir = getMostRecentPipeline();
 		printInfo();
 	}
 	
-	private void confirmJavaStarted(Process p) throws InterruptedException, IOException {
+	/**
+	 * inspired by MarcoS's response on https://stackoverflow.com/questions/5243233/set-running-time-limit-on-a-method-in-java
+	 * @param p
+	 * @throws IOException 
+	 * @throws InterruptedException 
+	 */
+	private void confirmStart(Process p) throws IOException, InterruptedException {
+		long startTime = System.currentTimeMillis();
 		int maxtime = 15; 
-		int haveWaited = 0;
-		while( (maxtime > haveWaited || getFlag(WAIT_ARG) )
-						&& initDir.getAbsolutePath().equals( mostRecent.getAbsolutePath() )
-						&& ! restartDirHasStatusFlag()
-						&& p.isAlive()) {
-			System.out.print(".");
-			haveWaited++;
-			mostRecent = getMostRecentPipeline();
-			if ( haveWaited == 10) {
-				System.out.print( "waiting for head java process to start");
-			}
-			if ( haveWaited == maxtime ) {
-				if (getFlag( WAIT_ARG ) ) {
-					System.out.println( "The normal timeout has been disabled." );
-				}else {
-					System.out.println( "Reached max wait time: " + maxtime + " seconds." );
+		Timer timer = new Timer(true);
+		if( !getFlag( FG_ARG ) ) {
+			timer.schedule( new TimerTask() {
+				@Override
+				public void run() {
+					System.out.print( "." );
 				}
-			}
-			Thread.sleep( 1000 );
+			}, 1 );
 		}
-		Thread.sleep( 1000 );
-		System.out.print(".");
+		
+		if ( getFlag( WAIT_ARG ) ) {
+			timer.schedule( new TimerTask() {
+				@Override
+				public void run() {
+					System.out.println( "The normal timeout has been disabled." );
+				}
+			}, maxtime );
+		}else {
+			timer.schedule(new InterruptTimerTask(Thread.currentThread()), maxtime);	
+		}
+		try {
+			watchProcess(p);
+		} catch (InterruptedException e) {
+			if (System.currentTimeMillis() - startTime >= maxtime - 1 )
+				System.out.println( "Reached max wait time: " + maxtime + " seconds." );
+			else throw e;
+		}
+		timer.cancel();
 	}
+	
 	
 	private void checkJarFile() throws EndLaunch {
 		BLJ_JAR_FILE=new File( new File(BLJ_DIR, "dist"), "BioLockJ.jar");
@@ -99,6 +111,24 @@ public class JavaLaunchProcess extends LaunchProcess {
 			msgs.add("If you are a developer, you may need to build the program.");
 			throw new EndLaunch( 1, msgs);
 		}
+	}
+	
+	/*
+	 * A TimerTask that interrupts the specified thread when run.
+	 */
+	protected class InterruptTimerTask extends TimerTask {
+
+	    private Thread theTread;
+
+	    public InterruptTimerTask(Thread theTread) {
+	        this.theTread = theTread;
+	    }
+
+	    @Override
+	    public void run() {
+	        theTread.interrupt();
+	    }
+
 	}
 	
 }

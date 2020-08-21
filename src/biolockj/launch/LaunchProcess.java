@@ -56,7 +56,7 @@ public class LaunchProcess {
 	/*
 	 * The directory for the pipeline that has just been launched.
 	 */
-	protected File pipeDir = null;
+	private File pipeDir = null;
 	/*
 	 * Most recently modified pipeline as of the start of the launch process.
 	 */
@@ -454,8 +454,8 @@ public class LaunchProcess {
 	}
 
 	protected boolean restartDirHasStatusFlag() {
-		if( restartArgVal == null ) return false;
-		File restartDir = new File( restartArgVal );
+		if( getFlag( RESTART_ARG ) ) return false;
+		File restartDir = getRestartDir();
 		File flag = PipelineUtil.getPipelineStatusFlag( restartDir );
 		return flag != null;
 	}
@@ -503,17 +503,28 @@ public class LaunchProcess {
 		}
 	}
 	
-	protected void showProcess(Process p) throws IOException, InterruptedException {
+	protected void watchProcess(Process p) throws IOException, InterruptedException {
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
 		String s = null;
-		while( ( s = br.readLine() ) != null )
+		while( ( s = br.readLine() ) != null 
+						&& ( ! hasPipelineStarted() || getFlag( FG_ARG ) ) )
 		{
-			System.out.println(s);
+			if ( getFlag( FG_ARG ) ) System.out.println(s);
+			grabPipelineLocation(s);
+			if ( pipeDir == null && restartDirHasStatusFlag() ) setPipedir( restartDir );
+			if ( pipeDir == null && foundNewPipeline() ) setPipedir( mostRecent );
 		}
-		p.waitFor();
-		p.destroy();
+//		p.waitFor();
+//		p.destroy();
 	}
 	
+	private boolean hasPipelineStarted() {
+		if (getPipedir() == null) return false;
+		else if ( PipelineUtil.getPipelineStatusFlag( getPipedir() ) != null)
+			return true;
+		return false;
+	}
+
 	protected String catchFirstResponse(Process p) throws IOException {
 		String id = null;
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
@@ -616,4 +627,23 @@ public class LaunchProcess {
 			mostRecent = getMostRecentPipeline();
 		}
 	}
+	
+	void setPipedir(File dir) {
+		pipeDir = dir;
+	}
+	File getPipedir() {
+		return pipeDir;
+	}
+	
+	boolean foundNewPipeline() {
+		return ! initDir.getAbsolutePath().equals( mostRecent.getAbsolutePath() );
+	}
+	
+	void grabPipelineLocation(String s) {
+		if( s.startsWith( Constants.PIPELINE_LOCATION_KEY ) ){
+			String path = s.replace( Constants.PIPELINE_LOCATION_KEY, "" ).trim();
+			setPipedir( new File(path) );
+		}
+	}
+	
 }
