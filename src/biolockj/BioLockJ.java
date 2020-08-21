@@ -12,8 +12,10 @@
 package biolockj;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import org.apache.commons.io.FileUtils;
+import biolockj.exception.BioLockJStatusException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.FatalExceptionHandler;
@@ -139,7 +141,7 @@ public class BioLockJ {
 	}
 
 	
-	private static void setPipelineRootDir() throws DockerVolCreationException, InvalidPipelineException {
+	private static void setPipelineRootDir() throws DockerVolCreationException, InvalidPipelineException, BioLockJStatusException, IOException {
 		String pipeType;
 		if( RuntimeParamUtil.doRestart() ) {
 			pipelineDir = RuntimeParamUtil.getRestartDir();
@@ -160,6 +162,7 @@ public class BioLockJ {
 		System.out.println( Constants.PIPELINE_LOCATION_KEY + printPathOnScreen);
 		Log.info( BioLockJ.class, "Assign " + pipeType + " pipeline root directory: " + printPathOnScreen );
 	}
+
 	/**
 	 * Create the pipeline root directory under $BLJ_PROJ and save the path to
 	 * {@link biolockj.Config}.{@value biolockj.Constants#INTERNAL_PIPELINE_DIR}.
@@ -172,10 +175,15 @@ public class BioLockJ {
 	 * <li>Current date = January 1, 2018
 	 * </ul>
 	 *
+	 * Also creates an empty master properties file so the directory is recognized as a valid pipeline; see
+	 * {@link PipelineUtil#isPipelineDir(File)}
+	 *
 	 * @return Pipeline root directory
-	 * @throws DockerVolCreationException 
+	 * @throws DockerVolCreationException
+	 * @throws IOException
+	 * @throws BioLockJStatusException
 	 */
-	private static void createPipelineDirectory() throws DockerVolCreationException {
+	private static void createPipelineDirectory() throws DockerVolCreationException, BioLockJStatusException, IOException {
 		final String dateString = BioLockJUtil.getDateString();
 		pipelineInstanceId = getProjectName() + "_" + dateString;
 		pipelineDir = new File( RuntimeParamUtil.get_BLJ_PROJ().getAbsolutePath(), pipelineInstanceId);
@@ -184,10 +192,10 @@ public class BioLockJ {
 			//TODO: dateString before i; or no date string
 			pipelineInstanceId = getProjectName() + "_" + i++ + "_" + dateString;
 			pipelineDir = new File( RuntimeParamUtil.get_BLJ_PROJ().getAbsolutePath(), pipelineInstanceId ); 
-			
 		}	
 		pipelineDir.mkdirs();
-		
+		//empty file because master config is part of a definition of a pipeline.
+		BioLockJUtil.createFile( MasterConfigUtil.getMasterConfig().getAbsolutePath() );
 	}
 
 	/**

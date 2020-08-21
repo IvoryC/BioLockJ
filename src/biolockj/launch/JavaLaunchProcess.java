@@ -7,7 +7,6 @@ import java.util.TimerTask;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.util.RuntimeParamUtil;
-import sun.util.calendar.JulianCalendar;
 
 public class JavaLaunchProcess extends LaunchProcess {
 	
