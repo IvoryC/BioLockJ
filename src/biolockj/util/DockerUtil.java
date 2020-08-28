@@ -18,7 +18,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.FileSystem;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
@@ -60,6 +59,7 @@ public class DockerUtil {
 		lines.add( ID_VAR + "=$(" + Config.getExe( module, Constants.EXE_DOCKER ) + " run " + DOCKER_DETACHED_FLAG +
 			" " + rmFlag( module ) + WRAP_LINE );
 		lines.addAll( getDockerVolumes( module ) );
+		lines.addAll( getEnvVars() );
 		lines.add( " " + getDockerImage( module ) + WRAP_LINE );
 		lines.add( USE_BASH + " \"$1\" )" );
 		lines.add( "echo \"Launched docker image: " + getDockerImage( module ) + "\"" );
@@ -69,6 +69,16 @@ public class DockerUtil {
 		lines.add( "docker inspect ${" + ID_VAR + "}" );
 		lines.add( "}" + Constants.RETURN );
 		return lines;
+	}
+
+	private static Collection<? extends String> getEnvVars() throws ConfigNotFoundException  {
+		final List<String> elines =  new ArrayList<>();
+		Map<String, String> envVars = Config.getEnvVarMap();
+		for (String key : envVars.keySet()) {
+			Log.debug(DockerUtil.class, "Giving container environment variable: " + key + "=" + envVars.get( key ));
+			elines.add( " -e " + key + "=" + envVars.get( key ) + " " + WRAP_LINE );
+		}
+		return elines;
 	}
 
 	public static boolean workerContainerStopped( final File mainStarted, final File workerScript ) {

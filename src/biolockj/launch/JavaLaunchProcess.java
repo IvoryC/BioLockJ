@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import biolockj.Config;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.util.RuntimeParamUtil;
@@ -49,12 +50,14 @@ public class JavaLaunchProcess extends LaunchProcess {
 	void runCommand() throws Exception {
 		String cmd = createCmd();
 		if (inTestMode()) {System.out.println( LaunchProcess.BIOLOCKJ_TEST_MODE_VALUE + " " + cmd); throw new EndLaunch( 0 );}
+		if (getFlag( FG_ARG )) {System.out.println( "Running command: [ " + cmd + " ]"); }
 		
 		super.runCommand();
 		
 		System.out.print( "Initializing BioLockJ" );
 		try {
-			final Process p = Runtime.getRuntime().exec( cmd ); 
+			final File dir = getConfigFile() == null ? null: getConfigFile().getParentFile();
+			final Process p = Runtime.getRuntime().exec( cmd, getEnvP(), dir );
 			confirmStart(p);
 		} catch( final Exception ex ) {
 			System.err.println( "Problem occurred running command: " + cmd);
@@ -63,6 +66,16 @@ public class JavaLaunchProcess extends LaunchProcess {
 		printInfo();
 	}
 	
+	private String[] getEnvP() throws Exception {
+		String[] envs = new String[ envVars.size() ];
+		int i = 0;
+		for (String key : envVars.keySet() ) {
+			envs[i] = key + "=" + envVars.get(key);
+			i++;
+		}
+		return envs;
+	}
+
 	/**
 	 * inspired by MarcoS's response on https://stackoverflow.com/questions/5243233/set-running-time-limit-on-a-method-in-java
 	 * @param p

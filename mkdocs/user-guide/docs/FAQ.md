@@ -54,6 +54,16 @@ This is often the result of a typo somewhere.  Generally, BioLockJ runs a check-
 
 
 ---
+### **Question:** A module script is failing because an environent variable is missing. But I know I defined that variable, and I can see it with `echo`. Why can't the script see it ?
+---
+**Answer:** Use `-e`; or reference it in your configuration file in the ${VAR} format
+
+Where possible, avoid relying on environment variables.  Consider defining a value in your config file and/or adding the value to a parameter list that will be used with the script.  
+
+Variables from your local envirnment must be explicitly passed into the module environments. See [the Configuration page](../Configuration/#variables).
+
+
+---
 ### **Question:** On a cluster system, I need a particular module to run on the head node.
 ---
 **Answer:** Use module-specific properties to control the cluster properties for that module.

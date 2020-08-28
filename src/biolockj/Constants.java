@@ -73,6 +73,8 @@ public class Constants {
 		Properties.registerProp( PIPELINE_COPY_FILES, Properties.BOOLEAN_TYPE, PIPELINE_COPY_FILES_DESC );
 		Properties.registerProp( PIPELINE_DEFAULT_PROPS, Properties.FILE_PATH_LIST, PIPELINE_DEFAULT_PROPS_DESC );
 		Properties.registerProp( PIPELINE_ENV, Properties.STRING_TYPE, "Environment in which a pipeline is run. Options: " + PIPELINE_ENV_CLUSTER + ", " + PIPELINE_ENV_AWS + ", " + PIPELINE_ENV_LOCAL );
+		Properties.registerProp( PIPELINE_ENV_VARS, Properties.LIST_TYPE, PIPELINE_ENV_VARS_DESC );
+		Properties.registerProp( PIPELINE_USE_EVARS, Properties.BOOLEAN_TYPE, PIPELINE_USE_EVARS_DESC );
 		Properties.registerProp( PIPELINE_PRIVS, Properties.STRING_TYPE, PIPELINE_PRIVS_DESC );
 		Properties.registerProp( DOWNLOAD_DIR, Properties.FILE_PATH, DOWNLOAD_DIR_DESC );
 		Properties.registerProp( LIMIT_DEBUG_CLASSES, Properties.LIST_TYPE, LIMIT_DEBUG_CLASSES_DESC );
@@ -620,6 +622,19 @@ public class Constants {
 	 * {@link biolockj.Config} String property: {@value #PIPELINE_ENV}
 	 */
 	public static final String PIPELINE_ENV = "pipeline.env";
+	
+	/**
+	 * {@link biolockj.Config} List property: {@value #PIPELINE_ENV}
+	 */
+	public static final String PIPELINE_ENV_VARS = "pipeline.envVars";
+	public static final String PIPELINE_ENV_VARS_DESC = "list of variables that should be passed into the runtime environment for all modules.";
+
+	/**
+	 * {@link biolockj.Config} List property: {@value #PIPELINE_USE_EVARS}<br>
+	 * {@value #PIPELINE_USE_EVARS_DESC}
+	 */
+	public static final String PIPELINE_USE_EVARS = "pipeline.useEnvVars";
+	public static final String PIPELINE_USE_EVARS_DESC = "when evaluating variables in the ${VAR} format, should environment variables be used. Regardless, priority is given to variable values defined in the config file.";
 
 	/**
 	 * {@link biolockj.Config} option for property: {@value #PIPELINE_ENV}<br>

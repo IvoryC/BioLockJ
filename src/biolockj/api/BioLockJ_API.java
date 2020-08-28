@@ -503,11 +503,14 @@ public class BioLockJ_API {
 	private static void initConfig(String path) throws Exception {
 		File config = new File(path);
 		if (!config.exists()) throw new API_Exception( "Cannot find configuration file: " + path );
+		initConfig(config);
+	}
+	private static void initConfig(File config) throws Exception {
 		Config.partiallyInitialize(config);
 	}
 	private static void initConfig() throws Exception {
 		File tempConfig = File.createTempFile( "tempconfig", "properties" );
-		Config.partiallyInitialize(tempConfig);
+		initConfig(tempConfig);
 		tempConfig.delete();
 	}
 	
@@ -584,7 +587,7 @@ public class BioLockJ_API {
 	}
 	
 	private static List<String> listFilesFromConfig(final String config, final String mountOrUpload) throws Exception {		
-		File configFile = Config.getExistingFileObjectFromPath( config );
+		File configFile = Config.getExistingFileObjectFromPath( config, false, true );
 		Set<String> mounts = new HashSet<>();
 		Set<String> uploads = new HashSet<>();
 		
@@ -601,7 +604,7 @@ public class BioLockJ_API {
 			//System.err.println("Reviewing " + vals.size() + " property values to see if any are files on the local system.");
 			for (String val : vals ) {
 				//System.err.println("Consider the value: " + val );
-				File testFile = Config.getExistingFileObjectFromPath( val );
+				File testFile = Config.getFileObjectFromPath( val, true, true );
 				if (testFile.getAbsolutePath().equals( Config.replaceEnvVar( Constants.STANDARD_CONFIG_PATH) ) 
 								|| testFile.getAbsolutePath().equals( Config.replaceEnvVar( Constants.DOCKER_CONFIG_PATH )) ) continue;
 				boolean fileExists = testFile.exists();

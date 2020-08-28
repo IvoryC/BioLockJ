@@ -188,8 +188,8 @@ public class LaunchProcess {
 		}
 		parseOptions( args );
 		assignMainArg();
-		gatherEnvVars();
 		checkBasicArgCompatibility();
+		gatherEnvVars();
 		setInitialState();
 	}
 
@@ -286,6 +286,12 @@ public class LaunchProcess {
 	}
 
 	protected void gatherEnvVars() throws EndLaunch, DockerVolCreationException, ConfigPathException {
+		try {
+			Config.partiallyInitialize( getConfigFile() );
+			envVars.putAll( Config.getEnvVarMap() ); //add any env vars that were referenced in the config file
+		} catch( Exception e ) {
+			msgs.add( "Warning: Local variables referenced in the config file may not be correctly passed to the module environments." );
+		}
 		checkBljProj();
 		checkBljDir();
 		if( parameters.get( ENV_ARG ) != null ) {
@@ -306,10 +312,10 @@ public class LaunchProcess {
 	private void checkBljProj() throws DockerVolCreationException, EndLaunch {
 		if( parameters.get( PROJ_ARG ) != null ) {
 			String path = DockerUtil.containerizePath( removeTrailingSlash( parameters.get( PROJ_ARG ) ) );
-			envVars.put( Config.BLJ_PROJ_SIMPLE_VAR, path );
+			envVars.put( Config.BLJ_PROJ_VAR, path );
 			BLJ_PROJ_DIR = new File( path );
 		} else {
-			BLJ_PROJ_DIR = new File( Processor.getBashVar( Config.BLJ_PROJ_SIMPLE_VAR ) );
+			BLJ_PROJ_DIR = new File( Processor.getBashVar( Config.BLJ_PROJ_VAR ) );
 		}
 		if( BLJ_PROJ_DIR == null ) {
 			msgs.add( "Error: Required env variable BLJ_PROJ is not defined." );
@@ -321,7 +327,7 @@ public class LaunchProcess {
 		}
 		if( !BLJ_PROJ_DIR.isDirectory() ) {
 			msgs.add(
-				"Error: Required env variable [" + Config.BLJ_PROJ_SIMPLE_VAR + "] must be a directory on the filesystem." );
+				"Error: Required env variable [" + Config.BLJ_PROJ_VAR + "] must be a directory on the filesystem." );
 			msgs.add( "Found: BLJ_PROJ=" + BLJ_PROJ_DIR.getAbsolutePath() );
 			msgs.add( PLS_USE_INSTALL );
 			throw new EndLaunch( msgs );
@@ -333,7 +339,7 @@ public class LaunchProcess {
 			BLJ_DIR = BioLockJUtil.getBljDir();
 		} catch( ConfigPathException e ) {
 			e.printStackTrace();
-			BLJ_DIR = new File( Processor.getBashVar( Config.BLJ_BASH_VAR ) );
+			BLJ_DIR = new File( Processor.getBashVar( "${" + Config.BLJ_BASH_VAR + "}" ) );
 			if( !BLJ_DIR.isDirectory() ) throw e;
 		}
 		// not sure how this would happen...
