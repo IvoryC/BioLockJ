@@ -8,14 +8,14 @@ For the most up-to-date information about how to use the API, see the help menu:
 `biolockj-api help`                   
                    
 ```                   
-BioLockJ API v1.3.8 - UNCC Fodor Lab                   
+BioLockJ API v1.3.9 - UNCC Fodor Lab                   
                    
 Usage:                   
 (bash)                   
 biolockj-api <query> [options...]                   
                    
 (java)                   
-java -cp /path/to/BioLockJ.jar[:<external-modules-dir>] biolockj.api.BioLockJ_API <query> [options...]                   
+java -cp /path/to/BioLockJ.jar biolockj.api.BioLockJ_API <query> [options...]                   
                    
 For some uses, redirecting stderr is recommended:                   
 biolockj-api <query> [options...]  2> /dev/null                   
@@ -35,10 +35,13 @@ Options:
         a vlue to use for a specific property                   
   --config <file>                   
         file path for a configuration file giving one or more property values                   
-  --verbose                   
+  --verbose true                   
         flag indicating that all messages should go to standard err, including some that are typically disabled.                   
                    
 query:                   
+                   
+  last-pipeline                   
+        Returns the path to the most recent pipeline.                   
                    
   listModules [ --external-modules <dir> ]                   
         Returns a list of classpaths to the classes that extend BioModule.                   

@@ -181,15 +181,23 @@
         
             <li><a class="toctree-l3" href="#question-what-are-the-system-requirements-for-running-biolockj">Question: What are the system requirements for running BioLockJ ?</a></li>
         
-            <li><a class="toctree-l3" href="#question-if-biolockj-indicates-that-my-pipeline-may-have-failed-to-start-how-do-i-debug-the-root-cause-of-the-failure">Question: If biolockj indicates that my pipeline may have failed to start, how do I debug the root cause of the failure?</a></li>
+            <li><a class="toctree-l3" href="#question-biolockj-says-that-my-pipeline-is-runningnow-what">Question: BioLockJ says that my pipeline is running...now what?</a></li>
+        
+            <li><a class="toctree-l3" href="#question-if-biolockj-indicates-that-my-pipeline-may-have-failed-to-start-how-do-i-determine-the-cause-of-the-failure">Question: If biolockj indicates that my pipeline may have failed to start, how do I determine the cause of the failure?</a></li>
         
             <li><a class="toctree-l3" href="#question-sometimes-biolockj-adds-modules-to-my-pipeline-how-can-i-tell-what-modules-will-be-added">Question: Sometimes BioLockJ adds modules to my pipeline.  How can I tell what modules will be added?</a></li>
         
             <li><a class="toctree-l3" href="#question-i-get-an-error-message-about-a-property-but-i-have-that-property-configured-correctly-what-gives">Question: I get an error message about a property, but I have that property configured correctly.  What gives?</a></li>
         
+            <li><a class="toctree-l3" href="#question-a-module-script-is-failing-because-an-environent-variable-is-missing-but-i-know-i-defined-that-variable-and-i-can-see-it-with-echo-why-cant-the-script-see-it">Question: A module script is failing because an environent variable is missing. But I know I defined that variable, and I can see it with echo. Why can't the script see it ?</a></li>
+        
             <li><a class="toctree-l3" href="#question-on-a-cluster-system-i-need-a-particular-module-to-run-on-the-head-node">Question: On a cluster system, I need a particular module to run on the head node.</a></li>
         
-            <li><a class="toctree-l3" href="#example">Example:</a></li>
+            <li><a class="toctree-l3" href="#question-how-do-i-configure-my-pipeline-for-multiplexed-data">Question: How do I configure my pipeline for multiplexed data?</a></li>
+        
+            <li><a class="toctree-l3" href="#question-how-should-i-configure-my-properties-for-a-dataset-that-is-one-sample-per-file-ie-not-multiplexed">Question: How should I configure my properties for a dataset that is one-sample-per-file (ie not multiplexed)?</a></li>
+        
+            <li><a class="toctree-l3" href="#question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running">Question: Shutting down a pipeline.  How do I stop a pipeline that is running?</a></li>
         
         </ul>
     
@@ -246,7 +254,15 @@
 <p><em><strong>In general,</strong></em> processing sequence data requires a computer cluster or a cloud-computing system (more than a typical individual-user machine). After sequence data have been summarized as tables, all subsequent steps are orders of magnetude smaller and can usually run on a laptop within a matter of minutes.  </p>
 <p>Most datasets can be dramatically sub-sampled to allow a laptop user to run a test of the pipeline; this does not produce usable results, but allows the user to test and troubleshoot the pipeline in a convenient setting before moving it to a bigger system.</p>
 <hr />
-<h3 id="question-if-biolockj-indicates-that-my-pipeline-may-have-failed-to-start-how-do-i-debug-the-root-cause-of-the-failure"><strong>Question:</strong> If biolockj indicates that my pipeline may have failed to start, how do I debug the root cause of the failure?<a class="headerlink" href="#question-if-biolockj-indicates-that-my-pipeline-may-have-failed-to-start-how-do-i-debug-the-root-cause-of-the-failure" title="Permanent link">#</a></h3>
+<h3 id="question-biolockj-says-that-my-pipeline-is-runningnow-what"><strong>Question:</strong> BioLockJ says that my pipeline is running...now what?<a class="headerlink" href="#question-biolockj-says-that-my-pipeline-is-runningnow-what" title="Permanent link">#</a></h3>
+<hr />
+<p><strong>Answer:</strong> Check on your pipeline's progress.</p>
+<p>See the <a href="../Getting-Started/#review-your-first-pipeline">Getting Started page</a>.</p>
+<p>If you are using a unix-like system, you can use the <code>cd-blj</code> alias to jump to the most recent pipeline.  On any system, the path to the new pipeline is printed during the launch process, it will be folder immediatly under your <strong>$BLJ_PROJ</strong> folder.  Look in that directory.  When I pipeline forms it creates the "precheckStarted" flag and then replaces that with the "precheckComplete" flag when all dependencies/settings are confirmed.  Then the pipeline starts the first module, and the flag is replaced with "biolockjStarted".  This generally takes a few seconds or less.  The subfolder for the current module will also have the "biolockjStarted" flag.  When a module is finished, the module flag is replaced with "biolockjComplete".  When the last module is finished, the pipeline flag is finally changed to "biolockjComplete".  From the pipeline folder, <code>ls 0*</code> is a quick way to see the current progress, becuase that will show the flag files and subfolders for each of the first ten modules. (That's "LS zero star", or "LS one star" if you have more than ten modules.)</p>
+<p>If any module encounters an error, and cannot complete, then that module is marked with the "biolockjFailed" flag, the pipeline shuts down, and the pipeline is also marked with "biolockjFailed".  Extensive information is available in the pipeline's log file.  A more concise message describing the error, and sometimes solutions, is written to the biolockjFailed flag.</p>
+<p>If your pipeline fails, use <code>cat biolockjFailed</code> to see the error message.</p>
+<hr />
+<h3 id="question-if-biolockj-indicates-that-my-pipeline-may-have-failed-to-start-how-do-i-determine-the-cause-of-the-failure"><strong>Question:</strong> If biolockj indicates that my pipeline may have failed to start, how do I determine the cause of the failure?<a class="headerlink" href="#question-if-biolockj-indicates-that-my-pipeline-may-have-failed-to-start-how-do-i-determine-the-cause-of-the-failure" title="Permanent link">#</a></h3>
 <hr />
 <p><strong>Answer:</strong> Use <code>-f</code>.</p>
 <p>By default, BioLockJ runs the java component in the background, and only a minimal, helpful message is printed on the screen.  If there was some problem in getting that short, helpful message to the screen, you can use the <code>--foreground</code> or <code>-f</code> option to force biolockj to run in the foreground, thus printing everything to the screen.  Often the print-out ends shortly after a helpful message.</p>
@@ -263,11 +279,17 @@
 <p><strong>Answer:</strong> Use <code>-u</code>.</p>
 <p>This is often the result of a typo somewhere.  Generally, BioLockJ runs a check-dependencies protocol on each module, and all required properties should be checked during that process, and it stops when it first finds a problem.  With the <code>--unused-props</code> or <code>-u</code> option, biolockj will check dependencies for all modules, even after one fails, and any properties that were never used will be printed to the screen.  This often highlights typos in property names, or properties that are not used by the currenlty configured modules.  Keep in mind, this only reports properties in your primary config file, not in any of your defaultProps files.</p>
 <hr />
+<h3 id="question-a-module-script-is-failing-because-an-environent-variable-is-missing-but-i-know-i-defined-that-variable-and-i-can-see-it-with-echo-why-cant-the-script-see-it"><strong>Question:</strong> A module script is failing because an environent variable is missing. But I know I defined that variable, and I can see it with <code>echo</code>. Why can't the script see it ?<a class="headerlink" href="#question-a-module-script-is-failing-because-an-environent-variable-is-missing-but-i-know-i-defined-that-variable-and-i-can-see-it-with-echo-why-cant-the-script-see-it" title="Permanent link">#</a></h3>
+<hr />
+<p><strong>Answer:</strong> Use <code>-e</code>; or reference it in your configuration file in the ${VAR} format</p>
+<p>Where possible, avoid relying on environment variables.  Consider defining a value in your config file and/or adding the value to a parameter list that will be used with the script.  </p>
+<p>Variables from your local envirnment must be explicitly passed into the module environments. See <a href="../Configuration/#variables">the Configuration page</a>.</p>
+<hr />
 <h3 id="question-on-a-cluster-system-i-need-a-particular-module-to-run-on-the-head-node"><strong>Question:</strong> On a cluster system, I need a particular module to run on the head node.<a class="headerlink" href="#question-on-a-cluster-system-i-need-a-particular-module-to-run-on-the-head-node" title="Permanent link">#</a></h3>
 <hr />
 <p><strong>Answer:</strong> Use module-specific properties to control the cluster properties for that module.</p>
 <p>See <a href="../Configuration/#module-specific-forms">the Configuration page</a> for more details about module-specific forms of general properties.</p>
-<h2 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">#</a></h2>
+<h4 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">#</a></h4>
 <p>On this cluster, the compute nodes do not have internet access, only the head node does. The first module in the pipeline is the SraDownload module to get the data, which requries internet access.</p>
 <p>All pipelines run on this cluster include a reference to the properties set up specifically for this cluster:               <br />
 <code>pipeline.defaultProps=${BLJ}/ourCluster.properties</code></p>
@@ -278,17 +300,17 @@ SraDownload.batchCommand = /bin/bash
 
 <p>BioLockJ launches jobs using <code>qsub &lt;script&gt;</code>. For ONLY the SraDownload module, the property <code>SraDownload.batchCommand</code> overrides <code>cluster.batchCommand</code>; so for only this module, the jobs will be launched using <code>/bin/bash</code> which runs on the current node rather than launching a compute node.  All config files that reference this file and launch on the head node, will run the SraDownload modude on the head node.</p>
 <hr />
-<h3 id="question-how-do-i-configure-my-pipeline-for-multiplexed-data">Question: How do I configure my pipeline for multiplexed data?<a class="headerlink" href="#question-how-do-i-configure-my-pipeline-for-multiplexed-data" title="Permanent link">#</a></h3>
+<h3 id="question-how-do-i-configure-my-pipeline-for-multiplexed-data"><strong>Question:</strong> How do I configure my pipeline for multiplexed data?<a class="headerlink" href="#question-how-do-i-configure-my-pipeline-for-multiplexed-data" title="Permanent link">#</a></h3>
 <hr />
 <p><strong>Answer:</strong> See the <a href="../GENERATED/biolockj.module.implicit/Demultiplexer/#details">Demultiplexer module Details</a>.</p>
 <hr />
-<h3 id="question-how-should-i-configure-my-properties-for-a-dataset-that-is-one-sample-per-file-ie-not-multiplexed">Question: How should I configure my properties for a dataset that is one-sample-per-file (ie not multiplexed)?<a class="headerlink" href="#question-how-should-i-configure-my-properties-for-a-dataset-that-is-one-sample-per-file-ie-not-multiplexed" title="Permanent link">#</a></h3>
+<h3 id="question-how-should-i-configure-my-properties-for-a-dataset-that-is-one-sample-per-file-ie-not-multiplexed"><strong>Question:</strong> How should I configure my properties for a dataset that is one-sample-per-file (ie not multiplexed)?<a class="headerlink" href="#question-how-should-i-configure-my-properties-for-a-dataset-that-is-one-sample-per-file-ie-not-multiplexed" title="Permanent link">#</a></h3>
 <hr />
 <p><strong>Answer1:</strong> BioLockJ can extract the sample name from the filename; see <a href="../GENERATED/Input/"> Input</a>.</p>
 <p>OR </p>
 <p><strong>Answer2:</strong> BioLockJ can connect the sample id to the file name given in one or more columns in the metadata; see <a href="../GENERATED/Metadata/">Metadata</a>.</p>
 <hr />
-<h3 id="question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running">Question: Shutting down a pipeline.  How do I stop a pipeline that is running?<a class="headerlink" href="#question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running" title="Permanent link">#</a></h3>
+<h3 id="question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running"><strong>Question:</strong> Shutting down a pipeline.  How do I stop a pipeline that is running?<a class="headerlink" href="#question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running" title="Permanent link">#</a></h3>
 <hr />
 <p><strong>Answer:</strong> Use <code>kill</code>, <code>docker stop</code> and possibly scheduler commands such as <code>qdel</code>.</p>
 <p>BioLockJ will shut down appropriately on its own when a pipeline either completes or fails.  </p>
