@@ -140,7 +140,19 @@
     <a class="current" href="./">Failure Recovery</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#failed-pipelines">Failed Pipelines</a></li>
+    <li class="toctree-l3"><a href="#failure-recovery">Failure Recovery</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#find-the-problem">Find the problem</a></li>
+        
+            <li><a class="toctree-l4" href="#try-again">Try again</a></li>
+        
+            <li><a class="toctree-l4" href="#back-tracking">back tracking</a></li>
+        
+            <li><a class="toctree-l4" href="#build-on-completed-pipelines">build on completed pipelines</a></li>
+        
+        </ul>
     
 
     </ul>
@@ -215,43 +227,52 @@
           <div role="main">
             <div class="section">
               
-                <h3 id="failed-pipelines">Failed Pipelines<a class="headerlink" href="#failed-pipelines" title="Permanent link">#</a></h3>
-<ul>
-<li>Failed pipelines can be restarted to save the progress made by successfully completed modules.  To restart a failed pipeline, add -r parameter:</li>
-</ul>
-<p><code>biolockj -r &lt;pipeline root&gt;</code></p>
-<ul>
-<li>Check the BioLockJ execution summary after any failure occurs via the blj_summary command. </li>
-</ul>
-<p><code>blj_summary</code></p>
-<ul>
-<li>
-<p>Review the BioLockJ log file in your pipeline root directory.  This is the most complete source of information on pipeline execution and may contain useful error messages that help resolve the root cause of the failure.</p>
-</li>
-<li>
-<p>If your pipeline directory is not created, you likely have invalid file paths or missing/invalid properties</p>
-</li>
-<li>
-<p>Check the FATAL_ERROR file your $HOME directory.  This is where BioLockJ saves error messages for failures occurring prior to the creation of your pipeline root directory.</p>
-</li>
-</ul>
-<p><code>cat "$HOME/biolockj_FATAL_ERROR_*"</code></p>
-<ul>
-<li>The most common culprits are:  <ul>
-<li><em>pipeline.defaultProps</em></li>
-<li>Missing/invalid $BLJ_PROJ directory set by the <a href="https://github.com/msioda/BioLockJ/blob/master/install?raw=true">install</a> script</li>
-</ul>
-</li>
-</ul>
-<p><code>echo $BLJ_PROJ</code></p>
-<ul>
-<li>
-<p>Failures that occur in a module/script are not logged to the Java log file since these run outside of the Java application.  The failed module directory may have an indicator file that gives either the sample ID or bash script line that failed.</p>
-</li>
-<li>
-<p>If the failed module was running a bash script on the cluster, check the module/qsub directory for the cluster job output and error files which may contain additional information. </p>
-</li>
-</ul>
+                <h1 id="failure-recovery"><strong>Failure Recovery</strong><a class="headerlink" href="#failure-recovery" title="Permanent link">#</a></h1>
+<p><em><strong>It is normal to go through several, even many, failed attempts.</strong></em></p>
+<p>It is not time effecient to read and fully understand all of the documentation to compeltely correctly set all parameters for every part of your pipeline.  Most users find it more effecient to read just enough to make an attempt, and then make corrections as needed.  As errors occurr, BioLockJ can highlight the relevant documentation or parameters.  An error message is not a reprimand, it is part of the conversation between the program and the user.  With this in mind, BioLockJ is designed so that, where feasible, any errors that will occur for a pipeline are found within a few seconds of the initial launch. </p>
+<h2 id="find-the-problem">Find the problem<a class="headerlink" href="#find-the-problem" title="Permanent link">#</a></h2>
+<p>Look at your pipeline folder.  If the pipeline failed, there is a flag file "biolockjFailed".</p>
+<pre><code>cd-blj
+cat biolockjFailed
+</code></pre>
+
+<p>This message often contains instructions about what to fix.  Sometimes it may only be able to describe the problem and you will have to figure out the solution.</p>
+<p>In some cases it may be necessary to look a the log file at the top level, or at the log files of an individual module. But in all cases, you should start by looking at the message in the biolockjFailed file.</p>
+<p>In very rare cases, BioLockJ may fail to form a pipeline directory, which means there is no central place for messages to be saved to.  If that is the case, launch the pipeline again but add the <code>--foreground</code> or <code>-f</code> flag (See See <a href="../GENERATED/biolockj-help/"><code>biolockj --help</code></a>.  This will almost certianly hit the same error, but the messages along the way will be printed to the screen.  In most cases, the end of the printed output will have the same error message format as the biolockjFailed file.</p>
+<h2 id="try-again">Try again<a class="headerlink" href="#try-again" title="Permanent link">#</a></h2>
+<p>Once you have fixed the problem (changed a property in the config file, installed dependency, removed bad inputs, etc) you can launch your pipeline again.  </p>
+<p>Ideally, the failure happened quickly, and the first attempt can be discarded.  It may take several attempts to successfully launch the pipeline--and that's ok! Each new attempt will get a new folder, with <em>_number</em> to distinguish the different attempts.  When you are happy with your pipeline, simply delete failed attempts.  If a pipeline is still running, or has any workers / jobs still running, you should leave the pipeline folder in place until you are sure those jobs are done.  This ensures that any files created or changed by those jobs are separated from any new runs.</p>
+<p>Sometimes, the pipeline fails someitme <em>after</em> the check-dependencies phase.  If a failed pipeline has progress that you want to keep, then you can restart that pipeline rather than launching from scratch.</p>
+<p>Failed pipelines can be restarted to save the progress made by successfully completed modules.  To restart a failed pipeline, add the <code>--restart</code> flag. See <a href="../GENERATED/biolockj-help/"><code>biolockj --help</code></a>.</p>
+<pre><code>biolockj -r &lt;pipeline root&gt;
+</code></pre>
+
+<p>or</p>
+<pre><code>biolockj --restart &lt;pipeline root&gt;
+</code></pre>
+
+<p>This will preserve the output of any module that has been marked with "biolockjComplete".  All other module directories will be deleted and recreated.</p>
+<h2 id="back-tracking">back tracking<a class="headerlink" href="#back-tracking" title="Permanent link">#</a></h2>
+<p>The restart process will automatically determine the first module to run as the first module that is not marked as complete.</p>
+<p>In some cases, you may want to re-run a completed module.  You can manually indicate which module should be the first one to restart by resetting the pipeline to that module before restarting the pipeline.</p>
+<pre><code>cd &lt;dir of module to restart&gt;
+blj_reset $PWD
+cd ..
+biolockj --restart $PWD
+</code></pre>
+
+<p>Any module <em>after</em> that one in the module run order will also be rerun.</p>
+<h2 id="build-on-completed-pipelines">build on completed pipelines<a class="headerlink" href="#build-on-completed-pipelines" title="Permanent link">#</a></h2>
+<p>When you initially build out your pipeline, its best to take small steps.  Configure a few modules, and launch the pipeline.  You will probably have to go through a few attempts to get everything right for those modules. </p>
+<pre><code>biolockj myAnalysis.properties
+</code></pre>
+
+<p>Once you are happy with that, you can add modules to your module run order, and restart the completed pipeline to pick up where it left off.</p>
+<pre><code>biolockj -c myAnalysis.properties --restart ${BLJ_PROJ}/myAnalysis_5_2020Aug20
+</code></pre>
+
+<p>Any modules that were complete in the myAnalysis_5_2020Aug20 pipeline will remain.  This is only valid for appending an existing module run order.  </p>
+<p>Often, you may use biolockj to encapsulate the "boiler plate" processing steps in your pipeline, and then take the outputs to work with manually for data exploration.  After exploring the data, you will refine your analyis question and settle on the figures you want to produce, and the code to do that.  <em>Then come back to BioLockJ</em>, and add your downstream scripts as GenMod steps, building on the pipeline you started with.  This makes your custome downstream steps just as organized and reproducible as the initial boiler-plate phase.  </p>
               
             </div>
           </div>

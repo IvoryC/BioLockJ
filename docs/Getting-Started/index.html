@@ -271,8 +271,6 @@ biolockj ${BLJ}/templates/myFirstPipeline/myFirstPipeline.properties
 # Initializing BioLockJ..
 # Building pipeline:  /Users/joe/apps/BioLockJ/pipelines/myFirstPipeline_2020Jan17
 # cd-blj       -&gt; Move to pipeline output directory
-# blj_log      -&gt; Tail pipeline log (accepts tail runtime parameters)
-# blj_summary  -&gt; View module execution summary
 # Fetching pipeline status 
 # 
 # Pipeline is complete.
@@ -308,9 +306,6 @@ biolockj ${BLJ}/templates/myFirstPipeline/myFirstPipeline.properties
 # Docker container id: 336259e7d3b8d9ab2fa71202258b562664be1bf9645d503a790ae5e9da15ce97
 # Initializing BioLockJ..
 # Building pipeline:  /Users/joe/apps/BioLockJ/pipelines/myFirstPipeline_2020Jan17
-# cd-blj       -&gt; Move to pipeline output directory
-# blj_log      -&gt; Tail pipeline log (accepts tail runtime parameters)
-# blj_summary  -&gt; View module execution summary
 # Fetching pipeline status 
 # 
 # Pipeline is complete.
@@ -335,11 +330,11 @@ biolockj ${BLJ}/templates/myFirstPipeline/myFirstPipeline.properties
 </code></pre>
 
 <p>Notice that modules are specified in the config using the keyword <code>#BioModule</code>.  Each module in the pipeline creates a folder in the pipeline directory.  Notice that an additional module "00_ImportMetaData" was added automatically.</p>
-<p>At the top level of the pipeline we see an empty <strong>flag</strong> file "biolockjComplete" which indicates that the pipeline finished successfully. While the pipeline is still in progress, the flag is "biolockjStarted"; and if the pipeline stopps due to an error, the flag is "biolockjFailed".</p>
+<p>At the top level of the pipeline we see an empty <strong>flag</strong> file "biolockjComplete" which indicates that the pipeline finished successfully. While the pipeline is still in progress, the flag is "biolockjStarted"; and if the pipeline stops due to an error, the flag is "biolockjFailed".</p>
 <p>The <code>summary.txt</code> file is a summary of each module as it ran during pipeline execution.  This is the best place to start when reviewing a pipeline.</p>
 <p>The file <code>"MASTER_myFirstPipeline_&lt;DATE&gt;.properties"</code> is the complete list of all properties used during this pipeline.  This includes properties that were set in the primary config file ("myFirstPipeline.properties"), and properties that are set as defaults in the BioLockJ program, and properties that are set in user-supplied default config files, which are specified in the primary config file using the <code>pipeline.defaultProps=</code> property.  This "MASTER_*.properties" file contains all of the settings required to reproduce this pipeline.  </p>
 <p>If the pipeline was run using docker, a file named <code>dockerInfo.json</code> will show the container information.</p>
-<p>The pipeline log file <code>"myFirstPipeline_&lt;DATE&gt;.log"</code> is an excellend resource for troubleshooting.</p>
+<p>The pipeline log file <code>"myFirstPipeline_&lt;DATE&gt;.log"</code> is an excellent resource for troubleshooting.</p>
 <p>The <code>validation</code> has tables recording the MD5 sum for each output from each module.  If the pipeline is run again, this folder can be used to determine if the results in the new run are an exact match for this run.</p>
 <p>Within each module's folder, we see the "biolockjComplete" flag (the same flags are used in modules and at the top level).  All output-procuing modules have a subfolder called <code>output</code>.  Most modules also have folders <code>script</code> and <code>temp</code>.  The output folder is used as input to down-stream modules.  Modules are the building blocks of pipelines.  For more information about modules, see <a href="../Built-in-modules/">Built-in BioModules</a>.</p>
 <h2 id="making-your-own-pipline">Making your own pipline<a class="headerlink" href="#making-your-own-pipline" title="Permanent link">#</a></h2>

@@ -273,7 +273,7 @@
 <h3 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">#</a></h3>
 <p>Bash variables can be referenced in the config. They must be "fully dressed": <code>${VAR}</code>          </p>
 <p>There are two variables that BioLockJ requires:          <br />
-<code>BLJ</code> is the file path to the BioLockJ direcotry and              <br />
+<code>BLJ</code> is the file path to the BioLockJ directory and              <br />
 <code>BLJ_PROJ</code> is the directory where pipelines created by BioLockJ are stored and run.          <br />
 After installation these are defined in the shell profile.  These can referenced in the config file.</p>
 <p>The <code>~</code> ("tilde") is replaced with <code>${HOME}</code> if (and only if) the ~ is the <em>first</em> character.</p>
@@ -284,10 +284,17 @@ sra.sraAccList=${DIR}/SraAccList.txt
 input.dirPaths=${DIR}/seqs      
 </code></pre>
 
+<p>Variables that are defined in the config file, can be referenced within the config file, however these variables are not added to the module script environment.</p>
 <p>If you are referencing environment variables <em>and</em> running in docker, you will need to use the -e parameter to biolockj to pass the variables into the docker environment (even if the variable is defined in the config file). For example:          </p>
 <pre><code>biolockj --docker -e SHEP=$SHEP,DIR=/path/to/big/data/dir config.properties
 </code></pre>
 
+<p>Most environement variables will NOT be part of the module script environment.  However, any environment variable that is referenced in the configuration file is considered necissary for the pipeline, and it is passed into the main program environment, docker containers, module runtime enviroments.</p>
+<p>Environment variables are not the best way to get information to a script because they can be difficult to trace / troubleshoot. However if your script or tool requires a particular environment variable, you can define it in your local environment, and reference it in the config file using an arbitrary property name, for example:</p>
+<pre><code>my.variable=${QIIME_CONFIG_FP}
+</code></pre>
+
+<p>This has essentially the same effect as using the <code>-e QIIME_CONFIG_FP=$QIIME_CONFIG_FP</code> argument in the biolockj command.  If this variable is required this is one way to communicate that the value of QIIME_CONFIG_FP may change from one system to the next, but the existence of QIIME_CONFIG_FP is essential for the pipeline to run.</p>
 <h3 id="relative-file-paths">Relative file paths<a class="headerlink" href="#relative-file-paths" title="Permanent link">#</a></h3>
 <p>File paths can be given using relative paths.  The path should start with <code>./</code>.       <br />
 The location <code>.</code> is interpreted as being the directory where the primary configuration file is.</p>

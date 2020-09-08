@@ -81,11 +81,13 @@
 | *pipeline.disableAddPreReqModules* | _boolean_ <br>If set to true, prerequisite modules will not be added to the pipeline.<br>*default:*  *null* |
 | *pipeline.downloadDir* | _file path_ <br>local directory used as the destination in the download command<br>*default:*  $HOME/projects/downloads |
 | *pipeline.env* | _string_ <br>Environment in which a pipeline is run. Options: cluster, aws, local<br>*default:*  local |
+| *pipeline.envVars* | _list_ <br>list of variables that should be passed into the runtime environment for all modules.<br>*default:*  BLJ |
 | *pipeline.inputTypes* | _list_ <br>List of file types. This manually overrides the recommended auto-detection.<br>*default:*  *null* |
 | *pipeline.limitDebugClasses* | _list_ <br>limit classes that log debug statements<br>*default:*  *null* |
 | *pipeline.logLevel* | _string_ <br>Options: DEBUG, INFO, WARN, ERROR<br>*default:*  INFO |
 | *pipeline.permissions* | _string_ <br>Set chmod -R command security bits on pipeline root directory (Ex. 770)<br>*default:*  770 |
 | *pipeline.setSeed* | _integer_ <br>set the seed for a random process. Must be positive integer.<br>*default:*  *null* |
+| *pipeline.useEnvVars* | _boolean_ <br>when evaluating variables in the ${VAR} format, should environment variables be used. Regardless, priority is given to variable values defined in the config file.<br>*default:*  Y |
 | *pipeline.userProfile* | _file path_ <br>Bash profile - may be ~/.bash_profile or ~/.bashrc or others<br>*default:*  *null* |
 
 ### qiime                   
