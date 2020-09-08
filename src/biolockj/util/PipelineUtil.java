@@ -15,7 +15,6 @@ import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Properties;
 import biolockj.exception.BioLockJStatusException;
-import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.InvalidPipelineException;
 import biolockj.module.BioModule;
 
@@ -37,7 +36,10 @@ public class PipelineUtil {
 	}
 	
 	public static File getMostRecentPipeline(File projDir) {
-		List<File> pipelines = new ArrayList<>( Arrays.asList( projDir.listFiles() ) );
+		List<File> pipelines = new ArrayList<>();
+		if (projDir.exists()) {
+			pipelines.addAll( Arrays.asList( projDir.listFiles() ) );
+		}
 		Collections.sort( pipelines, new Comparator<File>() {
 			@Override
 			public int compare( File o1, File o2 ) {
@@ -123,36 +125,18 @@ public class PipelineUtil {
 	
 	/**
 	 * Determine if a given directory is a valid pipeline.
+	 * To be a valid pipeline, the dir must exist, be a directory, 
+	 * and contain a master properties file.
 	 * 
 	 * @param dir
 	 * @return
 	 */
 	public static boolean isPipelineDir( final File dir ) {
-		if( !dir.exists() ) return false;
-		if( !dir.isDirectory() ) return false;
-		File flagFile = null;
 		try {
 			getMasterConfig( dir );
-			flagFile = getPipelineStatusFlag( dir );
 		} catch( InvalidPipelineException e ) {
 			return false;
 		}
-		if (flagFile != null) return true;
-		// TODO: simplify this.
-		// If it has MASTER_*.properties and a flagFile, its a pipeline.
-		// In the odd case of a just-restarted pipeline, there is no flagFile.  
-		// But a restarted pipeline must have at least one module already or it wouldn't be worth restarting it.
-		// So IFF the pipeline has its first module dir, then it can get away with not having a flag file.
-		//
-		// pipeline must include at least one module folder, which must start with 00_[A:Z] or 000_[A:Z]
-		// do not use isModuleDir method here, that will cause a logic loop
-		if( dir.list( new FilenameFilter() {
-			@Override
-			public boolean accept( File dir, String name ) {
-				if( !( new File( dir, name ) ).isDirectory() ) return false;
-				return ( name.startsWith( "00_" ) || name.startsWith( "000_" ) );
-			}
-		} ).length != 1 && flagFile==null) return false;
 		return true;
 	}
 	

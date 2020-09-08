@@ -387,7 +387,10 @@ public class Config {
 	public static void initialize() throws Exception {
 		configFile = RuntimeParamUtil.getConfigFile();
 		Log.info( Config.class, "Initialize Config: " + configFile.getAbsolutePath() );
-		props = replaceEnvVars( Properties.loadProperties( configFile ) );
+		//props = replaceEnvVars( Properties.loadProperties( configFile ) );
+		props = Properties.loadProperties( configFile );
+		Properties tempProps = replaceEnvVars( props );
+		props = tempProps;
 		setFilePathProperty( Constants.INTERNAL_PIPELINE_DIR, BioLockJ.getPipelineDir().getAbsolutePath() );
 		setConfigProperty( Constants.INTERNAL_PIPELINE_NAME, BioLockJ.getProjectName() );
 		setConfigProperty( Constants.INTERNAL_PIPELINE_ID, BioLockJ.getPipelineId() );
@@ -408,8 +411,11 @@ public class Config {
 		props = new Properties();
 	}
 	
-	public static void partiallyInitialize(File config) throws Exception {
-		props = replaceEnvVars( Properties.loadProperties( config ) );
+	public static void partiallyInitialize(File tempConfig) throws Exception {
+		configFile = tempConfig;
+		props = Properties.loadProperties( tempConfig );
+		Properties tempProps = replaceEnvVars( props );
+		props = tempProps;
 	}
 
 	/**
@@ -443,7 +449,12 @@ public class Config {
 	}
 
 	/**
-	 * Interpret env variable if included in the arg string, otherwise return the arg.
+	 * Interpret environment variable if included in the arg string, otherwise return the arg.
+	 * Variables are recognized if they are surrounded by ${ and }.  
+	 * For example: "dee ${VAR} da" becomes "fee doo da" IFF there is a variable "VAR" 
+	 * that is defined as "doo" either in the runtime environment, or in the config file.
+	 * The special character "~" ("tilda") is changed to "${HOME}" and then processed IFF 
+	 * it is the first character in the string after removing any flanking white space.
 	 * 
 	 * @param arg Property or runtime argument
 	 * @return Updated arg value after replacing env variables
@@ -461,9 +472,9 @@ public class Config {
 			while( hasEnvVar( val ) ) {
 				final String bashVar = val.substring( val.indexOf( "${" ), val.indexOf( "}" ) + 1 );
 				Log.debug( Config.class, "Replace \"" + bashVar + "\" in \"" + arg + "\"" );
-				final String bashVal = getBashVal( bashVar );
+				final String bashVal = getEnvVarVal( bashVar );
 				Log.debug( Config.class, "Bash var \"" + bashVar + "\" = \"" + bashVal + "\"" );
-				if( bashVal != null && bashVal.equals( bashVar ) ) return arg;
+				if( bashVal.equals( bashVar ) ) return arg;
 				val = val.replace( bashVar, bashVal );
 				Log.debug( Config.class, "Updated \"" + arg + "\" --> " + val + "\"" );
 			}
@@ -747,19 +758,45 @@ public class Config {
 	 * @throws ConfigPathException if path is defined but is not found on the file system
 	 * @throws DockerVolCreationException 
 	 */
-	public static File getExistingFileObjectFromPath( final String filePath ) throws ConfigPathException, DockerVolCreationException {
+	public static File getFileObjectFromPath( final String filePath, boolean convertRelativePath, boolean containerizePath ) throws DockerVolCreationException {
 		if( filePath != null ) {
-			String path = filePath;
-			path = convertRelativePath( path );
-			path = convertWindowsPathForDocker(path); 
-			if ( DockerUtil.inDockerEnv() ) {
-				Log.debug(Config.class, "The file path \"" + filePath + "\" has been interpreted as host file: " + path );
-				path = DockerUtil.containerizePath( path );
-			} 
+			String path  = filePath;
+			if (convertRelativePath) path = convertRelativePath( path );
+			if (containerizePath) path = DockerUtil.containerizePath( path );
 			Log.debug(Config.class, "The file path \"" + filePath + "\" has been internally interpreted as: " + path );
 			final File f = new File( path );
+			return f;
+		}
+		return null;
+	}
+	/**
+	 * Build File using filePath.
+	 *
+	 * @param filePath File path
+	 * @return File or null
+	 * @throws ConfigPathException if path is defined but is not found on the file system
+	 * @throws DockerVolCreationException 
+	 */
+	public static File getExistingFileObjectFromPath( final String filePath ) throws ConfigPathException, DockerVolCreationException {
+		return getExistingFileObjectFromPath( filePath, true, true );
+	}
+	/**
+	 * Build File using filePath.
+	 * In some internal cases, it may be best to avoid converting relative paths, or to the docker conversion.
+	 * If the path is null, return null. If the path does not lead to a valid file, throw exception.
+	 * 
+	 * @param filePath
+	 * @param convertRelativePath - should the "./" be converted to be relative to the config file
+	 * @param containerizePath - should this be converted from host-path form to in-docker-container form.
+	 * @return
+	 * @throws ConfigPathException
+	 * @throws DockerVolCreationException
+	 */
+	public static File getExistingFileObjectFromPath( final String filePath, boolean convertRelativePath, boolean containerizePath ) throws ConfigPathException, DockerVolCreationException {
+		if( filePath != null ) {
+			File f = getFileObjectFromPath(filePath, convertRelativePath, containerizePath);
 			if( f.exists() ) return f;
-			throw new ConfigPathException( f );
+			else throw new ConfigPathException( f );
 		}
 		return null;
 	}
@@ -826,7 +863,7 @@ public class Config {
 		return path;
 	}
 	private static String convertRelativePath(final String filePath) throws DockerVolCreationException {
-		final String CONFIG_DOT=DockerUtil.deContainerizePath( RuntimeParamUtil.getConfigFile().getParent() );
+		final String CONFIG_DOT=DockerUtil.deContainerizePath( configFile.getParent() );
 		return convertRelativePath(filePath, CONFIG_DOT);
 	}
 
@@ -869,41 +906,92 @@ public class Config {
 		return map;
 	}
 
-	private static String getBashVal( final String bashVar ) {
-		if( bashVarMap.get( bashVar ) != null ) {
-			return bashVarMap.get( bashVar );
+	private static String getEnvVarVal( final String dressedBashVar ) throws ConfigNotFoundException {
+		final String bashVar = stripBashMarkUp( dressedBashVar );
+		if( envVarMap.get( bashVar ) != null ) {
+			return envVarMap.get( bashVar );
 		}
 		
 		String bashVal = null;
-		try {
-			if (props == null) {Log.info(Config.class, "no props to reference.");}
-			if (props != null) {Log.info(Config.class, "Got props, value for ["+bashVar+"] is: " + props.getProperty( stripBashMarkUp( bashVar )));}
-			if (props != null && props.getProperty( stripBashMarkUp( bashVar )) != null ) {
-				bashVal = props.getProperty( stripBashMarkUp( bashVar ) );
-				moduleUsedProps.put(stripBashMarkUp( bashVar ), bashVal);
-			}else if ( bashVar.equals( BLJ_BASH_VAR ) ) {
-				final File dir = BioLockJUtil.getBljDir();
-				if( dir != null && dir.isDirectory() ) {
-					bashVal =  dir.getAbsolutePath();
-				}
-			}else if(bashVar.equals( BLJ_PROJ_VAR )) {
-				final File dir = RuntimeParamUtil.get_BLJ_PROJ();
-				if( dir != null && dir.isDirectory() ) {
-					bashVal =  dir.getAbsolutePath();
-				}
-			}else {
-				bashVal = Processor.getBashVar( bashVar );
-			}
-		} catch( final Exception ex ) {
-			Log.warn( Config.class,
-				"Error occurred attempting to decode bash var: " + bashVar + " --> " + ex.getMessage() );
-		}
+	
+		bashVal = replaceEnvVarFromProps(bashVar);
+		if( bashVal != null ) return bashVal;
+
+		bashVal = replaceEnvVarFromBuiltIns(bashVar);
+		
+		if( bashVal == null ) bashVal = replaceEnvVarFromEnvironment(bashVar);
 		
 		if( bashVal != null && !bashVal.trim().isEmpty() ) {
-			bashVarMap.put( bashVar, bashVal );
-			return bashVal;
+			envVarMap.put( bashVar, bashVal );
+			if( props != null ) syncEnvVarsWithProps();
+			moduleUsedProps.put( bashVar, bashVal );
 		}
-		return bashVar;
+		
+		return bashVal;
+	}
+	
+
+	private static String replaceEnvVarFromBuiltIns(final String bashVar) {
+		String bashVal = null;
+		try {
+			if( bashVar.equals( BLJ_BASH_VAR ) ) {
+				File dir = BioLockJUtil.getBljDir();
+				if( dir != null && dir.isDirectory() ) {
+					bashVal = dir.getAbsolutePath();
+				}
+			} else if( bashVar.equals( BLJ_PROJ_VAR ) ) {
+				final File dir = RuntimeParamUtil.get_BLJ_PROJ();
+				if( dir != null && dir.isDirectory() ) {
+					bashVal = dir.getAbsolutePath();
+				}
+			}
+		} catch( ConfigPathException | DockerVolCreationException cpe ) {
+			Log.warn( Config.class, "Error occurred attempting to decode built-in environment variable: " + bashVar +
+				" --> " + cpe.getMessage() );
+			cpe.printStackTrace();
+		}
+		return bashVal;
+	}
+	
+	private static String replaceEnvVarFromProps(final String bashVar) {
+		String bashVal = null;
+		if( props == null ) {
+			Log.info( Config.class, "no props to reference." );
+		}
+		if( props != null ) {
+			Log.info( Config.class, "Got props, value for [" + bashVar + "] is: " + props.getProperty( bashVar ) );
+		}
+		if( props != null && props.getProperty( bashVar ) != null ) {
+			bashVal = props.getProperty( bashVar );
+			moduleUsedProps.put( bashVar, bashVal );
+
+		}
+		return bashVal;
+	}
+	
+	private static String replaceEnvVarFromEnvironment(final String bashVar) {
+		String bashVal = null;
+		boolean useEnvVars = true;
+		try {
+			useEnvVars = getBoolean( null, Constants.PIPELINE_USE_EVARS );
+		} catch( ConfigFormatException e1 ) {
+			e1.printStackTrace();
+			useEnvVars = false;
+		}		
+		if ( useEnvVars ) {
+			try {
+				bashVal = Processor.getBashVar( bashVar );
+			} catch( final Exception ex ) {
+				Log.warn( Config.class,
+					"An unexpected error occurred attempting to decode environment var: " + bashVar + " --> " + ex.getMessage() );
+			}
+		}else{
+			Log.info( Config.class, "The variable [" + bashVar +
+				"] is not defined in the config file, and the use of local environment variables has been disabbled.  Set [ " +
+				Constants.PIPELINE_USE_EVARS + "=" + Constants.TRUE +
+				" ] to enable access to local environment variables." );
+		}
+		return bashVal;
 	}
 
 	/**
@@ -1003,21 +1091,49 @@ public class Config {
 			}
 		}
 	}
+	
+	/**
+	 * Return the String, String map of environment variables and their values.
+	 * This map will only include variables that are referenced in the config file using the ${VAR} format.
+	 * @return
+	 * @throws ConfigNotFoundException 
+	 */
+	public static Map<String, String> getEnvVarMap() throws ConfigNotFoundException {
+		syncEnvVarsWithProps();
+		return envVarMap;
+	}
+	
+	private static void syncEnvVarsWithProps() throws ConfigNotFoundException {
+		List<String> vars = getList( null, Constants.PIPELINE_ENV_VARS );
+		for (String var : vars) {
+			String val = getEnvVarVal( var );
+			if ( val == null ) throw new ConfigNotFoundException(var, "This pipeline expects that a variable [" + var 
+				+ "] will be set as an environment variable; but this variable has no value in the current context." + System.lineSeparator()
+				+ "If this variable is required, define it in the configuration file:  " + var + "=<some value>" + System.lineSeparator()
+				+ "If this variable is not required, update the values listed for [" + Constants.PIPELINE_ENV_VARS + "].");
+			envVarMap.put(var, val);
+		}
+		List<String> allVars = new ArrayList<String>();
+		allVars.addAll( envVarMap.keySet() );
+		if (props != null) for (String var : allVars) props.put(var, envVarMap.get( var ));
+		try {
+			setConfigProperty( Constants.PIPELINE_ENV_VARS, allVars );
+		} catch( DockerVolCreationException e ) {
+			//These are strings, not files will never need to convert file path; don't create noise in throws declarations.
+			e.printStackTrace();
+		}
+	}
+	
+	public static void checkDependencies( BioModule module ) throws ConfigNotFoundException, ConfigFormatException   {
+		getBoolean( module, Constants.PIPELINE_USE_EVARS );
+		getEnvVarMap();
+	}
 
-	public static final String BLJ_BASH_SIMPLE_VAR = "BLJ";
-	/**
-	 * Bash variable with path to BioLockJ directory: {@value #BLJ_BASH_VAR}
-	 */
-	public static final String BLJ_BASH_VAR = "${" + BLJ_BASH_SIMPLE_VAR + "}";
+	public static final String BLJ_BASH_VAR = "BLJ";
 	
-	public static final String BLJ_PROJ_SIMPLE_VAR = "BLJ_PROJ";
-	/**
-	 * Bash variable with path to projects directory: {@value #BLJ_PROJ_VAR}
-	 */
-	public static final String BLJ_PROJ_VAR = "${" + BLJ_PROJ_SIMPLE_VAR + "}";
+	public static final String BLJ_PROJ_VAR = "BLJ_PROJ";
 	
-	
-	private static final Map<String, String> bashVarMap = new HashMap<>();
+	private static final Map<String, String> envVarMap = new HashMap<>();
 	private static File configFile = null;
 	static Properties props = null;
 	private static Properties unmodifiedInputProps = new Properties();

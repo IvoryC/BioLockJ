@@ -13,7 +13,7 @@ package biolockj;
 
 import java.io.*;
 import java.util.*;
-import biolockj.exception.ConfigPathException;
+import biolockj.exception.ConfigNotFoundException;
 import biolockj.module.ScriptModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.NextflowUtil;
@@ -69,9 +69,10 @@ public class Processor {
 	 * @throws IOException if errors occur reading the InputStream
 	 * @throws InterruptedException if the thread process is interrupted
 	 */
-	protected String runJob( final String[] args, final String label, File workDir ) throws IOException, InterruptedException {
+	protected String runJob( final String[] args, final String label, File workDir, String[] envP ) throws IOException, InterruptedException {
 		Log.info( getClass(), "[ " + label + " ]: STARTING CMD --> " + getArgsAsString( args ) );
-		final Process p = Runtime.getRuntime().exec( args, null, workDir );
+		//final Process p = Runtime.getRuntime().exec( args, null, workDir );
+		final Process p = Runtime.getRuntime().exec( args, envP, workDir );
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
 		String returnVal = null;
 		String s = null;
@@ -85,8 +86,23 @@ public class Processor {
 		Log.info( getClass(), "[ " + label + " ]: COMPLETE" );
 		return returnVal;
 	}
-	protected String runJob( final String[] args, final String label ) throws IOException, InterruptedException {
+	protected String runJob( final String[] args, final String label ) throws IOException, InterruptedException, ConfigNotFoundException {
 		return runJob( args, label, null );
+	}
+	protected String runJob( final String[] args, final String label, File workDir ) throws IOException, InterruptedException, ConfigNotFoundException {
+		String[] envP=getEnvironmentVariables();
+		return runJob( args, label, workDir, envP);
+	}
+
+	private String[] getEnvironmentVariables() throws ConfigNotFoundException {
+		Map<String, String> envVars = Config.getEnvVarMap();
+		String[] envs = new String[ envVars.size() ];
+		int i = 0;
+		for (String key : envVars.keySet() ) {
+			envs[i] = key + "=" + envVars.get(key);
+			i++;
+		}
+		return envs;
 	}
 
 	/**
@@ -109,19 +125,7 @@ public class Processor {
 		String bashVarValue = null;
 		Log.info( Processor.class, "[ Get Bash Var (" + bashVar + ") ]: STARTING" );
 		try {
-			final String var = bashVar.startsWith( "$" ) || bashVar.equals( "~" ) ? bashVar: "$" + bashVar;
-			Log.info( Processor.class,
-				"[ Get Bash Var (" + bashVar + ") ]: CMD --> " + getArgsAsString( bashVarArgs( var ) ) );
-			final Process p = Runtime.getRuntime().exec( bashVarArgs( var ) );
-			final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
-			String s = null;
-			while( ( s = br.readLine() ) != null )
-				if( s.startsWith( BLJ_GET_ENV_VAR_KEY ) ) {
-					bashVarValue = s.replace( BLJ_GET_ENV_VAR_KEY, "" ).trim();
-					break;
-				}
-			p.waitFor();
-			p.destroy();
+			bashVarValue = System.getenv( bashVar );
 		} catch( final Exception ex ) {
 			Log.error( Processor.class, "Problem occurred looking up bash env. variable: " + bashVar, ex );
 		}
@@ -175,8 +179,9 @@ public class Processor {
 	 * 
 	 * @throws IOException if errors occur reading the InputStream
 	 * @throws InterruptedException if the thread process is interrupted
+	 * @throws ConfigNotFoundException 
 	 */
-	public static void submit( final ScriptModule module ) throws IOException, InterruptedException {
+	public static void submit( final ScriptModule module ) throws IOException, InterruptedException, ConfigNotFoundException {
 		new Processor().runJob( module.getJobParams(), module.getClass().getSimpleName(), module.getScriptDir() );
 	}
 
@@ -189,8 +194,9 @@ public class Processor {
 	 * @param label - Process label
 	 * @throws IOException if errors occur reading the InputStream
 	 * @throws InterruptedException if the thread process is interrupted
+	 * @throws ConfigNotFoundException 
 	 */
-	public static void submitJob( final String[] args, final String label ) throws IOException, InterruptedException {
+	public static void submitJob( final String[] args, final String label ) throws IOException, InterruptedException, ConfigNotFoundException {
 		new Processor().runJob( args, label );
 	}
 
@@ -202,8 +208,9 @@ public class Processor {
 	 * @return script output
 	 * @throws IOException if errors occur reading the InputStream
 	 * @throws InterruptedException if the thread process is interrupted
+	 * @throws ConfigNotFoundException 
 	 */
-	public static String submitQuery( final String cmd, final String label ) throws IOException, InterruptedException {
+	public static String submitQuery( final String cmd, final String label ) throws IOException, InterruptedException, ConfigNotFoundException {
 		return new Processor().runJob( new String[] { cmd }, label );
 	}
 
@@ -249,20 +256,6 @@ public class Processor {
 		return false;
 	}
 
-	private static String[] bashVarArgs( final String bashVar ) throws ConfigPathException {
-		final File profile = BioLockJUtil.getUserProfile();
-		if( profile != null )
-			return new String[] { bashVarScript().getAbsolutePath(), bashVar, profile.getAbsolutePath() };
-		return new String[] { bashVarScript().getAbsolutePath(), bashVar };
-	}
-
-	private static File bashVarScript() throws ConfigPathException {
-		final File script = new File( BioLockJUtil.getBljDir().getAbsolutePath() + File.separator +
-			Constants.SCRIPT_DIR + File.separator + BLJ_GET_ENV_VAR_SCRIPT );
-		if( script.isFile() ) return script;
-		throw new ConfigPathException( script );
-	}
-
 	private static String getArgsAsString( final String[] args ) {
 		final StringBuffer sb = new StringBuffer();
 		for( final String arg: args )
@@ -270,7 +263,5 @@ public class Processor {
 		return sb.toString();
 	}
 
-	private static final String BLJ_GET_ENV_VAR_KEY = "BLJ_GET_ENV_VAR";
-	private static final String BLJ_GET_ENV_VAR_SCRIPT = "get_env_var";
 	private static final Map<Thread, Long> threadRegister = new HashMap<>();
 }

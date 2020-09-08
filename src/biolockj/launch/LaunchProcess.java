@@ -56,7 +56,7 @@ public class LaunchProcess {
 	/*
 	 * The directory for the pipeline that has just been launched.
 	 */
-	protected File pipeDir = null;
+	private File pipeDir = null;
 	/*
 	 * Most recently modified pipeline as of the start of the launch process.
 	 */
@@ -188,8 +188,8 @@ public class LaunchProcess {
 		}
 		parseOptions( args );
 		assignMainArg();
-		gatherEnvVars();
 		checkBasicArgCompatibility();
+		gatherEnvVars();
 		setInitialState();
 	}
 
@@ -286,6 +286,12 @@ public class LaunchProcess {
 	}
 
 	protected void gatherEnvVars() throws EndLaunch, DockerVolCreationException, ConfigPathException {
+		try {
+			Config.partiallyInitialize( getConfigFile() );
+			envVars.putAll( Config.getEnvVarMap() ); //add any env vars that were referenced in the config file
+		} catch( Exception e ) {
+			msgs.add( "Warning: Local variables referenced in the config file may not be correctly passed to the module environments." );
+		}
 		checkBljProj();
 		checkBljDir();
 		if( parameters.get( ENV_ARG ) != null ) {
@@ -306,10 +312,10 @@ public class LaunchProcess {
 	private void checkBljProj() throws DockerVolCreationException, EndLaunch {
 		if( parameters.get( PROJ_ARG ) != null ) {
 			String path = DockerUtil.containerizePath( removeTrailingSlash( parameters.get( PROJ_ARG ) ) );
-			envVars.put( Config.BLJ_PROJ_SIMPLE_VAR, path );
+			envVars.put( Config.BLJ_PROJ_VAR, path );
 			BLJ_PROJ_DIR = new File( path );
 		} else {
-			BLJ_PROJ_DIR = new File( Processor.getBashVar( Config.BLJ_PROJ_SIMPLE_VAR ) );
+			BLJ_PROJ_DIR = new File( Processor.getBashVar( Config.BLJ_PROJ_VAR ) );
 		}
 		if( BLJ_PROJ_DIR == null ) {
 			msgs.add( "Error: Required env variable BLJ_PROJ is not defined." );
@@ -321,7 +327,7 @@ public class LaunchProcess {
 		}
 		if( !BLJ_PROJ_DIR.isDirectory() ) {
 			msgs.add(
-				"Error: Required env variable [" + Config.BLJ_PROJ_SIMPLE_VAR + "] must be a directory on the filesystem." );
+				"Error: Required env variable [" + Config.BLJ_PROJ_VAR + "] must be a directory on the filesystem." );
 			msgs.add( "Found: BLJ_PROJ=" + BLJ_PROJ_DIR.getAbsolutePath() );
 			msgs.add( PLS_USE_INSTALL );
 			throw new EndLaunch( msgs );
@@ -333,7 +339,7 @@ public class LaunchProcess {
 			BLJ_DIR = BioLockJUtil.getBljDir();
 		} catch( ConfigPathException e ) {
 			e.printStackTrace();
-			BLJ_DIR = new File( Processor.getBashVar( Config.BLJ_BASH_VAR ) );
+			BLJ_DIR = new File( Processor.getBashVar( "${" + Config.BLJ_BASH_VAR + "}" ) );
 			if( !BLJ_DIR.isDirectory() ) throw e;
 		}
 		// not sure how this would happen...
@@ -454,8 +460,8 @@ public class LaunchProcess {
 	}
 
 	protected boolean restartDirHasStatusFlag() {
-		if( restartArgVal == null ) return false;
-		File restartDir = new File( restartArgVal );
+		if( getFlag( RESTART_ARG ) ) return false;
+		File restartDir = getRestartDir();
 		File flag = PipelineUtil.getPipelineStatusFlag( restartDir );
 		return flag != null;
 	}
@@ -497,27 +503,34 @@ public class LaunchProcess {
 	}
 
 	protected void printActionOptions() {
-		if( DockerUtil.inDockerEnv() ) {
-			System.out.println( "After an initial status check, all pipeline updates will be in the pipeline folder." );
-		} else {
+		System.out.println( "After an initial status check, all pipeline updates will be in the pipeline folder." );
+		if( ! DockerUtil.inDockerEnv() ) {
 			System.out.println( "cd-blj       -> Move to pipeline output directory" );
-			//TODO probably going to remove these options, they are hard to test, and don't offer very much value.
-			System.out.println( "blj_log      -> Tail pipeline log (accepts tail runtime parameters)" );
-			System.out.println( "blj_summary  -> View module execution summary" );
 		}
 	}
 	
-	protected void showProcess(Process p) throws IOException, InterruptedException {
+	protected void watchProcess(Process p) throws IOException, InterruptedException {
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
 		String s = null;
-		while( ( s = br.readLine() ) != null )
+		while( ( s = br.readLine() ) != null 
+						&& ( ! hasPipelineStarted() || getFlag( FG_ARG ) ) )
 		{
-			System.out.println(s);
+			if ( getFlag( FG_ARG ) ) System.out.println(s);
+			grabPipelineLocation(s);
+			if ( pipeDir == null && restartDirHasStatusFlag() ) setPipedir( restartDir );
+			if ( pipeDir == null && foundNewPipeline() ) setPipedir( mostRecent );
 		}
-		p.waitFor();
-		p.destroy();
+//		p.waitFor();
+//		p.destroy();
 	}
 	
+	private boolean hasPipelineStarted() {
+		if (getPipedir() == null) return false;
+		else if ( PipelineUtil.getPipelineStatusFlag( getPipedir() ) != null)
+			return true;
+		return false;
+	}
+
 	protected String catchFirstResponse(Process p) throws IOException {
 		String id = null;
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
@@ -620,4 +633,23 @@ public class LaunchProcess {
 			mostRecent = getMostRecentPipeline();
 		}
 	}
+	
+	void setPipedir(File dir) {
+		pipeDir = dir;
+	}
+	File getPipedir() {
+		return pipeDir;
+	}
+	
+	boolean foundNewPipeline() {
+		return ! initDir.getAbsolutePath().equals( mostRecent.getAbsolutePath() );
+	}
+	
+	void grabPipelineLocation(String s) {
+		if( s.startsWith( Constants.PIPELINE_LOCATION_KEY ) ){
+			String path = s.replace( Constants.PIPELINE_LOCATION_KEY, "" ).trim();
+			setPipedir( new File(path) );
+		}
+	}
+	
 }

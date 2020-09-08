@@ -2,6 +2,7 @@ package biolockj.api;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -16,16 +17,15 @@ import java.util.Map;
 import java.util.Set;
 import biolockj.Config;
 import biolockj.Constants;
-import biolockj.Log;
 import biolockj.Properties;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigException;
-import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.module.BioModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.DockerUtil;
 import biolockj.util.ModuleUtil;
+import biolockj.util.PipelineUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.reflections.Reflections;
@@ -37,10 +37,12 @@ import org.reflections.util.FilterBuilder;
 
 public class BioLockJ_API {
 
+	private static String query = null;
 	// bash script
 	private static final String BASH_ENTRY = "biolockj-api";
 	
 	// query 
+	private static final String LAST_PIPELINE = "last-pipeline";
 	private static final String LIST_MODULES = "listModules";
 	private static final String LIST_API_MODULES = "listApiModules";
 	private static final String LIST_PROPS = "listProps";
@@ -68,25 +70,51 @@ public class BioLockJ_API {
 
 	private BioLockJ_API() {}
 
+	
+	private static HashMap<String, String> parseOptions( String[] args ) throws API_Exception {
+		HashMap<String, String> options = new HashMap<>();
+		final String QUERY_KEY = "query";
+		String argname = QUERY_KEY;
+		for (String arg : args) {
+			if (argname == null ) { //expecting option name
+				if ( arg.startsWith( "--" ) ) {
+					argname = arg.substring( 2 );
+				}else{
+					throw new API_Exception("Looking for option name, found unnamed value [ " + arg + " ].");
+				}
+			}else if( argname.equals( QUERY_KEY ) ){
+				if (arg.startsWith( "--" )) throw new API_Exception("The query term should be given before any options. Option names start with \"--\", the query term does not.");
+				query=arg;
+				argname = null;
+			}else { // expecting arg value
+				options.put(argname, arg);
+				argname = null;
+			}
+		}
+		return options;
+	}
+	
 	public static void main( String[] args ) throws Exception {
 		try {
-			HashMap<String, String> options = new HashMap<>();
-			String query = null;
-			for (String arg : args) {
-				int sep = arg.indexOf( "=" );
-				if (sep == -1) {
-					if (query == null) query = arg;
-					else throw new API_Exception("All options after the query must be named." + System.lineSeparator() + "Cannot process [ " + arg + " ].");
-				}else {
-					options.put( arg.substring( 0, sep ).trim(), arg.substring( sep + 1 ).trim() );
-				}
+			if (args.length==0) {
+				System.out.println( getHelp() );
+				System.exit( 0 );
 			}
+			HashMap<String, String> options = parseOptions(args);
+			
 			if ( query == null ) throw new API_Exception("Cannot determine query.");
-			if ( options.get(EXT_MODS_ARG) != null) System.err.print("The [" + EXT_MODS_ARG + "] option may not have been handled correctly.");
 			if ( options.get(DEBUG_ARG) != null ) setVerbose( true );
+			
+			if ( options.get(EXT_MODS_ARG) != null) {
+				System.exit( runSubProcess(options) );
+			}
 			
 			String reply = "";
 			switch( query ) {
+				case LAST_PIPELINE:
+					File BLJ_PROJ_DIR = new File(Config.replaceEnvVar( "${BLJ_PROJ}" ));
+					reply = PipelineUtil.getMostRecentPipeline( BLJ_PROJ_DIR ).getAbsolutePath();
+					break;
 				case LIST_MODULES:
 					unsupportedOption(query, options, new String[0]);
 					reply = listToString( listModules() );
@@ -236,6 +264,35 @@ public class BioLockJ_API {
 			}
 		}
 		return( String.join( System.lineSeparator(), output ) );
+	}
+	
+	/**
+	 * The {@value #EXT_MODS_ARG} option allows the use to expect the class path. 
+	 * To use this, a new java instance much be called with the extended path.
+	 * @param options
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws ConfigPathException
+	 */
+	private static int runSubProcess(HashMap<String, String> options) throws IOException, InterruptedException, ConfigPathException {
+		File BLJ_JAR = new File( (new File(BioLockJUtil.getBljDir(), "dist")), "BioLockJ.jar");
+		StringBuilder cmd = new StringBuilder();
+		cmd.append( "java -cp " + BLJ_JAR.getAbsolutePath() + ":" + options.get( EXT_MODS_ARG ) + "/*" + " biolockj.api.BioLockJ_API " + query ) ;
+		options.remove( EXT_MODS_ARG );
+		for (String key : options.keySet()) {
+			cmd.append( " --" + key + " " + options.get( key ) );
+		}
+		Process p = Runtime.getRuntime().exec( cmd.toString() );
+		final BufferedReader brOut = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
+		final BufferedReader brErr = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
+		String out = null;
+		while( ( out = brOut.readLine() ) != null ) System.out.println(out);
+		String err = null;
+		while( ( err = brErr.readLine() ) != null ) System.err.println(err);
+		p.waitFor();
+		p.destroy();
+		return(p.exitValue());
 	}
 	
 	
@@ -446,11 +503,14 @@ public class BioLockJ_API {
 	private static void initConfig(String path) throws Exception {
 		File config = new File(path);
 		if (!config.exists()) throw new API_Exception( "Cannot find configuration file: " + path );
+		initConfig(config);
+	}
+	private static void initConfig(File config) throws Exception {
 		Config.partiallyInitialize(config);
 	}
 	private static void initConfig() throws Exception {
 		File tempConfig = File.createTempFile( "tempconfig", "properties" );
-		Config.partiallyInitialize(tempConfig);
+		initConfig(tempConfig);
 		tempConfig.delete();
 	}
 	
@@ -527,10 +587,7 @@ public class BioLockJ_API {
 	}
 	
 	private static List<String> listFilesFromConfig(final String config, final String mountOrUpload) throws Exception {		
-		String configPath = Config.convertWindowsPathForDocker(config); 
-		configPath = DockerUtil.containerizePath( configPath ); 
-		
-		File configFile = new File(configPath);
+		File configFile = Config.getExistingFileObjectFromPath( config, false, true );
 		Set<String> mounts = new HashSet<>();
 		Set<String> uploads = new HashSet<>();
 		
@@ -547,13 +604,9 @@ public class BioLockJ_API {
 			//System.err.println("Reviewing " + vals.size() + " property values to see if any are files on the local system.");
 			for (String val : vals ) {
 				//System.err.println("Consider the value: " + val );
-				val = Config.convertWindowsPathForDocker(val); 
-				val = Config.convertRelativePath( val, configFile.getParent() );
-				val = DockerUtil.containerizePath( val ); 
-				//The built-in default config files will be available wherever BioLockJ is running.
-				if (val.equals( Config.replaceEnvVar( Constants.STANDARD_CONFIG_PATH) ) 
-								|| val.equals( Config.replaceEnvVar( Constants.DOCKER_CONFIG_PATH )) ) continue;
-				File testFile = new File(val);
+				File testFile = Config.getFileObjectFromPath( val, true, true );
+				if (testFile.getAbsolutePath().equals( Config.replaceEnvVar( Constants.STANDARD_CONFIG_PATH) ) 
+								|| testFile.getAbsolutePath().equals( Config.replaceEnvVar( Constants.DOCKER_CONFIG_PATH )) ) continue;
 				boolean fileExists = testFile.exists();
 				if (!fileExists && DockerUtil.inDockerEnv()) fileExists = existsOnHost(testFile);
 				if (fileExists) {
@@ -643,7 +696,7 @@ public class BioLockJ_API {
 		String PROP_OPTION = "--" + PROP_ARG + " <property>";
 		String VALUE_OPTION = "--" + VALUE_ARG + " <value>";
 		String CONFIG_OPTION = "--" + CONFIG_ARG + " <file>";
-		String DEBUG_OPTION = "--" + DEBUG_ARG;
+		String DEBUG_OPTION = "--" + DEBUG_ARG + " true";
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append( "BioLockJ API " + BioLockJUtil.getVersion( ) + " - UNCC Fodor Lab" +System.lineSeparator() );
@@ -653,7 +706,7 @@ public class BioLockJ_API {
 		sb.append( BASH_ENTRY + " <query> [options...]" +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "(java)" +System.lineSeparator() );
-		sb.append( "java -cp /path/to/BioLockJ.jar[:<external-modules-dir>] biolockj.api.BioLockJ_API <query> [options...]" +System.lineSeparator() );
+		sb.append( "java -cp /path/to/BioLockJ.jar biolockj.api.BioLockJ_API <query> [options...]" +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "For some uses, redirecting stderr is recommended:" +System.lineSeparator() );
 		sb.append( BASH_ENTRY + " <query> [options...]  2> /dev/null" +System.lineSeparator() );
@@ -677,6 +730,9 @@ public class BioLockJ_API {
 		sb.append( "        flag indicating that all messages should go to standard err, including some that are typically disabled." +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "query:" + System.lineSeparator() );
+		sb.append( System.lineSeparator() );
+		sb.append( "  " + LAST_PIPELINE +System.lineSeparator() );
+		sb.append( "        Returns the path to the most recent pipeline." +System.lineSeparator() );
 		sb.append( System.lineSeparator() );
 		sb.append( "  " + LIST_MODULES + " [ " + EXT_MODS_OPTION + " ]" +System.lineSeparator() );
 		sb.append( "        Returns a list of classpaths to the classes that extend BioModule." +System.lineSeparator() );

@@ -1,5 +1,5 @@
 #!/bin/bash
 
 BLJ_JAR=${BLJ}/dist/BioLockJ.jar
-[ ! -f "${BLJ_JAR}" ] && exit_script "Error [ biolockj ]: BioLockJ Jar file \"${BLJ_JAR}\" not found."
+[ ! -f "${BLJ_JAR}" ] && echo "Error [ biolockj ]: BioLockJ Jar file \"${BLJ_JAR}\" not found." && exit 1
 java -jar ${BLJ_JAR} ${@}

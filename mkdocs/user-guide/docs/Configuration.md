@@ -48,7 +48,7 @@ See the [list of available properties](GENERATED/General-Properties.md).
 Bash variables can be referenced in the config. They must be "fully dressed": `${VAR}`          
                     
 There are two variables that BioLockJ requires:            
-`BLJ` is the file path to the BioLockJ direcotry and                
+`BLJ` is the file path to the BioLockJ directory and                
 `BLJ_PROJ` is the directory where pipelines created by BioLockJ are stored and run.            
 After installation these are defined in the shell profile.  These can referenced in the config file.
 
@@ -62,10 +62,21 @@ sra.sraAccList=${DIR}/SraAccList.txt
 input.dirPaths=${DIR}/seqs      
 ```
 
+Variables that are defined in the config file, can be referenced within the config file, however these variables are not added to the module script environment.
+
 If you are referencing environment variables *and* running in docker, you will need to use the -e parameter to biolockj to pass the variables into the docker environment (even if the variable is defined in the config file). For example:          
 ```
 biolockj --docker -e SHEP=$SHEP,DIR=/path/to/big/data/dir config.properties
 ```    
+
+Most environement variables will NOT be part of the module script environment.  However, any environment variable that is referenced in the configuration file is considered necissary for the pipeline, and it is passed into the main program environment, docker containers, module runtime enviroments.
+
+Environment variables are not the best way to get information to a script because they can be difficult to trace / troubleshoot. However if your script or tool requires a particular environment variable, you can define it in your local environment, and reference it in the config file using an arbitrary property name, for example:
+```
+my.variable=${QIIME_CONFIG_FP}
+```
+
+This has essentially the same effect as using the `-e QIIME_CONFIG_FP=$QIIME_CONFIG_FP` argument in the biolockj command.  If this variable is required this is one way to communicate that the value of QIIME_CONFIG_FP may change from one system to the next, but the existence of QIIME_CONFIG_FP is essential for the pipeline to run.
 
 ### Relative file paths
 

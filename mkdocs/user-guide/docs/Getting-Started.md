@@ -47,8 +47,6 @@ biolockj ${BLJ}/templates/myFirstPipeline/myFirstPipeline.properties
 # Initializing BioLockJ..
 # Building pipeline:  /Users/joe/apps/BioLockJ/pipelines/myFirstPipeline_2020Jan17
 # cd-blj       -> Move to pipeline output directory
-# blj_log      -> Tail pipeline log (accepts tail runtime parameters)
-# blj_summary  -> View module execution summary
 # Fetching pipeline status 
 # 
 # Pipeline is complete.
@@ -96,9 +94,6 @@ biolockj --docker --blj ${BLJ}/templates/myFirstPipeline/myFirstPipeline.propert
 # Docker container id: 336259e7d3b8d9ab2fa71202258b562664be1bf9645d503a790ae5e9da15ce97
 # Initializing BioLockJ..
 # Building pipeline:  /Users/joe/apps/BioLockJ/pipelines/myFirstPipeline_2020Jan17
-# cd-blj       -> Move to pipeline output directory
-# blj_log      -> Tail pipeline log (accepts tail runtime parameters)
-# blj_summary  -> View module execution summary
 # Fetching pipeline status 
 # 
 # Pipeline is complete.

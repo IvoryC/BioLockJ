@@ -6,24 +6,6 @@
 ## cd $(last-pipeline)
 ## ls `last-pipeline`
 
-. $BLJ/script/blj_functions 
-
-if [ ${#BLJ_PROJ} -eq 0 ]; then
-	echo "Error - BLJ_PROJ is not defined." >&2
-	exit 1
-fi
-
-if [ ! -d "${BLJ_PROJ}" ]; then
-	echo "Error - Cannot find directory BLJ_PROJ: ${BLJ_PROJ}" >&2
-	exit 1
-fi
-
-pipeline=$(most_recent_pipeline)
-
-if [ ${#pipeline} -eq 0 ] || [ ${pipeline} == "none" ]; then
-	echo "No pipelines found in BLJ_PROJ: ${BLJ_PROJ}" >&2
-	exit 1
-fi
-
-# the only thing printed to stdout
-echo "${pipeline}"
+BLJ_JAR=${BLJ}/dist/BioLockJ.jar
+[ ! -f "${BLJ_JAR}" ] && echo "Error [ last-pipeline ]: BioLockJ Jar file \"${BLJ_JAR}\" not found." && exit 1
+java -cp ${BLJ_JAR} biolockj.api.BioLockJ_API last-pipeline

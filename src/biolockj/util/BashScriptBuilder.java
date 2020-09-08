@@ -203,6 +203,7 @@ public class BashScriptBuilder {
 		final String startedFlag = mainScriptPath + "_" + Constants.SCRIPT_STARTED;
 		if( header != null ) lines.add( header + RETURN );
 		lines.add( "# BioLockJ " + BioLockJUtil.getVersion() + ": " + mainScriptPath + RETURN );
+		lines.addAll( passEnvironmentVarVals(module) );
 		lines.addAll( pathVariableVals(module) );
 		lines.add( "touch \"" + startedFlag + "\"" + RETURN );
 		lines.add( "exec 1>${logDir}/MAIN.log" );
@@ -254,6 +255,20 @@ public class BashScriptBuilder {
 		lines.add( LOG_DIR + "=\"" + module.getLogDir().getAbsolutePath() + "\"" );
 		lines.add( OUTPUT_DIR + "=\"" + module.getOutputDir().getAbsolutePath() + "\"" );
 		lines.add( "" );
+		return lines;
+	}
+	
+	protected static List<String> passEnvironmentVarVals( ScriptModule module ) throws ConfigNotFoundException, ConfigFormatException {
+		final List<String> lines = new ArrayList<>();
+		Map<String, String> envVars = Config.getEnvVarMap();
+		if( envVars.size() > 0 && Config.getBoolean( module, Constants.PIPELINE_USE_EVARS ) ) {
+			for( String key: envVars.keySet() ) {
+				Log.debug( DockerUtil.class,
+					"Giving module script environment variable: " + key + "=" + envVars.get( key ) );
+				lines.add( "export " + key + "=" + envVars.get( key ) );
+			}
+			lines.add( "" );
+		}
 		return lines;
 	}
 	
@@ -309,6 +324,7 @@ public class BashScriptBuilder {
 		lines.add( "" );
 		lines.add( "# BioLockJ." + BioLockJUtil.getVersion() + ": " + scriptPath);
 		lines.add( "" );
+		lines.addAll( passEnvironmentVarVals( module ) );
 		lines.addAll( pathVariableVals(module) );
 		lines.add( "touch \"" + scriptPath + "_" + Constants.SCRIPT_STARTED  + "\"");
 		lines.add( "" );

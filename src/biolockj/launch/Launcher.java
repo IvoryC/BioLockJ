@@ -43,7 +43,7 @@ public class Launcher {
 					throw new EndLaunch( 0, LaunchProcess.BIOLOCKJ_TEST_MODE_VALUE + cmd.toString() );
 				}else {
 					final Process p = Runtime.getRuntime().exec( cmd.toString() ); 
-					lp.showProcess( p );
+					lp.watchProcess( p );
 				}
 			}else if (lp.getFlag( LaunchProcess.DOCKER_ARG ) ) {
 				DockerLaunchProcess.main( args );

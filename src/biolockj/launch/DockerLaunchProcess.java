@@ -130,7 +130,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 		try {
 			final Process p = Runtime.getRuntime().exec( cmd ); 
 			if (getFlag( FG_ARG )) {
-				showProcess(p);
+				watchProcess(p);
 			}else {
 				String containerId = catchFirstResponse(p);
 				System.out.println("Docker container id: " + containerId);
@@ -152,7 +152,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 		if (DockerUtil.inDockerEnv()) maxtime=120; //launch from docker can be sluggish
 		
 		while( (i < maxtime || getFlag( WAIT_ARG )) && 
-						initDir.getAbsolutePath().equals( mostRecent.getAbsolutePath() ) &&
+						! foundNewPipeline() &&
 						isContainerRunning(container) &&
 						! restartDirHasStatusFlag() ) {
 			System.out.print( "." );
@@ -169,7 +169,8 @@ public class DockerLaunchProcess extends LaunchProcess {
 		System.out.print( "." );
 		Thread.sleep( 1000 );
 		System.out.print( "." );
-		pipeDir = getMostRecentPipeline();// could lag slightly after program start					
+		mostRecent = getMostRecentPipeline();// could lag slightly after program start			
+		setPipedir( mostRecent );
 	}
 	
 	private boolean isContainerRunning(String container) throws IOException {
