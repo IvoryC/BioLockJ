@@ -49,7 +49,7 @@ public class PipelineUtil {
 		for( File pipe: pipelines ) {
 			if( PipelineUtil.isPipelineDir( pipe ) ) { return pipe; }
 		}
-		return new File(projDir, "the0thPipeline");
+		return projDir;
 	}
 
 	/**
@@ -76,8 +76,12 @@ public class PipelineUtil {
 		}
 		if (name==null){
 			final int i = configName.lastIndexOf( "." );
-			if( i > -1 && configName.length() > i + 1 ) name = configName.substring( 0, i );
-			if (name.startsWith( Constants.MASTER_PREFIX )) name = name.substring( Constants.MASTER_PREFIX.length() );
+			if( i > -1 && configName.length() > i + 1 ) {
+				name = configName.substring( 0, i );
+				if (name.startsWith( Constants.MASTER_PREFIX )) name = name.substring( Constants.MASTER_PREFIX.length() );
+			}else {
+				name = configName;
+			}
 		}
 		return name;
 	}
@@ -205,8 +209,10 @@ public class PipelineUtil {
 		String hadFlag = null;
 		for( String flag: PipelineUtil.allFlags ) {
 			File ff = new File( dir, flag );
-			if( ff.exists() ) ff.delete();
-			hadFlag = flag;
+			if( ff.exists() ) {
+				ff.delete();
+				hadFlag = flag;
+			}
 		}
 		return hadFlag;
 	}
