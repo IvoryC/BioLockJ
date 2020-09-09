@@ -41,6 +41,19 @@ If your pipeline fails, use `cat biolockjFailed` to see the error message.
 
 
 ---
+### **Question:** My pipeline failed...now what?
+---
+**Answer:** See [Failure Recovery](Failure-Recovery.md)
+
+Most often, there is a consice error message that may even have instructions for fixing the pipeline.
+```
+cd-blj
+cat biolockjFailed
+```
+Don't be discouraged. It is normal to go through several, even many, failed attempts as you figure out how all the parts come together.
+
+
+---
 ### **Question:** If biolockj indicates that my pipeline may have failed to start, how do I determine the cause of the failure?
 ---
 **Answer:** Use `-f`.
