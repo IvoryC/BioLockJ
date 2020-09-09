@@ -908,30 +908,34 @@ public class Config {
 
 	private static String getEnvVarVal( final String dressedBashVar ) throws ConfigNotFoundException {
 		final String bashVar = stripBashMarkUp( dressedBashVar );
+		
+		String bashVal = null;
+		
+		bashVal = replaceEnvVarFromBuiltIns(bashVar);
+		addEnvVarToMap(bashVar, bashVal);
+		
+		if( bashVal == null ) bashVal = replaceEnvVarFromProps(bashVar);
+		if( bashVal != null ) return bashVal;
+		
 		if( envVarMap.get( bashVar ) != null ) {
 			return envVarMap.get( bashVar );
 		}
 		
-		String bashVal = null;
-	
-		bashVal = replaceEnvVarFromProps(bashVar);
-		if( bashVal != null ) return bashVal;
-
-		bashVal = replaceEnvVarFromBuiltIns(bashVar);
-		
 		if( bashVal == null ) bashVal = replaceEnvVarFromEnvironment(bashVar);
-		
-		if( bashVal != null && !bashVal.trim().isEmpty() ) {
-			envVarMap.put( bashVar, bashVal );
-			if( props != null ) syncEnvVarsWithProps();
-			moduleUsedProps.put( bashVar, bashVal );
-		}
-		
+		addEnvVarToMap(bashVar, bashVal);
+				
 		return bashVal;
 	}
 	
+	private static void addEnvVarToMap(String key, String value) throws ConfigNotFoundException {
+		if( value != null && !value.trim().isEmpty() ) {
+			envVarMap.put( key, value );
+			moduleUsedProps.put( key, value );
+		}
+	}
+	
 
-	private static String replaceEnvVarFromBuiltIns(final String bashVar) {
+	private static String replaceEnvVarFromBuiltIns(final String bashVar) throws ConfigNotFoundException {
 		String bashVal = null;
 		try {
 			if( bashVar.equals( BLJ_BASH_VAR ) ) {
@@ -969,13 +973,14 @@ public class Config {
 		return bashVal;
 	}
 	
-	private static String replaceEnvVarFromEnvironment(final String bashVar) {
+	private static String replaceEnvVarFromEnvironment(final String bashVar) throws ConfigNotFoundException {
 		String bashVal = null;
 		boolean useEnvVars = true;
 		try {
 			useEnvVars = getBoolean( null, Constants.PIPELINE_USE_EVARS );
 		} catch( ConfigFormatException e1 ) {
 			e1.printStackTrace();
+			//If there is doubt, avoid getting env vars, once read they stick around
 			useEnvVars = false;
 		}		
 		if ( useEnvVars ) {
@@ -1104,23 +1109,30 @@ public class Config {
 	}
 	
 	private static void syncEnvVarsWithProps() throws ConfigNotFoundException {
-		List<String> vars = getList( null, Constants.PIPELINE_ENV_VARS );
-		for (String var : vars) {
-			String val = getEnvVarVal( var );
-			if ( val == null ) throw new ConfigNotFoundException(var, "This pipeline expects that a variable [" + var 
-				+ "] will be set as an environment variable; but this variable has no value in the current context." + System.lineSeparator()
-				+ "If this variable is required, define it in the configuration file:  " + var + "=<some value>" + System.lineSeparator()
-				+ "If this variable is not required, update the values listed for [" + Constants.PIPELINE_ENV_VARS + "].");
-			envVarMap.put(var, val);
-		}
-		List<String> allVars = new ArrayList<String>();
-		allVars.addAll( envVarMap.keySet() );
-		if (props != null) for (String var : allVars) props.put(var, envVarMap.get( var ));
-		try {
-			setConfigProperty( Constants.PIPELINE_ENV_VARS, allVars );
-		} catch( DockerVolCreationException e ) {
-			//These are strings, not files will never need to convert file path; don't create noise in throws declarations.
-			e.printStackTrace();
+		if( props != null ) {
+			List<String> vars = getList( null, Constants.PIPELINE_ENV_VARS );
+			for( String var: vars ) {
+				String val = getEnvVarVal( var );
+				if( val == null ) throw new ConfigNotFoundException( var, "This pipeline expects that a variable [" +
+					var +
+					"] will be set as an environment variable; but this variable has no value in the current context." +
+					System.lineSeparator() + "If this variable is required, define it in the configuration file:  " +
+					var + "=<some value>" + System.lineSeparator() +
+					"If this variable is not required, update the values listed for [" + Constants.PIPELINE_ENV_VARS +
+					"]." );
+				envVarMap.put( var, val );
+			}
+			List<String> allVars = new ArrayList<String>();
+			allVars.addAll( envVarMap.keySet() );
+			if( props != null ) for( String var: allVars )
+				props.put( var, envVarMap.get( var ) );
+			try {
+				setConfigProperty( Constants.PIPELINE_ENV_VARS, allVars );
+			} catch( DockerVolCreationException e ) {
+				// These are strings, not files will never need to convert file path; don't create noise in throws
+				// declarations.
+				e.printStackTrace();
+			}
 		}
 	}
 	
