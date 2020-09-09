@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import biolockj.Config;
 import biolockj.Constants;
+import biolockj.Processor;
 import biolockj.Properties;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigException;
@@ -112,7 +113,7 @@ public class BioLockJ_API {
 			String reply = "";
 			switch( query ) {
 				case LAST_PIPELINE:
-					File BLJ_PROJ_DIR = new File(Config.replaceEnvVar( "${BLJ_PROJ}" ));
+					File BLJ_PROJ_DIR = new File( Processor.getBashVar( "BLJ_PROJ" ));
 					reply = PipelineUtil.getMostRecentPipeline( BLJ_PROJ_DIR ).getAbsolutePath();
 					break;
 				case LIST_MODULES:
