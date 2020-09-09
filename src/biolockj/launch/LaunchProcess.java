@@ -460,9 +460,8 @@ public class LaunchProcess {
 	}
 
 	protected boolean restartDirHasStatusFlag() {
-		if( getFlag( RESTART_ARG ) ) return false;
-		File restartDir = getRestartDir();
-		File flag = PipelineUtil.getPipelineStatusFlag( restartDir );
+		if( !getFlag( RESTART_ARG ) ) return false;
+		File flag = PipelineUtil.getPipelineStatusFlag( getRestartDir() );
 		return flag != null;
 	}
 
