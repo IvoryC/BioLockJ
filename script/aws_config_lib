@@ -2,7 +2,7 @@
 ##############################################################
 ##  This script contains functions to work with AWS Config  ##
 ##############################################################
-. ${BLJ}/script/docker_functions
+#. ${BLJ}/script/docker_functions # reference v1.3.8 to see the how variables were defined.
 
 AWS_CONF=~/.aws/aws_config
 STANDARD_CONFIG="${BLJ}/resources/config/default/standard.properties"
