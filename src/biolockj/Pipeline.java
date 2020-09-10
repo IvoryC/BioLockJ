@@ -50,7 +50,7 @@ public class Pipeline {
 		final boolean runDetached = isJava && hasScripts && detachJava;
 
 		if( runDetached ) MasterConfigUtil.saveMasterConfig();
-		if( hasScripts && !DockerUtil.inAwsEnv() ) Processor.submit( (ScriptModule) exeModule() );
+		if( hasScripts && !DockerUtil.inAwsEnv() ) Processor.runModuleMainScript( (ScriptModule) exeModule() );
 		if( hasScripts ) waitForModuleScripts();
 		exeModule().cleanUp();
 		ValidationUtil.validateModule( exeModule() );

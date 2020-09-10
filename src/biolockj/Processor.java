@@ -173,7 +173,7 @@ public class Processor {
 	 * This method is called by script generating {@link biolockj.module.ScriptModule}s to update the script
 	 * file-permissions to ensure they are executable by the program. Once file permissions are set, the main script
 	 * (passed in the args param) is executed. Calls {@link #setFilePermissions(String, String)} and
-	 * {@link #submit(ScriptModule)}
+	 * {@link #runModuleMainScript(ScriptModule)}
 	 *
 	 * @param module ScriptModule that is submitting its main script as a Processor
 	 * 
@@ -181,8 +181,8 @@ public class Processor {
 	 * @throws InterruptedException if the thread process is interrupted
 	 * @throws ConfigNotFoundException 
 	 */
-	public static void submit( final ScriptModule module ) throws IOException, InterruptedException, ConfigNotFoundException {
-		new Processor().runJob( module.getJobParams(), module.getClass().getSimpleName(), module.getScriptDir() );
+	public static void runModuleMainScript( final ScriptModule module ) throws IOException, InterruptedException, ConfigNotFoundException {
+		new Processor().runJob( module.getJobParams(), module.getClass().getSimpleName(), module.getScriptDir(), null );
 	}
 
 	/**

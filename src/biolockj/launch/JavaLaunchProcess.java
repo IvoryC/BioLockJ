@@ -2,6 +2,7 @@ package biolockj.launch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import biolockj.Config;
@@ -67,10 +68,13 @@ public class JavaLaunchProcess extends LaunchProcess {
 	}
 	
 	private String[] getEnvP() throws Exception {
-		String[] envs = new String[ envVars.size() ];
+		HashMap<String,String> allEnvVars = new HashMap<>();
+		allEnvVars.putAll( envVars );
+		allEnvVars.putAll( System.getenv() );
+		String[] envs = new String[ allEnvVars.size() ];
 		int i = 0;
-		for (String key : envVars.keySet() ) {
-			envs[i] = key + "=" + envVars.get(key);
+		for (String key : allEnvVars.keySet() ) {
+			envs[i] = key + "=" + allEnvVars.get(key);
 			i++;
 		}
 		return envs;
