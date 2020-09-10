@@ -226,7 +226,7 @@ public class BashScriptBuilder {
 		lines.add( "function " + FUNCTION_RUN_JOB + "() {" );
 		lines.add( "scriptName=$(basename $1)");
 		lines.add( "id=$(" + Config.requireString( module, CLUSTER_BATCH_COMMAND ) + " $1)" );
-		lines.add( "local status = $?" );
+		lines.add( "local status=$?" );
 		lines.add( "echo \"$scriptName:" + CLUSTER_KEY + ":$id\" >> " + startedFlag );
 		if ( Config.requireBoolean( module, CLUSTER_HAS_BATCH_IDS ) ) {
 			lines.add( "[ $status -eq 0 ] && [ ${#id} -eq 0] && status=1 && echo \"No job id was returned from " 
