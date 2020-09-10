@@ -977,11 +977,10 @@ public class Config {
 		String bashVal = null;
 		boolean useEnvVars = true;
 		try {
-			useEnvVars = getBoolean( null, Constants.PIPELINE_USE_EVARS );
+			if (props != null) useEnvVars = getBoolean( null, Constants.PIPELINE_USE_EVARS );
 		} catch( ConfigFormatException e1 ) {
-			e1.printStackTrace();
-			//If there is doubt, avoid getting env vars, once read they stick around
-			useEnvVars = false;
+			//e1.printStackTrace();
+			// up until the properties are read, variables WILL access environment variables, even if this is set to false.
 		}		
 		if ( useEnvVars ) {
 			try {
