@@ -18,7 +18,8 @@ These properties are directed to R modules.
 | *r.rareOtuThreshold* | _numeric_ <br>If >=1, R will filter OTUs found in fewer than this many samples. If <1, R will interperate the value as a percentage and discard OTUs not found in at least that percentage of samples<br>*default:*  1 |
 | *r.reportFields* | _list_ <br>Metadata fields to include in reports; Fields listed here must exist in the metadata file. R reports must contain at least one valid field.<br>*default:*  *null* |
 | *r.saveRData* | _boolean_ <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br>*default:*  *null* |
-| *r.timeout* | _integer_ <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br>*default:*  10 |
+| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to
+	 * timeout. If set to 0, an estimate is used.<br>*default:*  0 |
 | *r.useUniqueColors* | _boolean_ <br>force to use a unique color for every value in every field plotted; only recommended for low numbers of metadata columns/values.<br>*default:*  *null* |
                    
 Several plotting options are available.                   

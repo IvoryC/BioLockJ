@@ -222,6 +222,10 @@
 </thead>
 <tbody>
 <tr>
+<td align="left"><em>r_CalculateStats.customScript</em></td>
+<td align="left"><em>file path</em> <br>Path to a custom R script to use in place of the built-in module script.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
 <td align="left"><em>r_CalculateStats.pAdjustMethod</em></td>
 <td align="left"><em>string</em> <br>the p.adjust "method" parameter<br><em>default:</em>  BH</td>
 </tr>
@@ -285,12 +289,20 @@
 <td align="left"><em>boolean</em> <br>Options: Y/N. If Y, will generate R Script log files<br><em>default:</em>  Y</td>
 </tr>
 <tr>
+<td align="left"><em>r.rareOtuThreshold</em></td>
+<td align="left"><em>numeric</em> <br>If &gt;=1, R will filter OTUs found in fewer than this many samples. If &lt;1, R will interperate the value as a percentage and discard OTUs not found in at least that percentage of samples<br><em>default:</em>  1</td>
+</tr>
+<tr>
 <td align="left"><em>r.saveRData</em></td>
 <td align="left"><em>boolean</em> <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br><em>default:</em>  <em>null</em></td>
 </tr>
 <tr>
 <td align="left"><em>r.timeout</em></td>
-<td align="left"><em>integer</em> <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br><em>default:</em>  10</td>
+<td align="left"><em>integer</em> <br>defines the number of minutes before R script fails due to</td>
+</tr>
+<tr>
+<td align="left">* timeout. If set to 0, an estimate is used.<br><em>default:</em>  0</td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><em>script.defaultHeader</em></td>
@@ -318,12 +330,12 @@
 <p><em>none</em></p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
-<em>pipeline-dependent</em>                 <br />
+<em>none found</em>                 <br />
 <strong>post-requisite modules</strong>                  <br />
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/r_module:v1.3.9
+<pre><code>biolockjdevteam/r_module:v1.3.10
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -331,8 +343,8 @@
 <code>R_CalculateStats.imageName</code><br>
 <code>R_CalculateStats.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
-<p>BioLockJ v1.3.9                 <br />
-Module developted by Mike Sioda.</p>
+<p>BioLockJ v1.3.10                 <br />
+Module created by Mike Sioda and developed by Ivory Blakley</p>
               
             </div>
           </div>

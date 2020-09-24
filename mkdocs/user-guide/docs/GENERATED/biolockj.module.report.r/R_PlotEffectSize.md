@@ -11,6 +11,7 @@ Generate horizontal barplot representing effect size (Cohen's d, r<sup>2</sup>, 
 ### R_PlotEffectSize properties: 
 | Property| Description |
 | :--- | :--- |
+| *r_PlotEffectSize.customScript* | _file path_ <br>Path to a custom R script to use in place of the built-in module script.<br>*default:*  *null* |
 | *r_PlotEffectSize.disableCohensD* | _boolean_ <br>Options: Y/N. If N (default), produce plots for binary attributes showing effect size calculated as Cohen's d. If Y, skip this plot type.<br>*default:*  *null* |
 | *r_PlotEffectSize.disableFoldChange* | _boolean_ <br>Options: Y/N. If N (default), produce plots for binary attributes showing the fold change. If Y, skip this plot type.<br>*default:*  Y |
 | *r_PlotEffectSize.disablePvalAdj* | _boolean_ <br>Options: Y/N. If Y, the non-adjusted p-value is used when determining which taxa to include in the plot and which should get a (*). If N (default), the adjusted p-value is used.<br>*default:*  *null* |
@@ -35,7 +36,8 @@ Generate horizontal barplot representing effect size (Cohen's d, r<sup>2</sup>, 
 | *r.colorFile* | _file path_ <br>path to a tab-delimited file giving the color to use for each value of each metadata field plotted.<br>*default:*  *null* |
 | *r.debug* | _boolean_ <br>Options: Y/N. If Y, will generate R Script log files<br>*default:*  Y |
 | *r.saveRData* | _boolean_ <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br>*default:*  *null* |
-| *r.timeout* | _integer_ <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br>*default:*  10 |
+| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to
+	 * timeout. If set to 0, an estimate is used.<br>*default:*  0 |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |
@@ -47,14 +49,14 @@ Generate horizontal barplot representing effect size (Cohen's d, r<sup>2</sup>, 
 
 ## Adds modules 
 **pre-requisite modules**                    
-*pipeline-dependent*                   
+biolockj.module.report.r.R_CalculateStats                   
 **post-requisite modules**                    
 *none found*                   
 
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.9
+biolockjdevteam/r_module:v1.3.10
 ```
 This can be modified using the following properties:<br>
 `R_PlotEffectSize.imageOwner`<br>
@@ -62,6 +64,6 @@ This can be modified using the following properties:<br>
 `R_PlotEffectSize.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.9                   
-Module developted by Ivory Blakley.
+BioLockJ v1.3.10                   
+Module developed by Ivory Blakley.
 

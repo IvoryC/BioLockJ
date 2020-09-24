@@ -213,7 +213,20 @@
 <h2 id="properties">Properties<a class="headerlink" href="#properties" title="Permanent link">#</a></h2>
 <p><em>Properties are the <code>name=value</code> pairs in the <a href="../../../Configuration#properties">configuration</a> file.</em>                   </p>
 <h3 id="r_plotpvalhistograms-properties">R_PlotPvalHistograms properties:<a class="headerlink" href="#r_plotpvalhistograms-properties" title="Permanent link">#</a></h3>
-<p><em>none</em></p>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><em>plotPvalHistograms.customScript</em></td>
+<td align="left"><em>file path</em> <br>Path to a custom R script to use in place of the built-in module script.<br><em>default:</em>  <em>null</em></td>
+</tr>
+</tbody>
+</table>
 <h3 id="general-properties-applicable-to-this-module">General properties applicable to this module:<a class="headerlink" href="#general-properties-applicable-to-this-module" title="Permanent link">#</a></h3>
 <table>
 <thead>
@@ -277,7 +290,11 @@
 </tr>
 <tr>
 <td align="left"><em>r.timeout</em></td>
-<td align="left"><em>integer</em> <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br><em>default:</em>  10</td>
+<td align="left"><em>integer</em> <br>defines the number of minutes before R script fails due to</td>
+</tr>
+<tr>
+<td align="left">* timeout. If set to 0, an estimate is used.<br><em>default:</em>  0</td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><em>script.defaultHeader</em></td>
@@ -310,7 +327,7 @@
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/r_module:v1.3.9
+<pre><code>biolockjdevteam/r_module:v1.3.10
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -319,7 +336,7 @@
 <code>R_PlotPvalHistograms.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
 <p>Module developed by Mike Sioda                 <br />
-BioLockJ v1.3.9</p>
+BioLockJ v1.3.10</p>
               
             </div>
           </div>

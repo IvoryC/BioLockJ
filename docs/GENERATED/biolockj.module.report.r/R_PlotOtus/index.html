@@ -225,6 +225,10 @@
 <td align="left"><em>r.pValFormat</em></td>
 <td align="left"><em>string</em> <br>Sets the format used in R sprintf() function<br><em>default:</em>  %1.2g</td>
 </tr>
+<tr>
+<td align="left"><em>r_PlotOtus.customScript</em></td>
+<td align="left"><em>file path</em> <br>Path to a custom R script to use in place of the built-in module script.<br><em>default:</em>  <em>null</em></td>
+</tr>
 </tbody>
 </table>
 <h3 id="general-properties-applicable-to-this-module">General properties applicable to this module:<a class="headerlink" href="#general-properties-applicable-to-this-module" title="Permanent link">#</a></h3>
@@ -310,7 +314,11 @@
 </tr>
 <tr>
 <td align="left"><em>r.timeout</em></td>
-<td align="left"><em>integer</em> <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br><em>default:</em>  10</td>
+<td align="left"><em>integer</em> <br>defines the number of minutes before R script fails due to</td>
+</tr>
+<tr>
+<td align="left">* timeout. If set to 0, an estimate is used.<br><em>default:</em>  0</td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><em>script.defaultHeader</em></td>
@@ -343,7 +351,7 @@
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/r_module:v1.3.9
+<pre><code>biolockjdevteam/r_module:v1.3.10
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -351,8 +359,8 @@
 <code>R_PlotOtus.imageName</code><br>
 <code>R_PlotOtus.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
-<p>Module developed by Mike Sioda                 <br />
-BioLockJ v1.3.9</p>
+<p>BioLockJ v1.3.10                 <br />
+Module created by Mike Sioda and developed by Ivory Blakley</p>
               
             </div>
           </div>

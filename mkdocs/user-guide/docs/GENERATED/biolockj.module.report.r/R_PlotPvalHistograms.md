@@ -9,7 +9,9 @@ Generate p-value histograms for each reportable metadata field and each *report.
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
 
 ### R_PlotPvalHistograms properties: 
-*none*
+| Property| Description |
+| :--- | :--- |
+| *plotPvalHistograms.customScript* | _file path_ <br>Path to a custom R script to use in place of the built-in module script.<br>*default:*  *null* |
 
 ### General properties applicable to this module: 
 | Property| Description |
@@ -27,7 +29,8 @@ Generate p-value histograms for each reportable metadata field and each *report.
 | *r.debug* | _boolean_ <br>Options: Y/N. If Y, will generate R Script log files<br>*default:*  Y |
 | *r.pvalCutoff* | _numeric_ <br>p-value cutoff used to assign label _r.colorHighlight_<br>*default:*  0.05 |
 | *r.saveRData* | _boolean_ <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br>*default:*  *null* |
-| *r.timeout* | _integer_ <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br>*default:*  10 |
+| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to
+	 * timeout. If set to 0, an estimate is used.<br>*default:*  0 |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |
@@ -46,7 +49,7 @@ Generate p-value histograms for each reportable metadata field and each *report.
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.9
+biolockjdevteam/r_module:v1.3.10
 ```
 This can be modified using the following properties:<br>
 `R_PlotPvalHistograms.imageOwner`<br>
@@ -55,5 +58,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.9
+BioLockJ v1.3.10
 

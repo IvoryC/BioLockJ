@@ -237,6 +237,10 @@ one at a time on the current machine (if <code>pipeline.env=local</code>).      
 <td align="left"><em>string</em> <br>Store default script header for MAIN script and locally run WORKER scripts.<br><em>default:</em>  #!/bin/bash</td>
 </tr>
 <tr>
+<td align="left"><em>script.fileRefreshDelay</em></td>
+<td align="left"><em>integer</em> <br>delay this many seconds after scripts complete to allow the file system to reflect changes from a worker node/container/virtual machine.<br><em>default:</em>  1</td>
+</tr>
+<tr>
 <td align="left"><em>script.numThreads</em></td>
 <td align="left"><em>integer</em> <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br><em>default:</em>  8</td>
 </tr>

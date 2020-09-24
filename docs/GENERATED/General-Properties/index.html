@@ -71,6 +71,9 @@
     <a class="current" href="./">General Properties</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#biolockj">biolockj</a></li>
+    
+
     <li class="toctree-l3"><a href="#cluster">cluster</a></li>
     
 
@@ -257,7 +260,22 @@
           <div role="main">
             <div class="section">
               
-                <h3 id="cluster"><a href="../Cluster/">cluster</a><a class="headerlink" href="#cluster" title="Permanent link">#</a></h3>
+                <h3 id="biolockj">biolockj<a class="headerlink" href="#biolockj" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><em>biolockj.version</em></td>
+<td align="left"><em>string</em> <br>Property giving the biolockj version that was used to generate the config file.<br><em>default:</em>  <em>null</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="cluster"><a href="../Cluster/">cluster</a><a class="headerlink" href="#cluster" title="Permanent link">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -667,7 +685,11 @@
 </tr>
 <tr>
 <td align="left"><em>r.timeout</em></td>
-<td align="left"><em>integer</em> <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br><em>default:</em>  10</td>
+<td align="left"><em>integer</em> <br>defines the number of minutes before R script fails due to</td>
+</tr>
+<tr>
+<td align="left">* timeout. If set to 0, an estimate is used.<br><em>default:</em>  0</td>
+<td align="left"></td>
 </tr>
 <tr>
 <td align="left"><em>r.useUniqueColors</em></td>
@@ -745,6 +767,10 @@
 <tr>
 <td align="left"><em>script.defaultHeader</em></td>
 <td align="left"><em>string</em> <br>Store default script header for MAIN script and locally run WORKER scripts.<br><em>default:</em>  #!/bin/bash</td>
+</tr>
+<tr>
+<td align="left"><em>script.fileRefreshDelay</em></td>
+<td align="left"><em>integer</em> <br>delay this many seconds after scripts complete to allow the file system to reflect changes from a worker node/container/virtual machine.<br><em>default:</em>  1</td>
 </tr>
 <tr>
 <td align="left"><em>script.numThreads</em></td>

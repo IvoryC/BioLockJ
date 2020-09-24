@@ -11,6 +11,7 @@ Generate sets of multidimensional scaling plots showing 2 axes at a time (up to 
 ### R_PlotMds properties: 
 | Property| Description |
 | :--- | :--- |
+| *r_PlotMds.customScript* | _file path_ <br>Path to a custom R script to use in place of the built-in module script.<br>*default:*  *null* |
 | *r_PlotMds.distance* | _string_ <br>distance metric for calculating MDS (default: bray)<br>*default:*  bray |
 | *r_PlotMds.numAxis* | _integer_ <br>Sets # MDS axis to plot; default (3) produces mds1 vs mds2, mds1 vs mds3, and mds2 vs mds3<br>*default:*  3 |
 | *r_PlotMds.reportFields* | _list_ <br>Override field used to explicitly list metadata columns to build MDS plots. If left undefined, all columns are reported<br>*default:*  *null* |
@@ -34,7 +35,8 @@ Generate sets of multidimensional scaling plots showing 2 axes at a time (up to 
 | *r.debug* | _boolean_ <br>Options: Y/N. If Y, will generate R Script log files<br>*default:*  Y |
 | *r.pch* | _integer_ <br>Sets R plot pch parameter for PDF report<br>*default:*  21 |
 | *r.saveRData* | _boolean_ <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br>*default:*  *null* |
-| *r.timeout* | _integer_ <br>the # minutes before R Script will time out and fail; If undefined, no timeout is used.<br>*default:*  10 |
+| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to
+	 * timeout. If set to 0, an estimate is used.<br>*default:*  0 |
 | *r_PlotMds.reportFields* | _list_ <br>Override field used to explicitly list metadata columns to build MDS plots. If left undefined, all columns are reported<br>*default:*  *null* |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
@@ -47,14 +49,14 @@ Generate sets of multidimensional scaling plots showing 2 axes at a time (up to 
 
 ## Adds modules 
 **pre-requisite modules**                    
-*pipeline-dependent*                   
+*none found*                   
 **post-requisite modules**                    
 *none found*                   
 
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.9
+biolockjdevteam/r_module:v1.3.10
 ```
 This can be modified using the following properties:<br>
 `R_PlotMds.imageOwner`<br>
@@ -62,6 +64,6 @@ This can be modified using the following properties:<br>
 `R_PlotMds.imageTag`<br>
 
 ## Citation 
-Module developed by Mike Sioda                   
-BioLockJ v1.3.9
+BioLockJ v1.3.10                   
+Module created by Mike Sioda and developed by Ivory Blakley
 
