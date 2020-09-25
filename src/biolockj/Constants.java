@@ -235,6 +235,12 @@ public class Constants {
 	 * Default path for an additional configuration file used for any pipeline run in docker.
 	 */
 	public static final String DOCKER_CONFIG_PATH = "${BLJ}/resources/config/default/docker.properties";
+	
+	/**
+	 * Prefix used in several {@link biolockj.Config} String properties. {@value #DOCKER_EXE_PREFIX}<br>
+	 * @see #EXE_PREFIX
+	 */
+	public static final String DOCKER_EXE_PREFIX = "dockerExe.";
 
 	/**
 	 * {@link biolockj.Config} option for {@value #REPORT_TAXONOMY_LEVELS}: {@value #DOMAIN}

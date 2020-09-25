@@ -115,9 +115,10 @@ Many pipeline properties (usually those used by pipeline utilities) can be direc
 
 #### exe.* properties
 
-`exe.` properties are used to specify the path to common executables.  Modules are sometimes written to use a common tool, such as `Rscript` or `bowtie`.  These modules will write scripts with the assumption that this command is on the `$PATH` when the script is executed UNLESS `exe.Rscript` is given specifying a path to use.  The `exe.` properties are often specified in a defaultProps file for a given environment rather than in individual project properties files.  
+`exe.` properties are used to specify the path to common executables.  `exe.` properties are special in that they have the automatic default of returning the the property name minus the `exe.`-prefex as their value.  Modules are sometimes written to use a common tool, such as `Rscript` or `bowtie`.  These modules will write scripts with the assumption that this command is on the `$PATH` when the script is executed UNLESS `exe.Rscript` is given specifying a path to use.  The `exe.` properties are often specified in a defaultProps file for a given environment rather than in individual project properties files.  
 
-If you are running a pipeline using docker, it is assumed that all file paths in your config file are written in terms of your host machine. The _EXCEPTION_ to this is the `exe.` file paths. Most often, docker containers are used because of the executables baked into them. In the rare case where you want to use an executable from your local machine, while running a pipeline in docker, you can specify this by using the prefix `hostExe.` in place of `exe.`.
+Most often, docker containers are used because of the executables baked into them, and any `exe.` configurations are only applicable when not runnig in docker.  In a pipeline running in docker, all references to an `exe.` property will return the default value (by removing the `exe.` prefix), regardless of how the `exe.` property is configured.
+In the rare case where you do need to give the path to executable within a container, you can specify this by using the prefix `dockerExe.` in place of `exe.`.  In the even rarer case where you want to use an executable from your local machine, while running a pipeline in docker, you can specify this by using the prefix `hostExe.` in place of `exe.`.
 
 
 ### Chaining configuration files

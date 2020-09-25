@@ -42,7 +42,7 @@ public class RequiredRPackageException extends BioLockJException {
 	private static String missingMultipleMessage(Set<String> names, Map<String, String> repos){
 		StringBuffer sb = new StringBuffer();
 		for (String name : names) {
-			sb.append( missingPackageMessage( name, repos.get( name )) );
+			sb.append( missingPackageMessage( name, repos.get( name )) + System.lineSeparator() );
 		}
 		return sb.toString();
 	}

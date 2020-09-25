@@ -102,17 +102,35 @@ public class Config {
 			"Config.getExe() can only be called for properties that begin with \"" + Constants.EXE_PREFIX + "\"" );
 		String inContainerPath = null;
 		String rawPath = getString( module, property );
+		String defaultExe = property.replaceFirst( Constants.EXE_PREFIX, "" );
 		try {
 			if( DockerUtil.inDockerEnv() ) {
 				File hostFile = getExistingFile( module, property.replaceFirst( Constants.EXE_PREFIX, Constants.HOST_EXE_PREFIX ) );
-				if (hostFile != null) inContainerPath = hostFile.getAbsolutePath();
+				String containerExe = getString( module, property.replaceFirst( Constants.EXE_PREFIX, Constants.DOCKER_EXE_PREFIX ) );
+				if( hostFile != null && containerExe != null ) {
+					throw new SpecialPropertiesException( property,
+					"The property forms [" + property.replaceFirst( Constants.EXE_PREFIX, Constants.HOST_EXE_PREFIX ) +
+						"] and [" + property.replaceFirst( Constants.EXE_PREFIX, Constants.DOCKER_EXE_PREFIX ) +
+						"] are mutually exclusive." );
+				}else if (hostFile != null) {
+					inContainerPath = hostFile.getAbsolutePath();
+				}else if (containerExe != null) {
+					inContainerPath = (new File(containerExe)).getAbsolutePath();
+				}
 
 				if( inContainerPath == null && rawPath != null ) {
 					Log.warn( Config.class, "Unlike most properties, the \"" + Constants.EXE_PREFIX +
-						"\" properties are not converted to an in-container path." );
-					Log.warn( Config.class, "The exact string given will be used in scripts in a docker container." );
+						"\" properties are ignored when running in docker." );
+					Log.warn( Config.class, "Regardless of how [" + property + "] is configured, \"" + defaultExe + "\" will be used when running in docker (in most cases, this is ideal).");
+					Log.warn( Config.class, "To override this behavior:" + System.lineSeparator());
 					Log.warn( Config.class,
-						"To override this behavior, use the \"" + Constants.HOST_EXE_PREFIX + "\" prefix instead." );
+						"Use the \"" + Constants.HOST_EXE_PREFIX + "\" prefix instead, to map an executable into a container (this is rarely a good idea)." );
+					Log.warn( Config.class,
+						"Use the \"" + Constants.DOCKER_EXE_PREFIX + "\" prefix instead, to give the path to an executable inside the container (this is also rare, as most executables inside the container will be on the path)." );
+					Log.warn( Config.class, "The exact string given will be used in scripts in a docker container." );
+				}
+				if( inContainerPath != null ) {
+					Log.warn( Config.class, "The use of an executable that is not on the path in the container being used is a sign that you are not using an optiminal container for your purpose.  Consider building a new container FROM the one you are using now." );
 				}
 			}
 		} catch( BioLockJException ex ) {
@@ -120,8 +138,9 @@ public class Config {
 		}
 		// property name after trimming "exe." prefix, for example if exe.Rscript is undefined, return "Rscript"
 		if( inContainerPath != null ) return inContainerPath;
+		if( DockerUtil.inDockerEnv() ) return defaultExe;
 		if( rawPath != null ) return rawPath;
-		return property.replaceFirst( Constants.EXE_PREFIX, "" );
+		return defaultExe;
 	}
 
 	/**
