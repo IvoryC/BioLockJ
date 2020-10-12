@@ -1,7 +1,7 @@
 package biolockj.exception;
 
-import java.util.Map;
 import java.util.Set;
+import biolockj.module.report.r.R_package;
 
 public class RequiredRPackageException extends BioLockJException {
 
@@ -9,17 +9,8 @@ public class RequiredRPackageException extends BioLockJException {
 	 * Create exception based on which R package is missing.
 	 * @param rpackage name of an R package that is required but cannot be loaded
 	 */
-	public RequiredRPackageException( String rpackage ) {
-		super( missingPackageMessage(rpackage, "" ));
-	}
-	
-	/**
-	 * Create exception based on which R package is missing, and the URL to download it from.
-	 * @param rpackage name of an R package that is required but cannot be loaded
-	 * @param packageRepo url of repository that from which the package may be installed.
-	 */
-	public RequiredRPackageException( String rpackage, String packageRepo ) {
-		super( missingPackageMessage(rpackage, packageRepo));
+	public RequiredRPackageException( R_package rpackage, String message ) {
+		super( missingPackageMessage(rpackage) + System.lineSeparator() + message);
 	}
 	
 	/**
@@ -27,27 +18,23 @@ public class RequiredRPackageException extends BioLockJException {
 	 * @param names Set of Strings given one or more names of packages that are required but cannot be loaded
 	 * @param repos Map of package names to url where the package could be installed from.
 	 */
-	public RequiredRPackageException( Set<String> names, Map<String, String> repos) {
-		super( missingMultipleMessage( names, repos));
+	public RequiredRPackageException( Set<R_package> rpackages) {
+		super( missingMultipleMessage( rpackages ));
 	}
 	
-	private static String missingPackageMessage(String rpackage, String repo) {
-		String installCmd;
-		if ( repo != null && ! repo.isEmpty() ) installCmd = "Rscript -e 'install.packages(\""+rpackage+"\", repos=\""+ repo + "\"); '";
-		else installCmd = "Rscript -e 'install.packages(\""+rpackage+"\"); '";
-		return "Missing R library [" + rpackage + "]. Please install this package.  Suggested install command: " + System.lineSeparator() 
-		+ installCmd; 
+	private static String missingPackageMessage(R_package rpackage) {
+		return "Missing R library [" + rpackage.getName() + "]. Please install this package.  Suggested install command: " + System.lineSeparator() 
+		+ rpackage.getInstallCmd(); 
 	}
 	
-	private static String missingMultipleMessage(Set<String> names, Map<String, String> repos){
+	private static String missingMultipleMessage(Set<R_package> rpackages){
 		StringBuffer sb = new StringBuffer();
-		for (String name : names) {
-			sb.append( missingPackageMessage( name, repos.get( name )) + System.lineSeparator() );
+		for (R_package pack : rpackages) {
+			sb.append( missingPackageMessage( pack) + System.lineSeparator() );
 		}
 		return sb.toString();
 	}
 	
-	
-	private static final long serialVersionUID = -8321547735003700677L;
+	private static final long serialVersionUID = -8321547735003700687L;
 
 }

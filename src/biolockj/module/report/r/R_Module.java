@@ -83,27 +83,29 @@ public abstract class R_Module extends ScriptModuleImpl {
 		checkRPackages();
 	}
 	
-	protected Map<String, String> requiredRPackages(){
-		Map<String, String> packages = new HashMap<>();
+	protected Set<R_package> requiredRPackages(){
+		Set<R_package> packages = new HashSet<>();
 		//These packages are required by the current BioLockJ_Lib.R functions
-		packages.put("properties","https://CRAN.R-project.org");
-		packages.put("stringr","https://CRAN.R-project.org");
-		packages.put("ggpubr","https://CRAN.R-project.org");
+		packages.add( new R_package( "properties", "https://CRAN.R-project.org" ) );
+		packages.add( new R_package( "stringr", "https://CRAN.R-project.org" ) );
+		packages.add( new R_package( "ggpubr", "https://CRAN.R-project.org" ) );
 		return packages;
 	}
 
 	private void checkRPackages() throws SpecialPropertiesException, IOException, InterruptedException,
 		RequiredRPackageException, ConfigNotFoundException {
-		Set<String> failedPackages = new HashSet<String>();
-		for( String pack: requiredRPackages().keySet() ) {
+		Set<R_package> failedPackages = new HashSet<>();
+		for( R_package pack: requiredRPackages() ) {
 			if( !checkPackage( pack ) ) failedPackages.add( pack );
 		}
-		if( failedPackages.size() > 0 ) { throw new RequiredRPackageException( failedPackages, requiredRPackages() ); }
+		if( failedPackages.size() > 0 ) { throw new RequiredRPackageException( failedPackages); }
 	}
 	
-	private boolean checkPackage(String packageName) throws SpecialPropertiesException, IOException, InterruptedException, ConfigNotFoundException {
+	private boolean checkPackage(R_package rpackage) throws SpecialPropertiesException, IOException, InterruptedException, ConfigNotFoundException {
 		boolean isGood;
-		String cmd = Config.getExe( this, Constants.EXE_RSCRIPT ) + " -e 'library(" + packageName + ");packageVersion(\"" + packageName + "\")'";
+		final String UR_GOOD = "you R good";
+		String packageName = rpackage.getName();
+		String cmd = Config.getExe( this, Constants.EXE_RSCRIPT ) + " -e 'library(" + packageName + ");packageVersion(\"" + packageName + "\")' && echo '" + UR_GOOD + "'";
 		//TODO: revisit this after the check exe feature is finished.
 //		if (Config.getString( this, Constants.PIPELINE_ENV ).equals(Constants.PIPELINE_ENV_CLUSTER)) {
 //			for (String addLib : BashScriptBuilder.loadModules(this)) {
@@ -120,15 +122,21 @@ public abstract class R_Module extends ScriptModuleImpl {
 		final BufferedReader brErr = new BufferedReader( new InputStreamReader( p.getErrorStream() ) );
 		String out = null;
 		String err = null;
+		String bottomLine = null;
+		int i = 0;
 		do{
 			if (out != null) Log.info(getClass(), out);
 			if (err != null) Log.info(getClass(), err);
+			bottomLine = out;
 			out = brOut.readLine();
 			err = brErr.readLine();
-		}while( out != null ||  err != null ) ;
+			Log.info(getClass(), "iteration - " + i); i++;
+		//}while( out != null ||  err != null ) ;
+		}while( out != null ) ;
 		p.waitFor();
 		p.destroy();
-		isGood = p.exitValue() == 0;
+		isGood = p.exitValue() == 0 && bottomLine.endsWith( UR_GOOD );
+		Log.info(R_Module.class, "R package [" + packageName + "] is " + (isGood ? "good" : "missing") + ". Returned: " + bottomLine);
 		return isGood;
 	}
 

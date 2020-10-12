@@ -57,10 +57,10 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	}
 	
 	@Override
-	protected Map<String, String> requiredRPackages() {
-		Map<String, String> packages = super.requiredRPackages();
-		packages.put("coin","https://CRAN.R-project.org");
-		packages.put("Kendall","https://CRAN.R-project.org");
+	protected Set<R_package> requiredRPackages() {
+		Set<R_package> packages = super.requiredRPackages();
+		packages.add( new R_package( "coin", "https://CRAN.R-project.org" ) );
+		packages.add( new R_package( "Kendall", "https://CRAN.R-project.org" ) );
 		return packages;
 	}
 

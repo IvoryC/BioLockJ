@@ -13,6 +13,7 @@ package biolockj.module.report.r;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Properties;
@@ -59,9 +60,9 @@ public class R_PlotMds extends R_Module implements ApiModule {
 	}
 	
 	@Override
-	protected Map<String, String> requiredRPackages() {
-		Map<String, String> packages = super.requiredRPackages();
-		packages.put("vegan","https://CRAN.R-project.org");
+	protected Set<R_package> requiredRPackages() {
+		Set<R_package> packages = super.requiredRPackages();
+		packages.add( new R_package( "vegan", "https://CRAN.R-project.org" ) );
 		return packages;
 	}
 
