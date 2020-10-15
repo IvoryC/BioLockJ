@@ -36,16 +36,27 @@ public class Config {
 	 *
 	 * @param module Source BioModule calling this function
 	 * @param property Property name
+	 * @param defaultVal one of Y or N giving the default value to use if none is specified yet.
+	 * @return boolean value
+	 * @throws ConfigFormatException if property value is not null but also not Y or N.
+	 */
+	public static boolean getBoolean( final BioModule module, final String property, final String defaultVal ) throws ConfigFormatException {
+		String value = getString( module, property, defaultVal );
+		if ( value.equalsIgnoreCase( Constants.TRUE ) ) return true;
+		else if ( value.equalsIgnoreCase( Constants.FALSE ) ) return false;
+		throw new ConfigFormatException( property, "Boolean properties must be set to either " + Constants.TRUE +
+			" or " + Constants.FALSE + "." );
+	}
+	/**
+	 * Parse property value (Y or N) to return boolean, if not found, return false;
+	 *
+	 * @param module Source BioModule calling this function
+	 * @param property Property name
 	 * @return boolean value
 	 * @throws ConfigFormatException if property value is not null but also not Y or N.
 	 */
 	public static boolean getBoolean( final BioModule module, final String property ) throws ConfigFormatException {
-		String value = getString( module, property );
-		if ( value == null ) return false;
-		else if ( value.equalsIgnoreCase( Constants.TRUE ) ) return true;
-		else if ( value.equalsIgnoreCase( Constants.FALSE ) ) return false;
-		throw new ConfigFormatException( property, "Boolean properties must be set to either " + Constants.TRUE +
-			" or " + Constants.FALSE + "." );
+		return getBoolean( module, property, Constants.FALSE );
 	}
 
 	/**
