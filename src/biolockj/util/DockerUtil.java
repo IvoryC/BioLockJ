@@ -417,7 +417,7 @@ public class DockerUtil {
 	private static String convertWindowsPath(final String path) {
 		String drive = path.substring( 0, path.indexOf( ":" ) ).toLowerCase();
 		String dirPath = path.substring( path.indexOf( ":" ) + 1 );
-		String mountPath = File.separator + "host_mnt" + File.separator + drive + FilenameUtils.separatorsToSystem( dirPath );
+		String mountPath = File.separator + drive + FilenameUtils.separatorsToSystem( dirPath );
 		Log.debug( DockerUtil.class, "Converted Windows path [" + path + "] to docker mount form: " + mountPath );
 		return mountPath ;
 	}
