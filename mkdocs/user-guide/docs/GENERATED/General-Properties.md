@@ -28,6 +28,7 @@
 | *docker.imageName* | _string_ <br>The name of a docker image to override whatever a module says to use.<br>*default:*  *null* |
 | *docker.imageOwner* | _string_ <br>name of the Docker Hub user that owns the docker containers<br>*default:*  *null* |
 | *docker.imageTag* | _string_ <br>indicate specific version of Docker images<br>*default:*  *null* |
+| *docker.mountSock* | _boolean_ <br>should /var/docker/docker.sock be mounted for modules.<br>*default:*  N |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 
