@@ -126,11 +126,12 @@ public abstract class TaxaCountModule extends JavaModuleImpl {
 			for( final File file: files )
 				if( file.getName().contains( level ) ) {
 					Set<File> fileSet = levelFiles.get( level );
-					if( fileSet == null ) fileSet = new HashSet<>();
+					if( fileSet == null ) {
+						fileSet = new HashSet<>();
+						levelFiles.put( level, fileSet );
+					}
 					fileSet.add( file );
-					levelFiles.put( level, fileSet );
 				}
-
 		return levelFiles;
 	}
 
