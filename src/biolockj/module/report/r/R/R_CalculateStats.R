@@ -2,9 +2,14 @@
 
 main <- function() {
 
-   countTable = getCountMetaTable( level )
-   metaTable = getMetaData( level )
+   countTable = readBljTable(countsFile)
+   metaTable = readBljTable(metadataFile)
+
    if ( is.null(countTable) || is.null(metaTable) ) return( NULL )
+   
+   merged = merge(countTable, metaTable, by=0,)
+   row.names(merged) = merged[,"Row.names"]
+   merged = merged[, names(merged) != "Row.names"]
    
    numDataCols = ncol(countTable) - ncol(metaTable);
    measuredFeatures = names(countTable)[1:numDataCols]
@@ -38,10 +43,10 @@ main <- function() {
                message( c( "Calculate pvalues for: ", feature, " ~ ", field ) )
                att = as.factor( metaTable[,field] )
                vals = levels( att )
-               if( everyGroupHasData( countTable, feature, field, vals ) ) { 
+               if( everyGroupHasData( merged, feature, field, vals ) ) { 
                   myLm = lm( countTable[,feature] ~ att, na.action=na.exclude )
                   parametricPvals[feature, field] = t.test( countTable[att==vals[1], feature], countTable[att==vals[2], feature] )$p.value
-                  nonParametricPvals[feature, field] = pvalue( wilcox_test( countTable[att==vals[1], feature], countTable[att==vals[2], feature] ) )
+                  nonParametricPvals[feature, field] = pvalue( wilcox_test.default( countTable, feature, att, vals ) )
                   rSquaredVals[feature, field] = summary( myLm )$r.squared
                } else {
                   parametricPvals[feature, field] = 1
@@ -56,7 +61,7 @@ main <- function() {
                message( c( "Calculate pvalues for: ", feature, " ~ ", field ) )
                att = as.factor( metaTable[,field] )
                vals = levels( att )
-               if( everyGroupHasData( countTable, feature, field, vals ) ) { 
+               if( everyGroupHasData( merged, feature, field, vals ) ) { 
                      myLm = lm( countTable[,feature] ~ att, na.action=na.exclude )
                      myAnova = anova( myLm )
                      parametricPvals[feature, field] = myAnova$"Pr(>F)"[1]
@@ -141,10 +146,10 @@ getP_AdjustLen <- function( names ) {
 }
 
 # Verify all groups have 2+ values to avoid statistical test failures
-everyGroupHasData <- function( countTable, feature, field, vals )  {
+everyGroupHasData <- function( merged, feature, field, vals )  {
    for( val in vals ) {
-      hasTaxa = !is.na( countTable[, feature] )
-      hasVal = as.vector( countTable[,field] ) == val
+      hasTaxa = !is.na( merged[, feature] )
+      hasVal = as.vector( merged[,field] ) == val
       if( length( which( hasTaxa & hasVal == TRUE) ) < 1 ) {
          message( paste( "Skip statistical test for", feature, "no data for", field, "=", val ) )
          return( FALSE )
@@ -156,9 +161,12 @@ everyGroupHasData <- function( countTable, feature, field, vals )  {
 # Method wilcox_test is from the coin package
 # Calculates exact p-values without using heuristic algorithm for better precision
 # Otherwise if ties are found the script may fail
-wilcox_test.default <- function( x, y, ... ) {
-   data = data.frame( values = c(x, y), group = rep( c("x", "y"), c(length(x), length(y)) ) )
-   return( wilcox_test( values ~ group, data = data, ... ) )
+wilcox_test.default <- function( countTable, feature, att, vals ) {
+   x = countTable[att==vals[1], feature]
+   y = countTable[att==vals[2], feature]
+   values = c(x, y)
+   group = as.factor(rep( c("x", "y"), c(length(x), length(y)) ) )
+   return( wilcox_test( values ~ group ) )
 }
 
 # Main function imports coin and Kendall libraries
@@ -176,12 +184,17 @@ wilcox_test.default <- function( x, y, ... ) {
 # }
 
 
+message("Running R version: ", R.Version()$version.string)
 message("Current Working directory: ",getwd())
 
 args = commandArgs(trailingOnly = TRUE)
-message("all args: ", args)
+message("all args: ", paste(args,sep=", ") )
 level = args[1]
 message("Running script for level: ", level)
+countsFile = args[2]
+message("Using input counts table: ", countsFile)
+metadataFile = args[3]
+message("Using metadata table: ", metadataFile)
 
 source("../resources/BioLockJ_Lib.R")
 importLibs( c( "coin", "Kendall" ) )

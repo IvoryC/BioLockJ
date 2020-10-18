@@ -20,10 +20,14 @@ import biolockj.Constants;
 import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.ApiModule;
+import biolockj.exception.BioLockJException;
 import biolockj.module.BioModule;
+import biolockj.module.report.taxa.TaxaCountModule;
 import biolockj.util.BioLockJUtil;
+import biolockj.util.MetaUtil;
 import biolockj.util.ModuleUtil;
 import biolockj.util.RMetaUtil;
+import biolockj.util.TaxaUtil;
 
 /**
  * This BioModule is used to build the R script used to generate taxonomy statistics and plots.
@@ -62,6 +66,76 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		packages.put("coin","https://CRAN.R-project.org");
 		packages.put("Kendall","https://CRAN.R-project.org");
 		return packages;
+	}
+	
+	@Override
+	public List<List<String>> buildScript( final List<File> files ) throws Exception {
+		List<List<String>> outer = new ArrayList<>();
+		Map<String, File> countTableByLevel = getFilesByLevel( getInputFiles() );
+		getFunctionLib();
+		File rscript = getModuleRScript();
+		for (String level : Config.getList( this, Constants.REPORT_TAXONOMY_LEVELS )) {
+			Log.debug(this.getClass(), "Building command for taxonomic level: " + level);
+			if ( countTableByLevel.get( level ) != null ) {
+				List<String> inner = new ArrayList<>();
+				//TODO add a call to the ScriptBuilder to get the ignored-new-line character/string
+				inner.add( Config.getExe( this, Constants.EXE_RSCRIPT ) + " " + rscript.getAbsolutePath() 
+					+ " " + level 
+					+ " " + countTableByLevel.get( level ).getAbsolutePath() 
+					+ " " + MetaUtil.getMetadata().getAbsolutePath() );
+				outer.add( inner );
+			}else {
+				Log.info(this.getClass(), "No input file found for level [" + level + "].");
+			}
+		}
+		return outer;
+	}
+	
+	private Map<String, File> getFilesByLevel( final List<File> files ) throws BioLockJException {
+		final Map<String, File> levelFiles = new HashMap<>();
+		Log.debug(this.getClass(), "Inside the getFilesByLevel method.");
+		Log.debug(this.getClass(), "Number files passed in as files list: " + files.size());
+		Log.debug(this.getClass(), "Taxa levels to search for are: " + BioLockJUtil.getCollectionAsString( TaxaUtil.getTaxaLevels()) );
+		for( final String level: TaxaUtil.getTaxaLevels() ) {
+			for( final File file: files ) {
+				if( file.getName().contains( "_" + level + "." ) ) {
+					File levelFile = levelFiles.get( level );
+					if( levelFile != null ) {
+						//CalculateStats expects to find no more than one file per level
+						Log.error(this.getClass(), "Found multiple input files for level [" + level + "].");
+						Log.error(this.getClass(), "Determined level for file [" + levelFile + "] to be: " + level + ".");
+						Log.error(this.getClass(), "Determined level for file [" + file + "] to be: " + level + ".");
+						throw new BioLockJException("Found multiple input files for level [" + level + "].");
+					}
+					levelFiles.put(level, file);
+					Log.debug(this.getClass(), "Determined file for level [" + level + "] is: " + file);
+				}
+			}
+		}
+		Log.debug(this.getClass(), "Found input files for levels: " + BioLockJUtil.getCollectionAsString( levelFiles.keySet() ));
+		return levelFiles;
+	}
+	
+	@Override
+	public List<File> getInputFiles() {
+		if( getFileCache().isEmpty() ) {
+			final List<File> files = new ArrayList<>();
+			for( final File f: findModuleInputFiles() ) {
+				if( TaxaUtil.isTaxaFile( f ) ) files.add( f );
+			}
+			cacheInputFiles(files);
+		}
+		Log.debug(this.getClass(), "Number of input files: " + getFileCache().size() );
+		return getFileCache();
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		if ( module instanceof TaxaCountModule ) {
+			Log.debug(this.getClass(), "Module [" + ModuleUtil.displaySignature( module ) + "] is a valid input module for R_CalculateStats." );
+			return true;
+		}
+		else return false;
 	}
 
 	/**
