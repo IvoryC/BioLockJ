@@ -239,6 +239,24 @@ importLibs <- function( libs ) {
 	}
 }
 
+# Merge 2 tables.
+# Assumes that both tables have row names, which are the key. Like the output of readBljTable.
+# Output only includes the intersect of table rows.
+# Prints warning if an input table includes additional rows.
+mergeTables <- function(left, right){
+    merged = merge(left, right, by=0,)
+    row.names(merged) = merged[,"Row.names"]
+    merged = merged[, names(merged) != "Row.names"]
+    
+    if ( nrow(merged) < length( union(row.names(left), row.names(right)) ) ){
+        warning("Table merge is imperfect!")
+        warning("Ommited rows from left side table: ", paste( setdiff( row.names(left), row.names(right) ), sep=", ") )
+        warning("Ommited rows from right side table: ", paste( setdiff( row.names(right), row.names(left) ), sep=", ") )
+    }
+    
+    return( merged )
+}
+
 # Return number of metadata columns appended to sample count tables
 numMetaCols <- function() {
 	return( getProperty( "R_internal.numMetaCols" ) )
