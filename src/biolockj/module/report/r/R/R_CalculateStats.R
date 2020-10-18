@@ -7,9 +7,7 @@ main <- function() {
 
    if ( is.null(countTable) || is.null(metaTable) ) return( NULL )
    
-   merged = merge(countTable, metaTable, by=0,)
-   row.names(merged) = merged[,"Row.names"]
-   merged = merged[, names(merged) != "Row.names"]
+   merged = mergeTables(countTable, metaTable)
    
    numDataCols = ncol(countTable) - ncol(metaTable);
    measuredFeatures = names(countTable)[1:numDataCols]
