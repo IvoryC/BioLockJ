@@ -17,6 +17,7 @@ import biolockj.util.*;
  * This BioModule is used to build a JSON file (summary.json) compiled from all OTUs in the dataset.
  * 
  * @blj.web_desc Json Report
+ * @deprecated
  */
 public class JsonReport extends JavaModuleImpl {
 
