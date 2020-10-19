@@ -193,7 +193,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 			Log.error(this.getClass(), msg);
 			Throwable spot = new ModuleInputException(msg);
 			spot.printStackTrace();
-			return true;
+			//return true;
 		}
 		return false;
 	}
@@ -369,25 +369,27 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 			e.printStackTrace();
 			throw new ModuleInputException("A problem occured while determining the input sources for module: " + ModuleUtil.displaySignature( this ));
 		}
-		for (InputSource is : sources ) {
-			if ( ! is.isReady() ) throw new ModuleInputException(this, is);
-			File file = is.getFile();
-			final Collection<File> files = new ArrayList<>();
-			if ( file.isDirectory() ) {
-				files.addAll( FileUtils.listFiles( file,
-					HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE ) ) ;
-			}else if ( file.exists() ){
-				files.add( file );
-			}else {
-				throw new ModuleInputException(this, is);
+		if ( sources != null && ! sources.isEmpty() ) {
+			for (InputSource is : sources ) {
+				if ( ! is.isReady() ) throw new ModuleInputException(this, is);
+				File file = is.getFile();
+				final Collection<File> files = new ArrayList<>();
+				if ( file.isDirectory() ) {
+					files.addAll( FileUtils.listFiles( file,
+						HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE ) ) ;
+				}else if ( file.exists() ){
+					files.add( file );
+				}else {
+					throw new ModuleInputException(this, is);
+				}
+				final Collection<File> goodFiles = BioLockJUtil.removeIgnoredAndEmptyFiles( files );
+				Log.debug( getClass(), "# Files found in input source [" + is.getName() + "]: " + goodFiles.size() );
+				//suggested for child class implementations
+				//			if (goodFiles.size() == 0) {
+				//				throw new ModuleInputException(this, is);
+				//			}
+				moduleInputFiles.addAll( goodFiles );
 			}
-			final Collection<File> goodFiles = BioLockJUtil.removeIgnoredAndEmptyFiles( files );
-			Log.debug( getClass(), "# Files found in input source [" + is.getName() + "]: " + goodFiles.size() );
-			//suggested for child class implementations
-//			if (goodFiles.size() == 0) {
-//				throw new ModuleInputException(this, is);
-//			}
-			moduleInputFiles.addAll( goodFiles );
 		}
 		return moduleInputFiles;
 	}
@@ -409,8 +411,11 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 			if( previousModule == null ) {
 				Log.debug( getClass(),
 					"No prior pipeline module is a valid input module.  Return pipleline input from: " + Constants.INPUT_DIRS );
-				for (File input : Config.getExistingFileList( this, Constants.INPUT_DIRS ) ) {
-					inputSources.add( new InputSource(input) );
+				List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
+				if (inputDirs != null && ! inputDirs.isEmpty() ) {
+					for (File input : Config.getExistingFileList( this, Constants.INPUT_DIRS ) ) {
+						inputSources.add( new InputSource(input) );
+					}
 				}
 				validInput = true;
 			} else {
