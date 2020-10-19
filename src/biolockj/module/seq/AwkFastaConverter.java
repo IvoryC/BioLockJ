@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.*;
 import biolockj.*;
 import biolockj.api.ApiModule;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.SequnceFormatException;
 import biolockj.module.SeqModuleImpl;
 import biolockj.util.BioLockJUtil;
@@ -120,7 +121,7 @@ public class AwkFastaConverter extends SeqModuleImpl implements ApiModule {
 		return "cp " + source + " " + getOutputDir().getAbsolutePath() + File.separator + target;
 	}
 
-	private boolean hasGzipped() {
+	private boolean hasGzipped() throws ModuleInputException {
 		for( final File f: getInputFiles() )
 			if( SeqUtil.isGzipped( f.getName() ) ) return true;
 

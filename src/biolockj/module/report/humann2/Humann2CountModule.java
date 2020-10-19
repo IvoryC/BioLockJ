@@ -16,6 +16,7 @@ import java.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import biolockj.Log;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.implicit.parser.wgs.Humann2Parser;
@@ -34,7 +35,7 @@ public abstract class Humann2CountModule extends JavaModuleImpl {
 	}
 
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) {
 			final List<File> files = new ArrayList<>();
 			for( final File f: findModuleInputFiles() )

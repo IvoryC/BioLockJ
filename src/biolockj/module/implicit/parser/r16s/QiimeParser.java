@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.*;
 import biolockj.Constants;
 import biolockj.Log;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.node.OtuNode;
 import biolockj.node.r16s.QiimeNode;
@@ -39,7 +40,7 @@ public class QiimeParser extends ParserModuleImpl {
 	 * Get only the lowest level report since it contains taxa info for all higher OTU reports.
 	 */
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		File lowestLevelReport = null;
 		Integer levelNum = null;
 		for( final File file: super.getInputFiles() ) {

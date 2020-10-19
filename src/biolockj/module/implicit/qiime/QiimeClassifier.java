@@ -243,7 +243,7 @@ public class QiimeClassifier extends ClassifierModuleImpl {
 	}
 
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException  {
 		if( getFileCache().isEmpty() ) if( getClass().getName().equals( QiimeClassifier.class.getName() ) )
 			cacheInputFiles( findModuleInputFiles() );
 		else try {

@@ -19,6 +19,7 @@ import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.api.BuildDocs;
 import biolockj.exception.ConfigFormatException;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.SequnceFormatException;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
@@ -119,7 +120,7 @@ public class Demultiplexer extends JavaModuleImpl implements SeqModule, ApiModul
 	}
 
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) try {
 			cacheInputFiles( getSeqFiles( findModuleInputFiles() ) );
 		} catch( final SequnceFormatException ex ) {

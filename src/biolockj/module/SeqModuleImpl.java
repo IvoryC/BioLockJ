@@ -15,6 +15,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import biolockj.Log;
+import biolockj.exception.BioLockJException;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.SequnceFormatException;
 import biolockj.util.SeqUtil;
 
@@ -28,10 +30,13 @@ public abstract class SeqModuleImpl extends ScriptModuleImpl implements SeqModul
 	 * @throws SequnceFormatException 
 	 */
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) try {
 			cacheInputFiles( getSeqFiles( findModuleInputFiles() ) );
 		} catch( SequnceFormatException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch( BioLockJException e ) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
