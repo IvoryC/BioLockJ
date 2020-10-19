@@ -359,6 +359,7 @@ public class ModuleUtil {
 	 * 
 	 * @param module BioModule in question
 	 * @return TRUE if module produced exactly 1 file (metadata file)
+	 * @deprecated
 	 */
 	public static boolean isMetadataModule( final BioModule module ) {
 		boolean foundMeta = false;
