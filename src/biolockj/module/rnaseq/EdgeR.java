@@ -16,6 +16,7 @@ import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.ConfigViolationException;
 import biolockj.exception.DockerVolCreationException;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.module.report.r.R_Module;
@@ -36,7 +37,7 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 	}
 	
 	@Override
-	protected List<File> findModuleInputFiles() {
+	protected List<File> findModuleInputFiles() throws ModuleInputException {
 		List<File> allFiles = super.findModuleInputFiles();
 		List<File> inputFiles = new ArrayList<>();
 		for ( File file : allFiles ) {

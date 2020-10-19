@@ -157,7 +157,7 @@ public abstract class ScriptModuleImpl extends BioModuleImpl implements ScriptMo
 	 * Default behavior is for scripts to run indefinitely (no timeout).
 	 */
 	@Override
-	public Integer getTimeout() throws ConfigFormatException {
+	public Integer getTimeout() throws ConfigFormatException, ModuleInputException {
 		return Config.getPositiveInteger( this, Constants.SCRIPT_TIMEOUT );
 	}
 

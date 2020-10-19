@@ -26,6 +26,7 @@ import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.MetadataException;
+import biolockj.exception.ModuleInputException;
 import biolockj.Config;
 import biolockj.module.OutsidePipelineWriter;
 import biolockj.module.getData.InputDataModule;
@@ -52,7 +53,7 @@ public class SraDownload extends SequenceReadArchive implements ApiModule, Input
 	}
 
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		return (new ArrayList<File>());
 	}
 

@@ -21,6 +21,7 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.exception.BioLockJException;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.report.taxa.TaxaCountModule;
 import biolockj.util.BioLockJUtil;
@@ -58,6 +59,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		Config.requireString( this, R_PVAL_ADJ_METHOD );
 		RMetaUtil.classifyReportableMetadata( this );
 		Config.getPositiveDoubleVal( this, Constants.R_RARE_OTU_THRESHOLD );
+		getInputSources();
 	}
 	
 	@Override
@@ -117,7 +119,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	}
 	
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) {
 			final List<File> files = new ArrayList<>();
 			for( final File f: findModuleInputFiles() ) {

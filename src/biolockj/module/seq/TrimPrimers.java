@@ -324,7 +324,7 @@ public class TrimPrimers extends JavaModuleImpl implements SeqModule, ApiModule,
 		return primers;
 	}
 
-	private List<File> getFwReads( final Map<File, File> pairedReads ) {
+	private List<File> getFwReads( final Map<File, File> pairedReads ) throws ModuleInputException {
 		if( pairedReads != null ) return new ArrayList<>( pairedReads.keySet() );
 		return getInputFiles();
 	}

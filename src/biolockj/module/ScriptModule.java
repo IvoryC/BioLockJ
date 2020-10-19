@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.List;
 import biolockj.Constants;
 import biolockj.exception.ConfigFormatException;
+import biolockj.exception.ModuleInputException;
 
 /**
  * Classes that implement this interface are <br>
@@ -85,8 +86,9 @@ public interface ScriptModule extends BioModule {
 	 *
 	 * @return Number of minutes before script is cancelled due to timeout
 	 * @throws ConfigFormatException if the {@value Constants#SCRIPT_TIMEOUT} value is invalid
+	 * @throws ModuleInputException TODO
 	 */
-	public Integer getTimeout() throws ConfigFormatException;
+	public Integer getTimeout() throws ConfigFormatException, ModuleInputException;
 
 	/**
 	 * Method returns bash script lines used to build the functions called by the worker scripts.

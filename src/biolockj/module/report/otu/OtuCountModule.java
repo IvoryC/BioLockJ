@@ -15,6 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import biolockj.Log;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.util.OtuUtil;
@@ -26,7 +27,7 @@ import biolockj.util.OtuUtil;
 public abstract class OtuCountModule extends JavaModuleImpl {
 
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) {
 			final List<File> files = new ArrayList<>();
 			for( final File f: findModuleInputFiles() )

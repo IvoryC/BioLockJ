@@ -24,6 +24,7 @@ import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.ConfigViolationException;
 import biolockj.exception.DockerVolCreationException;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.RequiredRPackageException;
 import biolockj.exception.SpecialPropertiesException;
 import biolockj.module.BioModule;
@@ -135,9 +136,10 @@ public abstract class R_Module extends ScriptModuleImpl {
 	/**
 	 * The R Script should run quickly, timeout = 10 minutes appears to work well.
 	 * @throws ConfigFormatException 
+	 * @throws ModuleInputException 
 	 */
 	@Override
-	public Integer getTimeout() throws ConfigFormatException {
+	public Integer getTimeout() throws ConfigFormatException, ModuleInputException {
 		int timeout = 0;
 		if (Config.getString( this, Constants.R_TIMEOUT ) == null ||
 						Config.getIntegerProp( this, Constants.R_TIMEOUT ) == 0) {
