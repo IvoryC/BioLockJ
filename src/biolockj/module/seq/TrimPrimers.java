@@ -19,6 +19,7 @@ import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.exception.*;
 import biolockj.module.ReadCounter;
+import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
 import biolockj.module.implicit.RegisterNumReads;
@@ -555,6 +556,11 @@ public class TrimPrimers extends JavaModuleImpl implements SeqModule, ApiModule,
 	 */
 	private File getSeqPrimerFile() throws ConfigNotFoundException, ConfigPathException, DockerVolCreationException {
 		return Config.requireExistingFile( this, INPUT_TRIM_SEQ_FILE );
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof SeqModule;
 	}
 
 	private final DecimalFormat df = new DecimalFormat( "##.##" );

@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import biolockj.Log;
 import biolockj.exception.SequnceFormatException;
 import biolockj.module.ReadCounter;
+import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
 import biolockj.util.*;
@@ -124,6 +125,11 @@ public class RegisterNumReads extends JavaModuleImpl implements SeqModule, ReadC
 			depricatedReadFields.remove( name );
 			numReadFieldName = name;
 		}
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof SeqModule;
 	}
 
 	private Map<String, String> readsPerSample = new HashMap<>();

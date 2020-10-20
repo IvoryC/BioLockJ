@@ -20,6 +20,7 @@ import biolockj.api.ApiModule;
 import biolockj.exception.ConfigViolationException;
 import biolockj.exception.SequnceFormatException;
 import biolockj.module.ReadCounter;
+import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
 import biolockj.module.implicit.RegisterNumReads;
@@ -471,6 +472,11 @@ public class SeqFileValidator extends JavaModuleImpl implements SeqModule, ApiMo
 		for( int i = 0; i < stats.length; i++ )
 			stats[ i ] = 0L;
 		return stats;
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof SeqModule;
 	}
 
 	private Set<File> badFiles = new HashSet<>();
