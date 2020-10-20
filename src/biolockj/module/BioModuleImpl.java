@@ -155,7 +155,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	public List<File> getInputFiles() throws ModuleInputException {
 		if ( calledPrematurely() ) return null;
 		if( getFileCache().isEmpty() ) {
-			findModuleInputFiles();
+			cacheInputFiles ( findModuleInputFiles() );
 		}
 		return getFileCache();
 	}
@@ -298,32 +298,52 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		} else Log.info( getClass(), "Construct module [ " + ModuleUtil.displayID( this ) + " ] for existing " +
 			this.moduleDir.getAbsolutePath() );
 	}
-
+	
 	/**
-	 * When {@link #findInputSources()} is called, this method determines if the previousModule output is valid 
-	 * input for the current BioModule. The default implementation of this method returns TRUE for any module; 
-	 * UNLESS the "input.inputModule" property is specified, in which case it returns TRUE IFF the modules 
-	 * alias or class name (its default alias) matches of the strings in the "input.inputModule" list.
+	 * When {@link #findInputSources(BioModule)} is called, this method determines if the previousModule output is valid 
+	 * input for the current BioModule. The default implementation of this method returns TRUE for any module.
+	 * The default implementation of {@link #findInputSources()} calls this method through {@link #findInputSources(BioModule, boolean)} 
+	 * which allows the user to specify the input module.
 	 * 
-	 * Overriding methods should reference supper() to preserve this option for the user to explicitly specify the input module.
+	 * This is the appropriate method to override in child classes.
+	 * 
 	 */
 	@Override
 	public boolean isValidInputModule( final BioModule module ) {
+		return true;
+	}
+	
+	/**
+	 * When {@link #findInputSources(BioModule)} is called, this method determines if the previousModule output is valid 
+	 * input for the current BioModule. This is a wrapper for {@link #isValidInputModule(BioModule)} that allows the user 
+	 * to configure a specific input module using the {@link biolockj.Config} property {@value biolockj.Constants#MODULE_INPUT_PROP}.
+	 */
+	protected final boolean isValidInputModule(final BioModule module, boolean validateConfiguredInput) {
 		boolean isValid;
-		String specificInputProp = Config.getModulePropName( this, "input.inputModule" );
+		String specificInputProp = Config.getModulePropName( this, Constants.MODULE_INPUT_PROP );
 		if ( Config.getString( this, specificInputProp ) == null ) {
-			isValid = true;
+			isValid = isValidInputModule(module);
 		}else {
 			boolean matched = false; 
 			for (String target : Config.getList( this, specificInputProp ) ) {
 				if ( ModuleUtil.displayName( module ).equals( target ) ||
 								module.getClass().getSimpleName().equals( target ) ) matched = true;
 			}
-			isValid = matched;
+			if (validateConfiguredInput) {
+				isValid = matched && isValidInputModule(module);
+			}else {
+				isValid = matched;
+				if (matched && !isValidInputModule(module)) {
+					Log.warn(this.getClass(), "Module " + ModuleUtil.displaySignature( this ) 
+					+ " is being forced to use an input module that is NOT considered a valid input." + System.lineSeparator()
+					+ "See configured property [ " + specificInputProp + " = " + Config.getString( this, specificInputProp ) + " ]" + System.lineSeparator()
+					+ "And make sure you know what you are doing!!!");
+				}
+			}
 		}
 		return isValid;
 	}
-
+	
 	@Override
 	public String toString() {
 		String val = getClass().getName();
@@ -421,7 +441,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 			} else {
 				Log.debug( getClass(),
 					"Check previous module for valid input type: " + ModuleUtil.displaySignature( previousModule ) );
-				validInput = isValidInputModule( previousModule );
+				validInput = isValidInputModule( previousModule, true );
 				if( validInput ) {
 					InputSource input = new InputSource(previousModule);
 					Log.debug( getClass(),
@@ -551,7 +571,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * BioLockJ log file extension constant: {@value #LOG_EXT}
 	 */
 	public static final String LOG_EXT = Constants.LOG_EXT;
-
+	
 	/**
 	 * BioLockJ PDF file extension constant: {@value #PDF_EXT}
 	 */
