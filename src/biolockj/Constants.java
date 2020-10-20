@@ -51,6 +51,7 @@ public class Constants {
 		Properties.registerProp( INPUT_TRIM_PREFIX, Properties.STRING_TYPE, INPUT_TRIM_PREFIX_DESC );
 		Properties.registerProp( INPUT_TRIM_SUFFIX, Properties.STRING_TYPE, INPUT_TRIM_SUFFIX_DESC );
 		Properties.registerProp( INPUT_TYPES, Properties.LIST_TYPE, INPUT_TYPES_DESC);
+		Properties.registerProp( MODULE_INPUT_PROP, Properties.LIST_TYPE, MODULE_INPUT_PROP_DESC );
 		Properties.registerProp( QIIME_ALPHA_DIVERSITY_METRICS, Properties.LIST_TYPE, "alpha diversity metrics to calculate through qiime; For complete list of skbio.diversity.alpha options, see <a href= \"http://scikit-bio.org/docs/latest/generated/skbio.diversity.alpha.html\" target=\"_top\">http://scikit-bio.org/docs/latest/generated/skbio.diversity.alpha.html</a>" );
 		Properties.registerProp( RM_TEMP_FILES, Properties.BOOLEAN_TYPE, RM_TEMP_FILES_DESC );
 		
@@ -580,6 +581,12 @@ public class Constants {
 	 */
 	public static final String MASTER_PREFIX = "MASTER_";
 
+	/**
+	 * {@link biolockj.Config} List property; {@value #INPUT_MODULE_PROP_DESC}
+	 */
+	public static final String MODULE_INPUT_PROP = "module.inputModule";
+	private static final String MODULE_INPUT_PROP_DESC = "Used exclusively in its module-specific form, specify the name or alias of the module to allow as input to a specific module";
+	
 	/**
 	 * BioLockJ SEQ module package: {@value #MODULE_SEQ_PACKAGE}
 	 */
