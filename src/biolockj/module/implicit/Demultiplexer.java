@@ -14,13 +14,13 @@ package biolockj.module.implicit;
 import java.io.*;
 import java.util.*;
 import biolockj.*;
-import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.api.BuildDocs;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.SequnceFormatException;
+import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
 import biolockj.util.*;
@@ -609,6 +609,11 @@ public class Demultiplexer extends JavaModuleImpl implements SeqModule, ApiModul
 		for( final String line: lines )
 			writer.write( line + RETURN );
 		writer.close();
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof SeqModule;
 	}
 
 	private long numTotalFwReads = 0L;

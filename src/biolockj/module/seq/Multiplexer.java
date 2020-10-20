@@ -263,6 +263,11 @@ public class Multiplexer extends JavaModuleImpl implements SeqModule, ApiModule 
 		for( final String path: this.muxFiles )
 			new File( path ).delete();
 	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof SeqModule;
+	}
 
 	private final Map<String, Long> fwMap = new HashMap<>();
 	private final Set<String> muxFiles = new HashSet<>();

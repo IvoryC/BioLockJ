@@ -20,6 +20,7 @@ import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.SequnceFormatException;
+import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
 import biolockj.module.implicit.RegisterNumReads;
@@ -236,6 +237,11 @@ public class RarefySeqs extends JavaModuleImpl implements SeqModule, ApiModule {
 		}
 
 		return null;
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof SeqModule;
 	}
 
 	private String otuColName = null;
