@@ -69,15 +69,6 @@ public abstract class JavaModuleImpl extends ScriptModuleImpl implements JavaMod
 		return lines;
 	}
 
-	/**
-	 * If module is a {@link biolockj.module.SeqModule} input must contain sequence data.
-	 */
-	@Override
-	public boolean isValidInputModule( final BioModule module ) {
-		if( this instanceof SeqModule ) return SeqUtil.isSeqModule( module );
-		return super.isValidInputModule( module );
-	}
-
 	@Override
 	public void moduleComplete() throws Exception {
 		markStatus( Constants.SCRIPT_SUCCESS );

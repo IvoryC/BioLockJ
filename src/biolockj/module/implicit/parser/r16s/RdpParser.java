@@ -16,6 +16,8 @@ import java.io.File;
 import biolockj.*;
 import biolockj.api.ApiModule;
 import biolockj.exception.BioLockJException;
+import biolockj.module.BioModule;
+import biolockj.module.classifier.r16s.RdpClassifier;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.node.OtuNode;
 import biolockj.node.r16s.RdpNode;
@@ -50,7 +52,9 @@ public class RdpParser extends ParserModuleImpl implements ApiModule{
 	 */
 	@Override
 	public void parseSamples() throws Exception {
+		Log.debug(this.getClass(), "There are [" + getInputFiles().size() + "] input files.");
 		for( final File file: getInputFiles() ) {
+			Log.debug(this.getClass(), "Parsing file: " + file.getAbsolutePath() );
 			final BufferedReader reader = BioLockJUtil.getFileReader( file );
 			Log.debug(this.getClass(), "Parsing file: " + file.getName());
 			String sampleId = SeqUtil.getSampleId( file );
@@ -94,6 +98,11 @@ public class RdpParser extends ParserModuleImpl implements ApiModule{
 	@Override
 	public String getCitationString() {
 		return "Module developed by Mike Sioda" + System.lineSeparator() + "BioLockJ " + BioLockJUtil.getVersion();
+	}
+
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof RdpClassifier ;
 	}
 
 	/**

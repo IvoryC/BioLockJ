@@ -17,7 +17,9 @@ import java.util.*;
 import biolockj.Constants;
 import biolockj.Log;
 import biolockj.exception.ModuleInputException;
+import biolockj.module.BioModule;
 import biolockj.module.implicit.parser.ParserModuleImpl;
+import biolockj.module.implicit.qiime.QiimeClassifier;
 import biolockj.node.OtuNode;
 import biolockj.node.r16s.QiimeNode;
 import biolockj.util.BioLockJUtil;
@@ -269,6 +271,11 @@ public class QiimeParser extends ParserModuleImpl {
 			return MetaUtil.getRecord( qiimeId ).get( demuxIndex - 1 ).replaceAll( "." + Constants.FASTA, "" );
 
 		return qiimeId;
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof QiimeClassifier ;
 	}
 
 	/**
