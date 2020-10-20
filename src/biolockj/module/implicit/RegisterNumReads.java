@@ -20,6 +20,7 @@ import biolockj.module.ReadCounter;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
+import biolockj.module.seq.SequenceOutputModule;
 import biolockj.util.*;
 
 /**
@@ -129,7 +130,7 @@ public class RegisterNumReads extends JavaModuleImpl implements SeqModule, ReadC
 	
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof SeqModule;
+		return module instanceof SequenceOutputModule;
 	}
 
 	private Map<String, String> readsPerSample = new HashMap<>();

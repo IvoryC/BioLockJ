@@ -14,7 +14,6 @@ package biolockj.module;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import biolockj.Log;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.SequnceFormatException;

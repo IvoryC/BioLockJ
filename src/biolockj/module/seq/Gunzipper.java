@@ -25,7 +25,7 @@ import biolockj.util.SeqUtil;
  * 
  * @blj.web_desc Decompress .gz Files
  */
-public class Gunzipper extends SeqModuleImpl implements ApiModule {
+public class Gunzipper extends SeqModuleImpl implements ApiModule, SequenceOutputModule {
 
 	public Gunzipper() {
 		addGeneralProperty( Constants.EXE_GZIP );

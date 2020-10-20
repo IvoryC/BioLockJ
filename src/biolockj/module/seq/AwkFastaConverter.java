@@ -26,7 +26,7 @@ import biolockj.util.SeqUtil;
  * 
  * @blj.web_desc Awk Fastq to Fasta Converter
  */
-public class AwkFastaConverter extends SeqModuleImpl implements ApiModule {
+public class AwkFastaConverter extends SeqModuleImpl implements ApiModule, SequenceOutputModule {
 	
 	public AwkFastaConverter(){
 		addGeneralProperty( Constants.EXE_GZIP );

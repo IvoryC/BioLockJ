@@ -31,7 +31,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Trim Primers
  */
-public class TrimPrimers extends JavaModuleImpl implements SeqModule, ApiModule, ReadCounter {
+public class TrimPrimers extends JavaModuleImpl implements SeqModule, SequenceOutputModule, ApiModule, ReadCounter {
 	
 	public TrimPrimers() {
 		super();
@@ -560,7 +560,7 @@ public class TrimPrimers extends JavaModuleImpl implements SeqModule, ApiModule,
 	
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof SeqModule;
+		return module instanceof SequenceOutputModule;
 	}
 
 	private final DecimalFormat df = new DecimalFormat( "##.##" );

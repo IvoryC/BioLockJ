@@ -30,7 +30,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Knead Data Sanitizer
  */
-public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModule {
+public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModule, SequenceOutputModule {
 
 	public KneadData() {
 		super();

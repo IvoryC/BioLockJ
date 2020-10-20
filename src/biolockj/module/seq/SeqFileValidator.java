@@ -476,7 +476,7 @@ public class SeqFileValidator extends JavaModuleImpl implements SeqModule, ApiMo
 	
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof SeqModule;
+		return module instanceof SequenceOutputModule;
 	}
 
 	private Set<File> badFiles = new HashSet<>();
