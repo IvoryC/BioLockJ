@@ -31,7 +31,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Merge Reads with PEAR
  */
-public class PearMergeReads extends SeqModuleImpl implements ApiModule, ReadCounter {
+public class PearMergeReads extends SeqModuleImpl implements ApiModule, SequenceOutputModule, ReadCounter {
 	
 	public PearMergeReads() {
 		super();

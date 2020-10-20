@@ -30,7 +30,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Multiplexer
  */
-public class Multiplexer extends JavaModuleImpl implements SeqModule, ApiModule {
+public class Multiplexer extends JavaModuleImpl implements SeqModule, SequenceOutputModule, ApiModule {
 
 	public Multiplexer() {
 		super();
@@ -266,7 +266,7 @@ public class Multiplexer extends JavaModuleImpl implements SeqModule, ApiModule 
 	
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof SeqModule;
+		return module instanceof SequenceOutputModule;
 	}
 
 	private final Map<String, Long> fwMap = new HashMap<>();

@@ -23,6 +23,7 @@ import biolockj.exception.SequnceFormatException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
+import biolockj.module.seq.SequenceOutputModule;
 import biolockj.util.*;
 
 /**
@@ -45,7 +46,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Demultiplexer
  */
-public class Demultiplexer extends JavaModuleImpl implements SeqModule, ApiModule {
+public class Demultiplexer extends JavaModuleImpl implements SeqModule, SequenceOutputModule, ApiModule {
 	
 	public Demultiplexer() throws API_Exception {
 		super();
@@ -613,7 +614,7 @@ public class Demultiplexer extends JavaModuleImpl implements SeqModule, ApiModul
 	
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof SeqModule;
+		return module instanceof SequenceOutputModule;
 	}
 
 	private long numTotalFwReads = 0L;

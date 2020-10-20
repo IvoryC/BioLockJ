@@ -32,7 +32,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Rarefy Seqs
  */
-public class RarefySeqs extends JavaModuleImpl implements SeqModule, ApiModule {
+public class RarefySeqs extends JavaModuleImpl implements SeqModule, SequenceOutputModule, ApiModule {
 
 	public RarefySeqs() {
 		super();
@@ -241,7 +241,7 @@ public class RarefySeqs extends JavaModuleImpl implements SeqModule, ApiModule {
 	
 	@Override
 	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof SeqModule;
+		return module instanceof SequenceOutputModule;
 	}
 
 	private String otuColName = null;
