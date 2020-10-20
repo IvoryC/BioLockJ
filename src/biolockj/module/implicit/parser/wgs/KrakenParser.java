@@ -15,6 +15,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import biolockj.*;
 import biolockj.api.ApiModule;
+import biolockj.module.BioModule;
+import biolockj.module.classifier.wgs.KrakenClassifier;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.node.*;
 import biolockj.node.wgs.KrakenNode;
@@ -93,6 +95,11 @@ public class KrakenParser extends ParserModuleImpl implements ApiModule {
 		} finally {
 			if( reader != null ) reader.close();
 		}
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof KrakenClassifier ;
 	}
 
 	@Override

@@ -16,6 +16,8 @@ import java.io.File;
 import java.util.*;
 import biolockj.*;
 import biolockj.exception.OtuFileException;
+import biolockj.module.BioModule;
+import biolockj.module.classifier.wgs.Kraken2Classifier;
 import biolockj.node.*;
 import biolockj.node.wgs.Kraken2Node;
 import biolockj.util.*;
@@ -196,6 +198,11 @@ public class Kraken2Parser extends KrakenParser {
 		levels.remove( TaxaUtil.bottomTaxaLevel() );
 		Collections.reverse( levels );
 		return levels;
+	}
+	
+	@Override
+	public boolean isValidInputModule( BioModule module ) {
+		return module instanceof Kraken2Classifier ;
 	}
 
 }
