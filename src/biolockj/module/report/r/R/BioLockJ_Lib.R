@@ -112,9 +112,11 @@ getMasterConfigFile <- function() {
 	propFile = vector( mode="character" )
 	propFile = list.files(getPipelineDir(), pattern="MASTER.*.properties", full.names=TRUE )
 	if( length( propFile ) == 0 ) {
+	    showContextWarning()
 		stop( "MASTER property file not found!" )
 	}
 	if( length( propFile ) > 1 ) {
+	    showContextWarning()
 	  stop( c("MASTER property file not found; ambiguous file choices: ", paste(propFile, sep=", ")))
 	}
 	return( propFile )
@@ -473,6 +475,12 @@ getAllUniqueColors <- function( df ){
   keys = paste0(f, ":", allLevels)
   newRows = data.frame(key=keys, color=boxColors)
   return( rbind(df, newRows) )
+}
+
+showContextWarning <- function(){
+    message("This script is designed to run within a pipeline context.")
+    message("That is, it expects the current working directory to be a subdirectory of a module directory in a BioLockJ pipeline,")
+    message("and it expects that the directory above the module directory has a MASTER_*.properties file.")
 }
 
 
