@@ -345,7 +345,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	}
 	
 	public boolean isValidInputDir(File dir) {
-		return true;
+		return dir != null && dir.isDirectory() && dir.listFiles().length > 0;
 	}
 	
 	/**
