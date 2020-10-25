@@ -25,9 +25,9 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.api.BuildDocs;
-import biolockj.exception.ConfigFormatException;
+import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigPathException;
-import biolockj.exception.DockerVolCreationException;
+import biolockj.module.InputSource;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.module.getData.InputDataModule;
 import biolockj.util.BioLockJUtil;
@@ -135,10 +135,14 @@ public class GenMod extends ScriptModuleImpl implements ApiModule, InputDataModu
 		}
 	}
 	
-//	@Override
-//	public String getDataSource() {
-//		return "Completely open-ended; depends on user-supplied script.";
-//	}
+	/**
+	 * Completely open-ended. User-supplied script must find any input it needs.
+	 */
+	@Override
+	protected List<InputSource> findInputSources() throws BioLockJException {
+		return new ArrayList<InputSource>();
+	}
+	
 	@Override
 	public Set<String> getInputDataTypes() {
 		return new TreeSet<String>();

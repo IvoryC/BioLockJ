@@ -344,6 +344,45 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		return isValid;
 	}
 	
+	public boolean isValidInputDir(File dir) {
+		return true;
+	}
+	
+	/**
+	 * When {@link #findInputSources} is called, this method determines if a given input directory is a valid 
+	 * input for the current BioModule. This is a wrapper for {@link #isValidInputDir(File)} that allows the user 
+	 * to configure a specific input directory using the {@link biolockj.Config} property {@value biolockj.Constants#INPUT_DIRS}.
+	 * @param dir The directory to consider
+	 * @param validateConfiguredInput Should the input be validated even if it is specified using the module-specific input property. If false, the user can over-ride the modules built-in methods for determining appropriate inputs.
+	 */
+	public boolean isValidInputDir(File dir, boolean validateConfiguredInput) {
+		boolean isValid;
+		String specificInputProp = Config.getModulePropName( this, Constants.INPUT_DIRS );
+		if ( Config.getString( this, specificInputProp ) == null ) {
+			isValid = isValidInputDir(dir);
+		}else {
+			boolean matched = false; 
+			for (String target : Config.getList( this, specificInputProp ) ) {
+				File targetDir = new File(target);
+				if ( dir.getAbsolutePath().equals( targetDir.getAbsolutePath() ) ) {
+					matched = true;
+				}
+			}
+			if (validateConfiguredInput) {
+				isValid = matched && isValidInputDir(dir);
+			}else {
+				isValid = matched;
+				if (matched && !isValidInputDir(dir)) {
+					Log.warn(this.getClass(), "Module " + ModuleUtil.displaySignature( this ) 
+					+ " is being forced to use an input folder that is NOT considered a valid input." + System.lineSeparator()
+					+ "See configured property [ " + specificInputProp + " = " + Config.getString( this, specificInputProp ) + " ]" + System.lineSeparator()
+					+ "And make sure you know what you are doing!!!");
+				}
+			}
+		}
+		return isValid;
+	}
+	
 	@Override
 	public String toString() {
 		String val = getClass().getName();
@@ -434,7 +473,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 				List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
 				if (inputDirs != null && ! inputDirs.isEmpty() ) {
 					for (File input : Config.getExistingFileList( this, Constants.INPUT_DIRS ) ) {
-						inputSources.add( new InputSource(input) );
+						if (isValidInputDir(input)) inputSources.add( new InputSource(input) );
 					}
 				}
 				validInput = true;
@@ -451,6 +490,10 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 					previousModule = ModuleUtil.getPreviousModule( previousModule );
 				}
 			}
+		if(inputSources.isEmpty()) {
+			Log.warn(this.getClass(), "No suitable input sources were found!");
+			throw new PipelineFormationException("Failed to find valid input source for module [" + ModuleUtil.displaySignature( this ) + "].");
+		}
 		return inputSources;
 	}
 
