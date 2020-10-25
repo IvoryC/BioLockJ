@@ -11,10 +11,12 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
+import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.SpecialPropertiesException;
+import biolockj.module.InputSource;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.util.BioLockJUtil;
 
@@ -109,6 +111,14 @@ public class Rmarkdown extends ScriptModuleImpl implements ApiModule {
 					"Copied resource " + file.getAbsolutePath() + " to module resource folder: " + getResourceDir() );
 			}
 		}
+	}
+	
+	/**
+	 * Completely open-ended. User-supplied markdown must find any input it needs.
+	 */
+	@Override
+	protected List<InputSource> findInputSources() throws BioLockJException {
+		return new ArrayList<InputSource>();
 	}
 	
 	@Override
