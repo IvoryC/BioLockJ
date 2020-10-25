@@ -200,8 +200,8 @@ do_wilcox_test <- function( countTable, feature, att, vals ) {
    x = countTable[att==vals[1], feature]
    y = countTable[att==vals[2], feature]
    values = c(x, y)
-   group = as.factor(rep( c("x", "y"), c(length(x), length(y)) ) )
-   return( wilcox_test( values ~ group ) )
+   group = as.factor( c( rep( "x", length(x)), rep( "y", length(y)) ) )
+   return( coin::wilcox_test( values ~ group ) )
 }
 
 message("Running R version: ", R.Version()$version.string)
