@@ -82,6 +82,8 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		Map<String, File> countTableByLevel = getFilesByLevel( getInputFiles() );
 		getFunctionLib();
 		File rscript = getModuleRScript();
+		String metaFilePath = MetaUtil.getMetadata().getAbsolutePath();
+		Log.debug(this.getClass(), "Using metadata file: " + metaFilePath);
 		for (String level : Config.getList( this, Constants.REPORT_TAXONOMY_LEVELS )) {
 			Log.debug(this.getClass(), "Building command for taxonomic level: " + level);
 			if ( countTableByLevel.get( level ) != null ) {
@@ -90,7 +92,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 				inner.add( Config.getExe( this, Constants.EXE_RSCRIPT ) + " " + rscript.getAbsolutePath() 
 					+ " " + level 
 					+ " " + countTableByLevel.get( level ).getAbsolutePath() 
-					+ " " + MetaUtil.getMetadata().getAbsolutePath() );
+					+ " " + metaFilePath );
 				outer.add( inner );
 			}else {
 				Log.info(this.getClass(), "No input file found for level [" + level + "].");
@@ -101,7 +103,6 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	
 	private Map<String, File> getFilesByLevel( final List<File> files ) throws BioLockJException {
 		final Map<String, File> levelFiles = new HashMap<>();
-		Log.debug(this.getClass(), "Inside the getFilesByLevel method.");
 		Log.debug(this.getClass(), "Number files passed in as files list: " + files.size());
 		Log.debug(this.getClass(), "Taxa levels to search for are: " + BioLockJUtil.getCollectionAsString( TaxaUtil.getTaxaLevels()) );
 		for( final String level: TaxaUtil.getTaxaLevels() ) {
@@ -135,6 +136,18 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		}
 		Log.debug(this.getClass(), "Number of input files: " + getFileCache().size() );
 		return getFileCache();
+	}
+	
+	@Override
+	public boolean isValidInputDir( File dir ) {
+		boolean hasTaxaFiles = false;
+		for( final File f: dir.listFiles() ) {
+			if( TaxaUtil.isTaxaFile( f ) ) {
+				hasTaxaFiles = true;
+				Log.info(this.getClass(), dir.getName() + " is a valid input dir because the file [" + f.getName() + "] is a taxa table file.");
+			}
+		}
+		return hasTaxaFiles;
 	}
 	
 	@Override
