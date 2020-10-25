@@ -376,31 +376,31 @@ public final class RMetaUtil {
 	 * {@link biolockj.Config} List property: {@value #R_EXCLUDE_FIELDS}<br>
 	 * R reports must contain at least one valid nominal or numeric metadata field.
 	 */
-	protected static final String R_EXCLUDE_FIELDS = "r.excludeFields";
+	public static final String R_EXCLUDE_FIELDS = "r.excludeFields";
 
 	/**
 	 * {@link biolockj.Config} List property: {@value #R_MDS_REPORT_FIELDS}<br>
 	 * Fields listed here must exist in the metadata file.
 	 */
-	protected static final String R_MDS_REPORT_FIELDS = "r_PlotMds.reportFields";
+	public static final String R_MDS_REPORT_FIELDS = "r_PlotMds.reportFields";
 
 	/**
 	 * {@link biolockj.Config} List property: {@value #R_NOMINAL_FIELDS}<br>
 	 * Override default property type by explicitly listing it as nominal.
 	 */
-	protected static final String R_NOMINAL_FIELDS = "r.nominalFields";
+	public static final String R_NOMINAL_FIELDS = "r.nominalFields";
 
 	/**
 	 * {@link biolockj.Config} List property: {@value #R_NUMERIC_FIELDS}<br>
 	 * Override default property type by explicitly listing it as numeric.
 	 */
-	protected static final String R_NUMERIC_FIELDS = "r.numericFields";
+	public static final String R_NUMERIC_FIELDS = "r.numericFields";
 
 	/**
 	 * {@link biolockj.Config} List property: {@value #R_REPORT_FIELDS}<br>
 	 * R reports must contain at least one valid field.
 	 */
-	protected static final String R_REPORT_FIELDS = "r.reportFields";
+	public static final String R_REPORT_FIELDS = "r.reportFields";
 
 	private static Set<String> binaryFields = null;
 	private static Set<String> mdsFields = null;
