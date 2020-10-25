@@ -19,6 +19,7 @@ import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Log;
 import biolockj.Properties;
+import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
@@ -40,6 +41,10 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	public R_CalculateStats() {
 		super();
 		addGeneralProperty( Constants.R_RARE_OTU_THRESHOLD );
+		addGeneralProperty( MetaUtil.META_FILE_PATH, "(required) Table whose columns (all columns, or those given through *" + RMetaUtil.R_REPORT_FIELDS + "*) which give grouping/design for statistical tests."  );
+		addGeneralProperty( RMetaUtil.R_EXCLUDE_FIELDS, "(optional)" );
+		addGeneralProperty( RMetaUtil.R_NOMINAL_FIELDS, "(optional)" );
+		addGeneralProperty( RMetaUtil.R_NUMERIC_FIELDS, "(optional)" );
 		addNewProperty( R_ADJ_PVALS_SCOPE, Properties.STRING_TYPE, "defines R p.adjust( n ) parameter is calculated. Options:  GLOBAL, LOCAL, TAXA, ATTRIBUTE" );
 		addNewProperty( R_PVAL_ADJ_METHOD, Properties.STRING_TYPE, "the p.adjust \"method\" parameter" );
 	}
@@ -60,6 +65,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		RMetaUtil.classifyReportableMetadata( this );
 		Config.getPositiveDoubleVal( this, Constants.R_RARE_OTU_THRESHOLD );
 		getInputSources();
+		//TODO: if inputSource is not a module, check that the folder does contain taxa tables.
 	}
 	
 	@Override
@@ -290,6 +296,11 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 
 	@Override
 	public String getDescription() {
+		return "Generate a basic summary statistics table.";
+	}
+	
+	@Override
+	public String getDetails() throws API_Exception {
 		return "Generate a summary statistics table with [adjusted and unadjusted] [parameteric and non-parametirc] p-values and r<sup>2</sup> values for each reportable metadata field and each *report.taxonomyLevel* configured.";
 	}
 
