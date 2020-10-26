@@ -11,12 +11,12 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
+import biolockj.dataType.InputSource;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.SpecialPropertiesException;
-import biolockj.module.InputSource;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.util.BioLockJUtil;
 

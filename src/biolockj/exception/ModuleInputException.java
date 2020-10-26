@@ -3,8 +3,8 @@ package biolockj.exception;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
+import biolockj.dataType.InputSource;
 import biolockj.module.BioModule;
-import biolockj.module.InputSource;
 import biolockj.util.ModuleUtil;
 
 /**
