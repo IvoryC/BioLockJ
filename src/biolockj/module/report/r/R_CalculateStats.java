@@ -21,15 +21,20 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
+import biolockj.dataType.DataUnit;
+import biolockj.dataType.InputSource;
+import biolockj.dataType.MetaField;
 import biolockj.exception.BioLockJException;
+import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ModuleInputException;
+import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
 import biolockj.module.report.taxa.TaxaCountModule;
+import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.MetaUtil;
 import biolockj.util.ModuleUtil;
 import biolockj.util.RMetaUtil;
-import biolockj.util.TaxaUtil;
 
 /**
  * This BioModule is used to build the R script used to generate taxonomy statistics and plots.
@@ -42,10 +47,11 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		super();
 		addGeneralProperty( Constants.R_RARE_OTU_THRESHOLD );
 		addGeneralProperty( MetaUtil.META_FILE_PATH, "(required) Table whose columns (all columns, or those given through *" + RMetaUtil.R_REPORT_FIELDS + "*) which give grouping/design for statistical tests."  );
+		addGeneralProperty( RMetaUtil.R_REPORT_FIELDS, "(recommended)" );
 		addGeneralProperty( RMetaUtil.R_EXCLUDE_FIELDS, "(optional)" );
 		addGeneralProperty( RMetaUtil.R_NOMINAL_FIELDS, "(optional)" );
 		addGeneralProperty( RMetaUtil.R_NUMERIC_FIELDS, "(optional)" );
-		addNewProperty( R_ADJ_PVALS_SCOPE, Properties.STRING_TYPE, "defines R p.adjust( n ) parameter is calculated. Options:  GLOBAL, LOCAL, TAXA, ATTRIBUTE" );
+		addNewProperty( R_ADJ_PVALS_SCOPE, Properties.STRING_TYPE, "defines R p.adjust( n ) parameter is calculated. Options:  " + ADJ_PVAL_ATTRIBUTE + ", " + ADJ_PVAL_LOCAL + ", " + ADJ_PVAL_TAXA + ", " + ADJ_PVAL_ATTRIBUTE + ".");
 		addNewProperty( R_PVAL_ADJ_METHOD, Properties.STRING_TYPE, "the p.adjust \"method\" parameter" );
 	}
 
@@ -60,12 +66,94 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	@Override
 	public void checkDependencies() throws Exception {
 		super.checkDependencies();
-		Config.requireString( this, R_ADJ_PVALS_SCOPE );
+		String scope = Config.requireString( this, R_ADJ_PVALS_SCOPE );
+		if ( !scope.equals( ADJ_PVAL_ATTRIBUTE ) && !scope.equals( ADJ_PVAL_GLOBAL ) 
+						&& !scope.equals( ADJ_PVAL_LOCAL ) && !scope.equals( ADJ_PVAL_TAXA ) ) throw new ConfigFormatException( R_ADJ_PVALS_SCOPE, getDescription(R_ADJ_PVALS_SCOPE) );
 		Config.requireString( this, R_PVAL_ADJ_METHOD );
 		RMetaUtil.classifyReportableMetadata( this );
 		Config.getPositiveDoubleVal( this, Constants.R_RARE_OTU_THRESHOLD );
 		getInputSources();
-		//TODO: if inputSource is not a module, check that the folder does contain taxa tables.
+	}
+	
+	/**
+	 * We expect to have exactly one source for taxa tables (there may be multiple tables),
+	 * and we expect to have one or more input sources for metadata.
+	 */
+	@Override
+	protected List<InputSource> findInputSources() throws BioLockJException {
+		List<InputSource> inputs = new ArrayList<>();
+		try {
+			inputs.addAll( super.findInputSources() );
+		}catch(PipelineFormationException ex) {
+			Log.error(this.getClass(), "Failed to find Taxa tables for module [" + ModuleUtil.displaySignature( this ) + "]." );
+		}
+		if (inputs.isEmpty()) {
+			throw new PipelineFormationException( "Failed to find Taxa tables for module [" + ModuleUtil.displaySignature( this ) + "]." );
+		}else if (inputs.size() > 1 ) {
+			throw new PipelineFormationException( "Found multiple valid input dirs for [" + ModuleUtil.displaySignature( this ) + "]." );
+		}
+		for (String metaField : selectMetaFields() ) {
+			inputs.add( findMetaSource( metaField ) );
+		}
+		return inputs;
+	}
+	
+	/**
+	 * Determine the fields that were given in the meta data.
+	 * @return
+	 * @throws BioLockJException
+	 */
+	private Set<String> selectMetaFields() throws BioLockJException{
+		RMetaUtil.classifyReportableMetadata( this );
+		Set<String> fields = new HashSet<>();
+		fields.addAll( Config.getList( null, RMetaUtil.R_REPORT_FIELDS ) );
+		if (fields.isEmpty()) {
+			fields.addAll( Config.getList( this, RMetaUtil.R_NOMINAL_FIELDS ) );
+			fields.addAll( Config.getList( this, RMetaUtil.R_NUMERIC_FIELDS ) );
+			fields.addAll( RMetaUtil.getBinaryFields( null ) );
+		}
+		fields.removeAll( Config.getList( this, RMetaUtil.R_EXCLUDE_FIELDS ) );
+		return fields;
+	}
+	
+	/**
+	 * This mimics the logic in findInputSource in BioModuleImpl. Recursively look back through the pipeline modules,
+	 * and eventually into the original metadata file, looking for a source to credit for the meta data field of
+	 * interest.
+	 * 
+	 * @param field
+	 * @return
+	 * @throws PipelineFormationException
+	 */
+	private InputSource findMetaSource(String field) throws PipelineFormationException {
+		boolean foundSource = false;
+		BioModule prevMod = ModuleUtil.getPreviousModule( this );
+		InputSource in = null;
+		while( !foundSource ) {
+			if (prevMod == null) {
+				if ( MetaUtil.hasColumn( field ) ) {
+					foundSource = true;
+					in = new InputSource(null, field);
+				}else {
+					throw new PipelineFormationException( "Metadata field [" + field + " is not found in current metadata, nor expected from current modules." );
+				}
+			}else {
+				Collection<DataUnit> outs = prevMod.getOutputTypes();
+				if ( !outs.isEmpty() ) {
+					for ( DataUnit out : outs ) {
+						if (out instanceof MetaField) {
+							String outName = ((MetaField) out).getName();
+							if (outName.equals(field)) {
+								foundSource = true;
+								in = new InputSource(prevMod, field);
+							}
+						}
+					}
+				}
+			}
+			prevMod = ModuleUtil.getPreviousModule( prevMod );
+		}
+		return in;
 	}
 	
 	@Override
@@ -79,19 +167,21 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	@Override
 	public List<List<String>> buildScript( final List<File> files ) throws Exception {
 		List<List<String>> outer = new ArrayList<>();
-		Map<String, File> countTableByLevel = getFilesByLevel( getInputFiles() );
+		TaxaTable tt = new TaxaTable();
+		tt.setFiles( files );
+		//Map<String, File> countTableByLevel = getFilesByLevel( files );
 		getFunctionLib();
 		File rscript = getModuleRScript();
 		String metaFilePath = MetaUtil.getMetadata().getAbsolutePath();
 		Log.debug(this.getClass(), "Using metadata file: " + metaFilePath);
 		for (String level : Config.getList( this, Constants.REPORT_TAXONOMY_LEVELS )) {
 			Log.debug(this.getClass(), "Building command for taxonomic level: " + level);
-			if ( countTableByLevel.get( level ) != null ) {
+			if ( tt.getTaxaTableFile( level ) != null ) {
 				List<String> inner = new ArrayList<>();
 				//TODO add a call to the ScriptBuilder to get the ignored-new-line character/string
 				inner.add( Config.getExe( this, Constants.EXE_RSCRIPT ) + " " + rscript.getAbsolutePath() 
 					+ " " + level 
-					+ " " + countTableByLevel.get( level ).getAbsolutePath() 
+					+ " " + tt.getTaxaTableFile( level ).getAbsolutePath() 
 					+ " " + metaFilePath );
 				outer.add( inner );
 			}else {
@@ -101,48 +191,30 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		return outer;
 	}
 	
-	private Map<String, File> getFilesByLevel( final List<File> files ) throws BioLockJException {
-		final Map<String, File> levelFiles = new HashMap<>();
-		Log.debug(this.getClass(), "Number files passed in as files list: " + files.size());
-		Log.debug(this.getClass(), "Taxa levels to search for are: " + BioLockJUtil.getCollectionAsString( TaxaUtil.getTaxaLevels()) );
-		for( final String level: TaxaUtil.getTaxaLevels() ) {
-			for( final File file: files ) {
-				if( file.getName().contains( "_" + level + "." ) ) {
-					File levelFile = levelFiles.get( level );
-					if( levelFile != null ) {
-						//CalculateStats expects to find no more than one file per level
-						Log.error(this.getClass(), "Found multiple input files for level [" + level + "].");
-						Log.error(this.getClass(), "Determined level for file [" + levelFile + "] to be: " + level + ".");
-						Log.error(this.getClass(), "Determined level for file [" + file + "] to be: " + level + ".");
-						throw new BioLockJException("Found multiple input files for level [" + level + "].");
-					}
-					levelFiles.put(level, file);
-					Log.debug(this.getClass(), "Determined file for level [" + level + "] is: " + file);
-				}
-			}
-		}
-		Log.debug(this.getClass(), "Found input files for levels: " + BioLockJUtil.getCollectionAsString( levelFiles.keySet() ));
-		return levelFiles;
-	}
-	
 	@Override
-	public List<File> getInputFiles() throws ModuleInputException {
-		if( getFileCache().isEmpty() ) {
-			final List<File> files = new ArrayList<>();
-			for( final File f: findModuleInputFiles() ) {
-				if( TaxaUtil.isTaxaFile( f ) ) files.add( f );
+	protected List<File> findModuleInputFiles() throws ModuleInputException  {
+		List<File> files = new ArrayList<>();
+		// there may be multiple tables, but they are expected to all come from one source.
+		InputSource taxaTableSource;
+		try {
+			taxaTableSource = getInputSources().get(0);
+			for( final File f: taxaTableSource.getFile().listFiles() ) {
+				if( TaxaTable.isTaxaTableFile( f ) ) files.add( f );
 			}
-			cacheInputFiles(files);
+		} catch( ModuleInputException e ) {
+			throw e;
+		} catch( BioLockJException e ) {
+			e.printStackTrace();
+			throw new ModuleInputException(e.getMessage());
 		}
-		Log.debug(this.getClass(), "Number of input files: " + getFileCache().size() );
-		return getFileCache();
+		return files;
 	}
 	
 	@Override
 	public boolean isValidInputDir( File dir ) {
 		boolean hasTaxaFiles = false;
 		for( final File f: dir.listFiles() ) {
-			if( TaxaUtil.isTaxaFile( f ) ) {
+			if( TaxaTable.isTaxaTableFile( f ) ) {
 				hasTaxaFiles = true;
 				Log.info(this.getClass(), dir.getName() + " is a valid input dir because the file [" + f.getName() + "] is a taxa table file.");
 			}
@@ -169,6 +241,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	 * @return File Table of statistics or null
 	 * @throws Exception if errors occur
 	 */
+	@Deprecated
 	public static File getStatsFile( final BioModule module, final String level, final Boolean isParametric,
 		final Boolean isAdjusted ) throws Exception {
 		final String querySuffix = "_" + level + "_" + getSuffix( isParametric, isAdjusted ) + TSV_EXT;
@@ -223,6 +296,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		return false;
 	}
 
+	@Deprecated
 	private static List<File> getStatsFileDirs( final BioModule module ) throws Exception {
 		final BioModule statsModule = ModuleUtil.getModule( module, R_CalculateStats.class.getName(), false );
 		if( statsModule != null ) {

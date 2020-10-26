@@ -32,7 +32,7 @@ public abstract class TransformTaxaTables extends TaxaCountModule {
 	@Override
 	public void runModule() throws Exception {
 		for( final File file: getInputFiles() ) {
-			TaxaLevelTable inputData = TaxaUtil.readTaxaTable(file);
+			TaxaLevelTable inputData = TaxaTable.readTaxaTable(file);
 			List<String> filteredSampleIDs = filterSamples(inputData);
 			List<String> filteredTaxaIDs = filterTaxa(inputData);
 			TaxaLevelTable transformedData = transform( inputData, filteredSampleIDs, filteredTaxaIDs );

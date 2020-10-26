@@ -33,7 +33,7 @@ public abstract class TaxaCountModule extends JavaModuleImpl {
 		if( getFileCache().isEmpty() ) {
 			final List<File> files = new ArrayList<>();
 			for( final File f: findModuleInputFiles() )
-				if( TaxaUtil.isTaxaFile( f ) ) files.add( f );
+				if( TaxaTable.isTaxaTableFile( f ) ) files.add( f );
 
 			cacheInputFiles( filterByProcessLevel( files ) );
 		}
@@ -74,7 +74,7 @@ public abstract class TaxaCountModule extends JavaModuleImpl {
 				FileUtils.listFiles( module.getOutputDir(), HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE ) );
 
 			for( final File f: files )
-				if( TaxaUtil.isTaxaFile( f ) ) return true;
+				if( TaxaTable.isTaxaTableFile( f ) ) return true;
 		} catch( final Exception ex ) {
 			Log.warn( getClass(), "Error occurred while inspecting module output files: " + module );
 			ex.printStackTrace();
