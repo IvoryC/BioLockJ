@@ -184,21 +184,26 @@ displayR2 <- function( val ) {
 }
 
 # Return the most recent stats file at the given level based on the suffix returned by statsFileSuffix()
-getStatsTable <- function( level, parametric=NULL, adjusted=TRUE ) {
-	statsFile = pipelineFile( paste0( level, "_", statsFileSuffix( parametric, adjusted ), "$" ) )
+getStatsTable <- function( level, parametric=NULL, adjusted=TRUE, searchDir ) {
+	#statsFile = pipelineFile( paste0( level, "_", statsFileSuffix( parametric, adjusted ), "$" ) )
+    pattern=paste0( level, "_", statsFileSuffix( parametric, adjusted ), "$" )
+	statsFile = dir(path=searchDir, pattern=pattern )
 	if( is.null( statsFile )  ) {
 		message( paste0( "BioLockJ_Lib.R function --> getStatsTable( level=", level, 
 										 ", parametric=", parametric, ", adjusted=", adjusted, " ) returned NULL" ) )
 		return( NULL )
+	}else if(length(statsFile) > 1){
+	    stop("Ambiguous inputs. Searched for single file with pattern [", pattern, "], found: ", length(statsFile), "  \n", paste0(statsFile, collapse=", "))
 	}
 	
-	statsTable = read.table( statsFile, header=TRUE, sep="\t", row.names=1, check.names=FALSE )
+	#statsTable = read.table( statsFile, header=TRUE, sep="\t", row.names=1, check.names=FALSE )
+	statsTable = readBljTable( statsFile )
 	if( nrow( statsTable ) == 0 ) {
-		message( paste0( "BioLockJ_Lib.R function --> getStatsTable( level=", level, ", parametric=", parametric, ", adjusted=", adjusted, " ) returned an empty table with only the header row:", colnames( statsTable ) ) )
+		message( "Found table [", statsFile, "] to be an empty table with only the header row:", colnames( statsTable ) )
 		return( NULL )
 	}
 	
-	message( "Read stats table", statsFile )
+	message( "Read stats table: ", statsFile )
 	return( statsTable )
 }
 
@@ -337,8 +342,8 @@ plotPlainText <- function(textToPrint, align="center", maxCharWidth=55, vertical
 
 # Read a table using the biolockj standards
 readBljTable <- function( file ){
-	return( read.table( file, header=TRUE, sep="\t", row.names=1, na.strings=getProperty( "metadata.nullValue" ), 
-		check.names=FALSE, comment.char=getProperty( "metadata.commentChar", "" ) ) )
+	return( read.table( file, header=TRUE, sep="\t", row.names=1, na.strings=getProperty( "metadata.nullValue", "NA" ), 
+		check.names=FALSE, comment.char=getProperty( "metadata.commentChar", "#" ) ) )
 }
 
 # This method returns 1 of 5 possible CalculateStats.R output file suffix values
