@@ -17,6 +17,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import biolockj.*;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
+import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.MetadataException;
 import biolockj.module.BioModule;
@@ -64,7 +65,7 @@ public final class RMetaUtil {
 	 * @throws Exception if {@link biolockj.Config} lists invalid metadata fields or metadata filed has less than 2
 	 * unique values
 	 */
-	public static void classifyReportableMetadata( final BioModule module ) throws Exception {
+	public static void classifyReportableMetadata( final BioModule module ) throws BioLockJException {
 		Log.info( RMetaUtil.class, "Validate reportable metadata fields: " + MetaUtil.getPath() );
 
 		Set<String> rScriptFields = Config.getSet( module, R_REPORT_FIELDS );
@@ -180,7 +181,7 @@ public final class RMetaUtil {
 		}
 
 		if( updateRConfig( module ) && !MasterConfigUtil.saveMasterConfig() )
-			throw new Exception( "Failed to update MASTER config with latest \"R_internal\" Config" );
+			throw new BioLockJException( "Failed to update MASTER config with latest \"R_internal\" Config" );
 
 		if( !BioLockJUtil.isDirectMode() ) {
 			Log.info( RMetaUtil.class, Constants.LOG_SPACER );
@@ -196,7 +197,7 @@ public final class RMetaUtil {
 	 * @return Set of column names with only 2 non-numeric values
 	 * @throws Exception if unable to assign binary fields
 	 */
-	public static Set<String> getBinaryFields( final BioModule module ) throws Exception {
+	public static Set<String> getBinaryFields( final BioModule module ) throws BioLockJException {
 		if( binaryFields == null ) classifyReportableMetadata( module );
 		return binaryFields;
 	}
@@ -219,7 +220,7 @@ public final class RMetaUtil {
 	 * @return map of R props by data type
 	 * @throws Exception if errors occur
 	 */
-	public static boolean updateRConfig( final BioModule module ) throws Exception {
+	public static boolean updateRConfig( final BioModule module ) throws BioLockJException {
 		final Integer numCols = Config.getPositiveInteger( module, RMetaUtil.NUM_META_COLS );
 		final Integer numMetaCols = getMetaCols( module ).size();
 
@@ -275,13 +276,14 @@ public final class RMetaUtil {
 	 * @param module Source BioModule calling this utility
 	 * @param prop Config property name
 	 * @param fields Set of metadata fields
+	 * @throws ConfigFormatException 
 	 * @throws Exception if the metadata column does not exist
 	 */
 	public static void verifyMetadataFieldsExist( final BioModule module, final String prop,
-		final Collection<String> fields ) throws Exception {
+		final Collection<String> fields ) throws MetadataException, ConfigFormatException {
 		for( final String field: fields )
 			if( !MetaUtil.getFieldNames().contains( field ) && !isQiimeMetric( module, field ) )
-				throw new Exception( "Config property [ " + prop + "] contians a field [" + field +
+				throw new MetadataException( "Config property [ " + prop + "] contians a field [" + field +
 					"] not found in metadata: " + MetaUtil.getPath() );
 	}
 
@@ -314,7 +316,7 @@ public final class RMetaUtil {
 		return false;
 	}
 
-	private static boolean isValidNumericField( final String field ) throws Exception {
+	private static boolean isValidNumericField( final String field ) throws BioLockJException {
 		if( field != null && MetaUtil.getFieldNames().contains( field ) ) {
 			final int count = MetaUtil.getUniqueFieldValues( field, true ).size();
 			if( count > 1 ) return true;
@@ -325,7 +327,7 @@ public final class RMetaUtil {
 	}
 
 	private static Set<String> updateNumericData( final String field, final Set<String> rScriptFields,
-		final boolean doUpdate ) throws Exception {
+		final boolean doUpdate ) throws BioLockJException {
 		if( doUpdate && isValidNumericField( field ) ) {
 			rScriptFields.add( field );
 			numericFields.add( field );
@@ -337,10 +339,13 @@ public final class RMetaUtil {
 		return rScriptFields;
 	}
 
-	private static void verifyNumericData( final String field, final Set<String> data ) throws Exception {
+	private static void verifyNumericData( final String field, final Set<String> data ) throws MetadataException {
 		for( final String val: data )
-			if( !NumberUtils.isNumber( val ) ) throw new Exception( "Invalid Config! " + R_NUMERIC_FIELDS +
-				" contains field [" + field + "] with non-numeric data [" + val + "]" );
+			if( !val.equals( MetaUtil.META_NULL_VALUE ) && !NumberUtils.isNumber( val ) ) {
+				throw new MetadataException( "Invalid parameter: " + R_NUMERIC_FIELDS +
+				" contains field [" + field + "] with non-numeric data [" + val + "]. Please revise one of: " 
+							+ R_NUMERIC_FIELDS + ", " + MetaUtil.META_FILE_PATH + ", or " + MetaUtil.META_NULL_VALUE);
+			}
 	}
 	
 	public static void registerProps() throws API_Exception {
