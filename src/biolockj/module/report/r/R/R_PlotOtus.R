@@ -1,5 +1,33 @@
 # Module script for: biolockj.module.report.r.R_PlotOtus
 
+main <- function(level, countsFile, metadataFile, statsDir){
+  
+  message("Running script for level: ", level)
+  message("Using input counts table: ", countsFile)
+  message("Using metadata table: ", metadataFile)
+  message("Stats tables will be searched for in: ", statsDir)
+  
+  countTable = readBljTable(countsFile)
+  if ( is.null(countTable) ) stop("There was a problem with reading the input counts table: ", countsFile)
+  message("Read in counts table with [", nrow(countTable), "] rows and [", ncol(countTable), "] columns.")
+  
+  metaTable = readBljTable(metadataFile)
+  if ( is.null(metaTable) ) stop("There was a problem with reading the metadata table: ", metadataFile)
+  message("Read in metadata table with [", nrow(metaTable), "] rows and [", ncol(metaTable), "] columns.")
+  
+  #merged = mergeTables(countTable, metaTable)
+  
+  seed = getProperty("pipeline.setSeed", -1)
+  if (seed > -1) {
+    message("setting seed: ", seed)
+    set.seed(seed)
+  }
+  
+  buildPlots(sigOnly=FALSE, countTable, metaTable)
+  buildPlots(sigOnly=TRUE, countTable, metaTable)
+  
+}
+
 #Constants
 r.plotWidth = 23
 
@@ -23,9 +51,9 @@ plotHeading <- function( parPval, nonParPval, r2, field ) {
   HEAD_1 = 0.2; HEAD_2 = 1.4; LEFT = 0; RIGHT = 1; TOP = 3;
   title1 = paste( "Adj.", getTestName( field ), "P-value:", displayCalc( parPval ) )
   title2 = paste( "Adj.", getTestName( field, FALSE ), "P-value:", displayCalc( nonParPval ) )
-  mtext( title1, TOP, HEAD_1, col=displayCol( parPval ), cex=0.75, adj=LEFT )
+  mtext( title1, TOP, HEAD_1, col=displayCol( parPval, sigOnly ), cex=0.75, adj=LEFT )
   mtext( displayR2( r2 ), TOP, HEAD_1, cex=0.75, adj=RIGHT )
-  mtext( title2, TOP, HEAD_2, col=displayCol( nonParPval ), cex=0.75, adj=LEFT )
+  mtext( title2, TOP, HEAD_2, col=displayCol( nonParPval, sigOnly ), cex=0.75, adj=LEFT )
 }
 
 # Scatter-plot for numeric fields 
@@ -70,8 +98,9 @@ getLas <- function( labels ) {
 }
 
 # Key method used to build plots
-buildPlots <- function(sigOnly=FALSE) {
-  message( c( "sigOnly value: ", sigOnly ) )
+buildPlots <- function(sigOnly, countTable, metaTable) {
+  message("")
+  message( "sigOnly value: ", sigOnly )
   
   foundSig = FALSE
   countTable = getCountTable( level )
@@ -85,11 +114,11 @@ buildPlots <- function(sigOnly=FALSE) {
   message( "nominalCols: ", nominalCols )
   message( "numericCols: ", numericCols )
   
-  parStats = getStatsTable( level, TRUE )
-  nonParStats = getStatsTable( level, FALSE )
-  r2Stats = getStatsTable( level )
+  parStats = getStatsTable( level, parametric=TRUE, adjusted=TRUE, searchDir )
+  nonParStats = getStatsTable( level, parametric=TRUE, adjusted=TRUE, searchDir )
+  r2Stats = getStatsTable( level, parametric=NULL, adjusted=TRUE, searchDir )
   
-  pdf( reportFile( level ), paper="letter", width=7, height=10.5 )
+  pdf( reportFile( level, sigOnly ), paper="letter", width=7, height=10.5 )
   par(mfrow=c(3, 2), las=1, oma=c(1.2,1,4.5,0), mar=c(5, 4, 3, 2), cex=1)
   message( "default par(mfrow): ", par("mfrow") )
   par( mfrow = par("mfrow") ) 
@@ -98,9 +127,12 @@ buildPlots <- function(sigOnly=FALSE) {
   position = 0
   pvalCutoff = getProperty("r.pvalCutoff")
   
-  # if r.rareOtuThreshold > 1, cutoffValue is an absolute threshold, otherwise it's a % of countTable rows
   cutoffValue = getProperty("r.rareOtuThreshold", 1)
-  if( cutoffValue < 1 ) cutoffValue = cutoffValue * nrow( countTable )
+  if( cutoffValue < 1 ) {
+    message("Because the cutoff < 1, it is interpreted as a fraction of countTable rows.")
+    cutoffValue = cutoffValue * nrow(countTable)
+  } 
+  message("cutoffValue = ", cutoffValue)
   
   for( item in names( countTable ) ) {
     if( sum( countTable[,item] > 0 ) >=  cutoffValue ) {
@@ -134,56 +166,59 @@ buildPlots <- function(sigOnly=FALSE) {
         }
         
         plotHeading( parPval, nonParPval, r2Stats[item, meta], meta )
-        mtext( meta, side=1, font=1, cex=1, line=2.5, col=displayCol( c(parPval, nonParPval) ) )
+        mtext( meta, side=1, font=1, cex=1, line=2.5, col=displayCol( c(parPval, nonParPval), sigOnly ) )
         position = position + 1
         
         if( position == 1 ) {
           pageNum = pageNum + 1
-          addHeaderFooter( item, level, pageNum )
+          addHeaderFooter( item, level, pageNum, sigOnly )
         } else if( position > prod( par("mfrow") ) ) {
           position = 1
           pageNum = pageNum + 1
-          addHeaderFooter( item, level, pageNum )
+          addHeaderFooter( item, level, pageNum, sigOnly )
         }
       }
     }
   }
   dev.off()
-  if( !foundSig ) file.remove( reportFile( level ) )
+  if( !foundSig ) file.remove( reportFile( level, sigOnly ) )
 }
 
-reportFile <- function( level ) {
+reportFile <- function( level, sigOnly ) {
   return( getPath( getOutputDir(), paste0( level, ifelse( sigOnly, "_significant", "" ), "_OTU_plots.pdf" ) ) )
 }
 
 # Always use base color for significant only plot, otherwise use highlight colors for significant plots
-displayCol <- function( vals ) {
+displayCol <- function( vals, sigOnly ) {
   if( sigOnly ) return( getProperty("r.colorBase", "black") )
   return( getColor( vals ) )
 }
 
 # Add page title + footer with page number
-addHeaderFooter <- function( item, level, pageNum ) {
+addHeaderFooter <- function( item, level, pageNum, sigOnly ) {
   if( !sigOnly ) addPageTitle( item )
   addPageNumber( pageNum )
   addPageFooter( paste0( ifelse( sigOnly, "Significant ", "" ), "Taxa Plots [ ", str_to_title( level ), " ]" ) )
 }
 
+
+
+
+message("Running R version: ", R.Version()$version.string)
 message("Current Working directory: ",getwd())
 
 args = commandArgs(trailingOnly = TRUE)
-message("all args: ", args)
-level = args[1]
-message("Running script for level: ", level)
+message("all args: ", paste(args,sep=", ") )
 
 source("../resources/BioLockJ_Lib.R")
 
-seed = getProperty("pipeline.setSeed", -1)
-if (seed > -1) set.seed(seed)
+main(level = args[1],
+     countsFile = args[2],
+     metadataFile = args[3],
+     statsDir = args[4])
 
-sigOnly <<- FALSE
-buildPlots()
-sigOnly <<- TRUE
-buildPlots(sigOnly=TRUE)
+message("")
+message("Done!")
+message("")
 
 sessionInfo()
