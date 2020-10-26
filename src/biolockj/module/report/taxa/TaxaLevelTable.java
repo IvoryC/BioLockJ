@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Class to represent the data from a taxa table (one level).
+ * @author Ivory Blakley
+ *
+ */
 public class TaxaLevelTable extends HashMap<String, HashMap<String, Double>>{
 
 	private String level;

@@ -11,7 +11,6 @@
  */
 package biolockj.util;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,9 +23,12 @@ import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.module.report.taxa.TaxaLevelTable;
+import biolockj.module.report.taxa.TaxaTable;
 
 /**
  * This utility helps work individual Taxa names, not full OTU path files which need {@link biolockj.util.OtuUtil}.<br>
+ * It mainly handles the Taxa levels.  The tables are handled by {@link TaxaTable} class.
+ * When the files are actually read in, they are read as a {@link TaxaLevelTable} object.
  * Taxa files containing sample taxa counts for a given taxonomy level as output by
  * {@link biolockj.module.report.taxa.BuildTaxaTables}.
  */
@@ -212,7 +214,7 @@ public class TaxaUtil {
 	 * @throws BioLockJException if level is null
 	 */
 	public static File getTaxonomyTableFile( final File dir, final String level, final String suffix ) throws BioLockJException
-		 { // Replace Exception with new TaxaTableException
+		 { //TODO: Replace Exception with new TaxaTableException
 		if( level == null ) throw new BioLockJException( "Level is required to build a taxonomy table" );
 		String mySuffix = suffix;
 		if( mySuffix != null && !mySuffix.endsWith( "_" ) ) mySuffix += "_";
@@ -298,7 +300,7 @@ public class TaxaUtil {
 	 */
 	public static boolean isLogNormalizedTaxaFile( final File file ) {
 		for( final String level: getTaxaLevels() )
-			if( file.getName().contains( "_" + TAXA_TABLE + "_Log" ) &&
+			if( file.getName().contains( "_" + TaxaTable.TAXA_TABLE + "_Log" ) &&
 				file.getName().endsWith( "_" + NORMALIZED + "_" + level + Constants.TSV_EXT ) ) return true;
 		return false;
 	}
@@ -311,7 +313,7 @@ public class TaxaUtil {
 	 */
 	public static boolean isNormalizedTaxaFile( final File file ) {
 		for( final String level: getTaxaLevels() )
-			if( file.getName().endsWith( "_" + TAXA_TABLE + "_" + NORMALIZED + "_" + level + Constants.TSV_EXT ) )
+			if( file.getName().endsWith( "_" + TaxaTable.TAXA_TABLE + "_" + NORMALIZED + "_" + level + Constants.TSV_EXT ) )
 				return true;
 		return false;
 	}
@@ -321,11 +323,10 @@ public class TaxaUtil {
 	 * 
 	 * @param file File to test
 	 * @return boolean TRUE if file is a taxonomy count file
+	 * @deprecated Use {@link TaxaTable#isTaxaTableFile(File)} instead
 	 */
 	public static boolean isTaxaFile( final File file ) {
-		if( file.getName().contains( "_" + TAXA_TABLE + "_" ) ) for( final String level: getTaxaLevels() )
-			if( file.getName().endsWith( level + Constants.TSV_EXT ) ) return true;
-		return false;
+		return TaxaTable.isTaxaTableFile( file );
 	}
 
 	/**
@@ -363,43 +364,10 @@ public class TaxaUtil {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws BioLockJException
+	 * @deprecated Use {@link TaxaTable#readTaxaTable(File)} instead
 	 */
 	public static TaxaLevelTable readTaxaTable(final File taxaTable) throws FileNotFoundException, IOException, BioLockJException{
-		TaxaLevelTable data = new TaxaLevelTable(TaxaUtil.getTaxonomyTableLevel( taxaTable ));
-		final List<String> otuNames = new ArrayList<>();
-		boolean foundBigValues = false;
-		
-		final BufferedReader reader = BioLockJUtil.getFileReader( taxaTable );
-		try {
-			otuNames.addAll( getOtuNames( reader.readLine() ) );
-			String nextLine = reader.readLine();
-
-			while( nextLine != null ) {
-				final StringTokenizer st = new StringTokenizer( nextLine, DELIM );
-				final String sampleID = st.nextToken();
-				final HashMap<String, Double> rowValues = data.newSampleRow( sampleID );
-				int i = 0;
-				while( st.hasMoreTokens() ) {
-					final String nextToken = st.nextToken();
-					if( nextToken.length() > 0 ) {
-						Double cellValue = new Double( nextToken );
-						if ( (cellValue + 1) <= cellValue ) foundBigValues = true;
-						rowValues.put( otuNames.get( i ), cellValue);
-					}
-					i++;
-				}
-				if ( rowValues.size() != otuNames.size() ) {
-					throw new BioLockJException("Header included [" + otuNames.size() + "] taxa, but the row for sample [" + 
-				sampleID + "] has [" + rowValues.size() + "] values.");
-				}
-
-				nextLine = reader.readLine();
-			}
-		} finally {
-			if( reader != null ) reader.close();
-		}
-		if (foundBigValues) Log.warn(TaxaUtil.class, "Values in this table may be larger than can be precisely stored as a Double.");
-		return data;
+		return TaxaTable.readTaxaTable( taxaTable );
 	}
 	
 	/**
@@ -408,7 +376,7 @@ public class TaxaUtil {
 	 * @param header Head line of table
 	 * @return List of Taxa
 	 */
-	private static List<String> getOtuNames( final String header ) {
+	public static List<String> getOtuNames( final String header ) {
 		final List<String> otuNames = new ArrayList<>();
 		final StringTokenizer st = new StringTokenizer( header, DELIM );
 		st.nextToken(); // skip ID & then strip quotes
@@ -458,8 +426,9 @@ public class TaxaUtil {
 
 	/**
 	 * Included in the file name of each file output. One file per sample is output by the ParserModule.
+	 * @deprecated Use {@link TaxaTable#TAXA_TABLE} instead
 	 */
-	protected static final String TAXA_TABLE = "taxaCount";
+	protected static final String TAXA_TABLE = TaxaTable.TAXA_TABLE;
 
 	private static String bottomLevel = null;
 	private static List<String> configLevels = null;
@@ -468,7 +437,7 @@ public class TaxaUtil {
 		Constants.ORDER, Constants.FAMILY, Constants.GENUS, Constants.SPECIES );
 	private static String topLevel = null;
 	
-	private static final String DELIM = Constants.TAB_DELIM;
+	public static final String DELIM = Constants.TAB_DELIM;
 	public static final String FILE_EXT = Constants.TSV_EXT;
 	
 }

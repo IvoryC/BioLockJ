@@ -13,6 +13,8 @@ package biolockj.module.report.taxa;
 
 import java.io.*;
 import java.util.*;
+import biolockj.Config;
+import biolockj.Constants;
 import biolockj.Log;
 import biolockj.api.ApiModule;
 import biolockj.module.report.otu.OtuCountModule;
@@ -63,7 +65,7 @@ public class BuildTaxaTables extends OtuCountModule implements ApiModule {
 
 			uniqueOtus.put( level, new Integer( levelTaxa.size() ).longValue() );
 			report( "Taxonomy Counts @" + level, levelTaxaCounts );
-			final File table = TaxaUtil.getTaxonomyTableFile( getOutputDir(), level, null );
+			final File table = getTaxonomyTableFile( getOutputDir(), level, null );
 			Log.info( getClass(), "Building: " + table.getAbsolutePath() );
 
 			final BufferedWriter writer = new BufferedWriter( new FileWriter( table ) );
@@ -136,5 +138,25 @@ public class BuildTaxaTables extends OtuCountModule implements ApiModule {
 	public String getCitationString() {
 		return "Module developed by Mike Sioda" + System.lineSeparator()
 		+ "BioLockJ " + BioLockJUtil.getVersion();
+	}
+
+	/**
+	 * Create File object of a taxonomy table at the given level, with the given suffix, in the given directory dir.
+	 * 
+	 * @param dir Target directory
+	 * @param level Taxonomy level
+	 * @param suffix File suffix
+	 * @return Taxonomy Table File
+	 * @throws Exception if errors occur
+	 */
+	private File getTaxonomyTableFile( final File dir, final String level, final String suffix )
+		throws Exception { // Replace Exception with new TaxaTableException
+		if( level == null ) throw new Exception( "Level is required to build a taonomy table" );
+		String mySuffix = suffix;
+		if( mySuffix != null && !mySuffix.endsWith( "_" ) ) mySuffix += "_";
+		if( mySuffix != null && !mySuffix.startsWith( "_" ) ) mySuffix = "_" + mySuffix;
+		if( mySuffix == null ) mySuffix = "_";
+		return new File( dir.getAbsolutePath() + File.separator + Config.pipelineName() + "_" + TaxaTable.TAXA_TABLE + mySuffix +
+			level + Constants.TSV_EXT );
 	}
 }
