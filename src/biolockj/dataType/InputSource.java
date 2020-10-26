@@ -1,6 +1,8 @@
-package biolockj.module;
+package biolockj.dataType;
 
 import java.io.File;
+import biolockj.module.BioModule;
+import biolockj.util.MetaUtil;
 import biolockj.util.ModuleUtil;
 
 /**
@@ -11,22 +13,37 @@ import biolockj.util.ModuleUtil;
  *
  */
 public class InputSource {
-	InputSource(BioModule module){
+	public InputSource(BioModule module){
+		isMetaDataColumn = false;
 		isBioModule = true;
 		this.module = module;
 		this.file = null;
+		this.column = null;
 		name = ModuleUtil.displaySignature( module );
 	}
-	InputSource(File folder){
+	public InputSource(File folder){
+		isMetaDataColumn = false;
 		isBioModule = false;
 		this.file = folder;
 		this.module = null;
+		this.column = null;
 		name = folder.getName() + ( folder.isDirectory() ? " folder" : "");
 	}
+	public InputSource(BioModule module, String columnName){
+		isMetaDataColumn = true;
+		isBioModule = module != null;
+		this.file = null;
+		this.module = module;
+		this.column = columnName;
+		name = "metadata column [" + columnName + "]" + ( isBioModule ? (" from module" + ModuleUtil.displaySignature( module ) ) : "");
+	}
 	private final boolean isBioModule;
+	private final boolean isMetaDataColumn;
 	private final BioModule module;
+	private final String column;
 	private final File file;
 	private final String name;
+	private final Class<? extends DataUnit> typeClass = null;
 	
 	/**
 	 * Is this input a BioLockJ module?
@@ -42,8 +59,10 @@ public class InputSource {
 	 */
 	public boolean isReady() {
 		boolean ready;
-		if (isBioModule) {
+		if (module != null) {
 			ready = ModuleUtil.isComplete( module );
+		}else if (isMetaDataColumn){
+			ready = MetaUtil.hasColumn( column );
 		}else {
 			ready = file.exists();
 		}
@@ -69,6 +88,19 @@ public class InputSource {
 	}
 	
 	public String getName() {
+		return name;
+	}
+	
+	public String getMetaColumnName() {
+		return column;
+	}
+	
+	public Class<? extends DataUnit> getInputType() {
+		return typeClass;
+	}
+	
+	@Override
+	public String toString() {
 		return name;
 	}
 }
