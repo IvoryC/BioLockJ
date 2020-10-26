@@ -37,13 +37,15 @@ public class InputSource {
 		this.column = columnName;
 		name = "metadata column [" + columnName + "]" + ( isBioModule ? (" from module" + ModuleUtil.displaySignature( module ) ) : "");
 	}
+	
 	private final boolean isBioModule;
 	private final boolean isMetaDataColumn;
 	private final BioModule module;
 	private final String column;
 	private final File file;
 	private final String name;
-	private final Class<? extends DataUnit> typeClass = null;
+	
+	private DataUnit data = null;
 	
 	/**
 	 * Is this input a BioLockJ module?
