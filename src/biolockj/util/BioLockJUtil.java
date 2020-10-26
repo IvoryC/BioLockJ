@@ -27,6 +27,7 @@ import biolockj.launch.Launcher;
 import biolockj.module.BioModule;
 import biolockj.module.getData.InputDataModule;
 import biolockj.module.report.r.R_CalculateStats;
+import biolockj.module.report.taxa.TaxaTable;
 
 /**
  * Simple utility containing String manipulation and formatting functions.
@@ -759,7 +760,7 @@ public class BioLockJUtil {
 			} else if( TaxaUtil.isNormalizedTaxaFile( file ) ) {
 				fileTypes.add( PIPELINE_NORMAL_TAXA_COUNT_TABLE_INPUT_TYPE );
 				fileTypes.add( PIPELINE_TAXA_COUNT_TABLE_INPUT_TYPE );
-			} else if( TaxaUtil.isTaxaFile( file ) ) fileTypes.add( PIPELINE_TAXA_COUNT_TABLE_INPUT_TYPE );
+			} else if( TaxaTable.isTaxaTableFile( file ) ) fileTypes.add( PIPELINE_TAXA_COUNT_TABLE_INPUT_TYPE );
 			else if( PathwayUtil.isPathwayFile( file ) ) fileTypes.add( PIPELINE_HUMANN2_COUNT_TABLE_INPUT_TYPE );
 			if( sample == null && Config.getBoolean( null, MetaUtil.META_REQUIRED ) ) {
 				throw new FileWithoutMetadataException( file );
@@ -903,7 +904,7 @@ public class BioLockJUtil {
 	/**
 	 * Internal {@link biolockj.Config} String property: {@value #PIPELINE_TAXA_COUNT_TABLE_INPUT_TYPE}<br>
 	 * Set as the value of {@value #INTERNAL_PIPELINE_INPUT_TYPES} for taxa count files that meet the file requirements
-	 * to pass {@link biolockj.util.TaxaUtil#isTaxaFile(File)}.
+	 * to pass {@link biolockj.module.report.taxa.TaxaTable#isTaxaTableFile(File)}.
 	 */
 	public static final String PIPELINE_TAXA_COUNT_TABLE_INPUT_TYPE = "taxa_count";
 

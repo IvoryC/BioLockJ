@@ -21,6 +21,7 @@ import biolockj.module.BioModule;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.module.report.r.R_Module;
 import biolockj.module.report.taxa.BuildTaxaTables;
+import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.MasterConfigUtil;
 import biolockj.util.MetaUtil;
@@ -42,7 +43,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		List<File> allFiles = super.findModuleInputFiles();
 		List<File> inputFiles = new ArrayList<>();
 		for ( File file : allFiles ) {
-			if( TaxaUtil.isTaxaFile( file ) ) {
+			if( TaxaTable.isTaxaTableFile( file ) ) {
 				inputFiles.add( file );
 			}
 		}
