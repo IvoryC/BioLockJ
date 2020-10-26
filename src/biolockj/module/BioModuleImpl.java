@@ -19,6 +19,8 @@ import org.apache.commons.io.filefilter.HiddenFileFilter;
 import biolockj.*;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
+import biolockj.dataType.DataUnit;
+import biolockj.dataType.InputSource;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
@@ -217,6 +219,11 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	@Override
 	public File getOutputDir() {
 		return ModuleUtil.requireSubDir( this, OUTPUT_DIR );
+	}
+	
+	@Override
+	public Collection<DataUnit> getOutputTypes() {
+		return new LinkedList<>();
 	}
 
 	/**
