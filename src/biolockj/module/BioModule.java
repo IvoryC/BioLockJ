@@ -12,7 +12,10 @@
 package biolockj.module;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
+import biolockj.dataType.DataUnit;
+import biolockj.dataType.InputSource;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
@@ -127,6 +130,12 @@ public interface BioModule {
 	 * @return File directory containing the primary BioModule output
 	 */
 	public File getOutputDir();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Collection<DataUnit> getOutputTypes();
 
 	/**
 	 * {@link biolockj.Pipeline} calls this method when building the list of pipeline BioModules to execute. Any
