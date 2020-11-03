@@ -3,14 +3,14 @@ package biolockj.exception;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
-import biolockj.dataType.InputSource;
 import biolockj.module.BioModule;
+import biolockj.module.io.InputSource;
 import biolockj.util.ModuleUtil;
 
 /**
  * This Exception is thrown when a BioModule encounters a problem while identifying 
  * its specific input files from the abstract representation of where to look.
- * @author ieclabau
+ * @author Ivory Blakley
  *
  */
 public class ModuleInputException extends BioLockJException {

@@ -16,13 +16,21 @@ import java.io.IOException;
 import java.util.*;
 import biolockj.*;
 import biolockj.api.BioLockJ_API;
+import biolockj.dataType.DataUnit;
+import biolockj.dataType.DataUnitFilter;
+import biolockj.exception.BioLockJException;
 import biolockj.exception.BioLockJStatusException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
+import biolockj.module.BioModuleFilter;
 import biolockj.module.JavaModule;
 import biolockj.module.classifier.ClassifierModule;
+import biolockj.module.io.InputSource;
+import biolockj.module.io.InputSpecs;
+import biolockj.module.io.OutputSpecs;
 import biolockj.module.report.r.R_Module;
 
 /**
@@ -136,6 +144,7 @@ public class ModuleUtil {
 	}
 	
 	/**
+	 * Given a simple (short) class name, find the full class name if it is available in the current class path.
 	 * @throws Exception 
 	 * 
 	 */
@@ -459,6 +468,89 @@ public class ModuleUtil {
 		for( final BioModule m: Pipeline.getModules() )
 			if( m instanceof R_Module ) ids.add( m.getID() );
 		return ids;
+	}
+	
+	/**
+	 * Find the most recent module that outputs a data type that satisfies the dataFilter.
+	 * @param module
+	 * @param dataFilter
+	 * @return
+	 */
+	public static BioModule findInputModule(BioModule module, DataUnitFilter dataFilter ){
+		return findInputModule(module, new BioModuleFilter(){
+			@Override
+			public boolean accept(BioModule qmodule) {
+				Collection<OutputSpecs> outputs = qmodule.getOutputSpecs();
+				if (outputs.isEmpty()) return false;
+				for (OutputSpecs output : outputs) {
+					if (dataFilter.accept( output.getDataType() )) return true;
+				}
+				return false;
+			}
+		});
+	}
+	
+	public static BioModule findInputModule(final BioModule module, final BioModuleFilter filter ){
+		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
+		BioModule prevMod = getPreviousModule( module );
+		BioModule returnModule = null;
+		while( returnModule == null ) {
+			if (prevMod == null) break;
+			if ( filter.accept( prevMod ) && defaultFilter.accept( prevMod ) ) {
+				returnModule = prevMod;
+			}
+			prevMod = getPreviousModule( prevMod );
+		};
+		return returnModule;
+	}
+	
+	public static void assignInputModules( BioModule module, List<InputSpecs> specs) throws BioLockJException {
+		Log.debug( module.getClass(), "Initialize input sources..." );
+		
+		for (InputSpecs inspec : specs) {
+			Log.info(module.getClass(), "Determineing module input to meet input: " + inspec.getLabel() );
+			DataUnitFilter inFilter = inspec.getFilter();
+			
+			BioModule inputModule = findInputModule( module, inFilter );
+			
+			if( inputModule != null ) {
+				InputSource in = new InputSource( inputModule );
+				inspec.source.add( in );
+				Log.info( module.getClass(), "Found valid input module to satisfy the [" + inspec.getLabel() + "] input: " + in.getName() );
+			} else {
+				Log.debug( module.getClass(), "No prior pipeline module is a valid input module.  Return input from inputDirs.");
+			}
+		}
+	}
+	
+	/**
+	 * If {@link Config} property {@value biolockj.Constants#MODULE_INPUT_PROP} is configured for the callingModule, 
+	 * then return a filter that only allows modules that match that list.
+	 * Otherwise, return an accept-all filter.
+	 * @param callingModule
+	 * @return
+	 */
+	private static BioModuleFilter getConfigInputModuleFilter(final BioModule callingModule) {
+		String specificInputProp = Config.getModulePropName( callingModule, Constants.MODULE_INPUT_PROP );
+		BioModuleFilter filter;
+		List<String> allowedList = Config.getList( callingModule, specificInputProp );
+		if( allowedList == null || allowedList.isEmpty() ) {
+			filter = new BioModuleFilter() {
+				public boolean accept(BioModule omodule) { return true;};
+			};
+		} else {
+			filter = new BioModuleFilter() {
+				public boolean accept(BioModule omodule) {
+					boolean matched = false;
+					for( String target: allowedList ) {
+						if( ModuleUtil.displayName( omodule ).equals( target ) ||
+										omodule.getClass().getSimpleName().equals( target ) ) matched = true;
+					}
+					return matched;
+				};
+			};
+		}
+		return filter;
 	}
 	
 	/**
