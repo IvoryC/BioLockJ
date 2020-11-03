@@ -5,7 +5,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import biolockj.exception.MetadataException;
 import biolockj.util.MetaUtil;
 
-public class NumericMetaData extends MetaField {
+public class NumericMetaData<T extends NumericMetaData<?>> extends MetaField<T> {
 
 	public NumericMetaData( String name ) {
 		super( name );
