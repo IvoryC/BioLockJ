@@ -1,6 +1,7 @@
-package biolockj.dataType;
+package biolockj.module.io;
 
 import java.io.File;
+import biolockj.dataType.DataUnit;
 import biolockj.module.BioModule;
 import biolockj.util.MetaUtil;
 import biolockj.util.ModuleUtil;
