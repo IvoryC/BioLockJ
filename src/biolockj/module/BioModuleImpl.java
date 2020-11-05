@@ -20,12 +20,17 @@ import biolockj.*;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.dataType.DataUnit;
-import biolockj.dataType.InputSource;
+import biolockj.dataType.DataUnitFilter;
+import biolockj.dataType.SpecificModuleOutput;
+import biolockj.dataType.UnknownPipelineInput;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
+import biolockj.module.io.InputSource;
+import biolockj.module.io.InputSpecs;
+import biolockj.module.io.OutputSpecs;
 import biolockj.util.*;
 
 /**
@@ -219,11 +224,6 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	@Override
 	public File getOutputDir() {
 		return ModuleUtil.requireSubDir( this, OUTPUT_DIR );
-	}
-	
-	@Override
-	public Collection<DataUnit> getOutputTypes() {
-		return new LinkedList<>();
 	}
 
 	/**
@@ -460,14 +460,6 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		return moduleInputFiles;
 	}
 	
-	@Override
-	public List<InputSource> getInputSources() throws BioLockJException {
-		if (inputSources == null) {
-			inputSources = findInputSources();
-		}
-		return inputSources;
-	}
-	
 	protected List<InputSource> findInputSources() throws BioLockJException {
 		List<InputSource> inputSources = new ArrayList<>();
 		Log.debug( getClass(), "Initialize input sources..." );
@@ -504,6 +496,123 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		return inputSources;
 	}
 
+	
+
+	@Override
+	public List<InputSource> getInputSources() throws BioLockJException {
+		if( inputSources == null ) {
+			inputSources = new ArrayList<>();
+			for (InputSpecs inspec : inputSpecs ) {
+				if (inspec.source == null) assignInputSources();
+				inputSources.addAll( inspec.source );
+			}
+		}
+		return inputSources;
+	}
+	
+	/**
+	 * Determine a suitable input source for each inputSpec.
+	 * @throws BioLockJException 
+	 */
+	public void assignInputSources() throws BioLockJException {
+		ModuleUtil.assignInputModules(this, getInputSpecs());
+		for (InputSpecs inspec : getInputSpecs() ) {
+			if (inspec.source == null) {
+				assignInputDir( inspec );
+			}
+		}
+	}
+	
+	/**
+	 * If a given input requirement cannot be satisfied by other modules.
+	 * The default is not very smart.
+	 * @param inspec
+	 * @throws BioLockJException 
+	 */
+	public void assignInputDir(InputSpecs inspec) throws BioLockJException {
+		List<File> validDirs = new ArrayList<>();
+		List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
+		if( inputDirs == null || inputDirs.isEmpty() ) {
+			throw new ModuleInputException( "No input dirs available for module [" + ModuleUtil.displaySignature( this ) + "]." );
+		}else{
+			for( File inFile: inputDirs ) {
+				DataUnit<?> inData = null;
+				try {
+					inData = (DataUnit<?>) Class.forName( inspec.dataUnitClass ).newInstance();
+				} catch( Exception e ) {
+					e.printStackTrace();
+					Log.error(this.getClass(), "Failed attempt to instantiate a DataUnit of type: " + inspec.dataUnitClass );
+				}
+				if (inData == null) break;
+				if ( inspec.getFilter().accept( inData ) && inData.isValid() ) {
+					validDirs.add( inFile );
+				}
+			}
+		}
+		if (validDirs.size() > 1) {
+			throw new ModuleInputException( "Too many input dirs for module [" + ModuleUtil.displaySignature( this ) + "]." );
+		}else if (validDirs.size() == 0) {
+			throw new ModuleInputException( "The input given for [" + ModuleUtil.displaySignature( this ) + "] were not suitable for input [" + inspec.getLabel() + "]." );
+		}else {
+			inspec.source.add( new InputSource( validDirs.get(0) ) );
+		}
+	}
+	
+	protected List<InputSpecs> inputSpecs = null;
+	
+	public List<InputSpecs> getInputSpecs() {
+		if (inputSpecs == null) defineInputSpecs();
+		return inputSpecs;
+	}
+	
+	/**
+	 * Create an instance of InputSpecs that has no technical criteria.
+	 * 
+	 * If this default DataUnitFilter is used to determine module inputs,
+	 * then the most recent module to produce any output will be used.
+	 * Use this when the input is intended to be VERY open ended, or when 
+	 * other methods are used to actually determine the modules inputs.
+	 * 
+	 * If there are no previous modules, then this dataUnitClass will 
+	 * accept any file as a an input file.
+	 * 
+	 * This default may be removed in the future.  
+	 * All extending classes should provide their own, more meaningful, input specifications.
+	 */
+	protected void defineInputSpecs() {
+		inputSpecs = new ArrayList<>();
+		inputSpecs.add( new InputSpecs("input", "any input", UnknownPipelineInput.class.getName(), 
+			new DataUnitFilter() {
+
+			@Override
+			public boolean accept( @SuppressWarnings("rawtypes") DataUnit data ) {
+				return true;
+			}
+
+		}) );
+	}
+	
+	protected List<OutputSpecs> outputSpecs = null;
+	
+	@Override
+	public Collection<OutputSpecs> getOutputSpecs(){
+		if (outputSpecs == null) defineOutputSpecs();
+		return outputSpecs;
+	}
+	
+	/**
+	 * By default, the output type of each module is an instance of SpecificModuleOutput
+	 * that refers specifically to this module.
+	 * The default may be removed in the future.  
+	 * All extending classes should provide their own, preferably more descriptive, output specifications.
+	 */
+	protected void defineOutputSpecs() {
+		Collection<OutputSpecs> outputs = new LinkedList<>();
+		outputs.add( new OutputSpecs("module output", new SpecificModuleOutput<>(this)) );
+	}
+
+	
+	
 	/**
 	 * Get cached input files
 	 * 
