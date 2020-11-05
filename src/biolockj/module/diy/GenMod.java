@@ -25,11 +25,11 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.api.BuildDocs;
-import biolockj.dataType.InputSource;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigPathException;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.module.getData.InputDataModule;
+import biolockj.module.io.InputSource;
 import biolockj.util.BioLockJUtil;
 
 /**
