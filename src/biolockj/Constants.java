@@ -582,7 +582,8 @@ public class Constants {
 	public static final String MASTER_PREFIX = "MASTER_";
 
 	/**
-	 * {@link biolockj.Config} List property; {@value #INPUT_MODULE_PROP_DESC}
+	 * {@link biolockj.Config} List property; <br>
+	 * {@value #MODULE_INPUT_PROP_DESC}
 	 */
 	public static final String MODULE_INPUT_PROP = "module.inputModule";
 	private static final String MODULE_INPUT_PROP_DESC = "Used exclusively in its module-specific form, specify the name or alias of the module to allow as input to a specific module";
