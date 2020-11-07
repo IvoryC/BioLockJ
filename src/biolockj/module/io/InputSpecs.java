@@ -40,7 +40,7 @@ public class InputSpecs{
 	 * @param description used as {@link #description}
 	 * @param clazz The required class of data for this input
 	 */
-	public InputSpecs(String label, String description, Class<? extends DataUnit<?>> clazz) {
+	public InputSpecs(String label, String description, Class<? extends DataUnit> clazz) {
 		this(label, description, clazz.toString(), new BasicInputFilter(clazz));
 	}
 	
