@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import biolockj.Constants;
 import biolockj.Log;
 import biolockj.dataType.DataUnit;
+import biolockj.dataType.DataUnitFactory;
 import biolockj.exception.BioLockJException;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.TaxaUtil;
@@ -26,9 +27,20 @@ import biolockj.util.TaxaUtil;
  * @author Ivory Blakley
  *
  */
-public class TaxaTable implements DataUnit {
+public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
+	
+	public TaxaTable(List<String> levels) {
+		this.levels = levels;
+	}
+	public TaxaTable() {
+		this.levels = TaxaUtil.getTaxaLevels();
+	}
+	
+	public TaxaTable(Collection<File> files) throws BioLockJException {
+		setFiles( files );
+	}
 
-	List<String> levels;
+	private List<String> levels;
 	
 	/*
 	 * Map of taxonomic level to taxa table file.
@@ -42,8 +54,23 @@ public class TaxaTable implements DataUnit {
 
 	@Override
 	public boolean isValid() throws BioLockJException {
-		// TODO Auto-generated method stub
-		return false;
+		if ( !isReady() ) return false;
+		boolean allGood = true;
+		for (String level : levels) {
+			File file = getTaxaTableFile( level );
+			if ( !file.exists() ) {
+				allGood = false;
+				break;
+			}
+			try {
+				readTaxaTable( file );
+			} catch( IOException e ) {
+				allGood = false;
+				e.printStackTrace();
+				Log.error(this.getClass(), "An error occurred while attempting to read file: " + file.getAbsolutePath());
+			}
+		}
+		return allGood;
 	}
 
 	/**
@@ -59,8 +86,8 @@ public class TaxaTable implements DataUnit {
 		return ready;
 	}
 	
-	public Collection<String> getLevels(){
-		return files.keySet();
+	public List<String> getLevels(){
+		return levels;
 	}
 	
 	public File getTaxaTableFile(String level) {
@@ -73,7 +100,7 @@ public class TaxaTable implements DataUnit {
 	 * @return
 	 * @throws BioLockJException 
 	 */
-	public boolean setFiles(Collection<File> inFiles) throws BioLockJException {
+	public void setFiles(Collection<File> inFiles) throws BioLockJException {
 		files = new HashMap<>();
 		//Log.debug(this.getClass(), "Number of files passed in as files list: " + files.size());
 		//Log.debug(this.getClass(), "Taxa levels to search for are: " + BioLockJUtil.getCollectionAsString( TaxaUtil.getTaxaLevels()) );
@@ -93,8 +120,16 @@ public class TaxaTable implements DataUnit {
 				}
 			}
 		}
-		Log.debug(this.getClass(), "Found input files for levels: " + getLevels());
-		return true;
+		List<String> origLevels = new ArrayList<>();
+		origLevels.addAll( levels );
+		levels.removeIf( (lev) -> !files.containsKey( lev ) );
+		Log.debug(this.getClass(), "Found input files for levels: " + files.keySet());
+		if (levels.isEmpty()) {
+			throw new BioLockJException("There was a complete diconnect between the expected levels {" 
+							+ BioLockJUtil.getCollectionAsString( origLevels ) 
+							+ "} and the found levels {" + BioLockJUtil.getCollectionAsString(files.keySet()) 
+							+ "}.");
+		}
 	}
 	
 	/**
@@ -112,17 +147,19 @@ public class TaxaTable implements DataUnit {
 	/**
 	 * Read a table of counts, formatted with samples as rows (ids in first column) and taxa as columns (ids in header).
 	 * @param taxaTable
+	 * @param test200 if true, the only the first 200 lines of the file are read, useful for {@link #isValid()}
 	 * @return Map linking sample name to map that links taxa IDs to value.
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 * @throws BioLockJException
 	 */
-	public static TaxaLevelTable readTaxaTable(final File taxaTable) throws FileNotFoundException, IOException, BioLockJException{
+	public static TaxaLevelTable readTaxaTable(final File taxaTable, boolean test100) throws FileNotFoundException, IOException, BioLockJException{
 		TaxaLevelTable data = new TaxaLevelTable(TaxaUtil.getTaxonomyTableLevel( taxaTable ));
 		final List<String> otuNames = new ArrayList<>();
 		boolean foundBigValues = false;
 		
 		final BufferedReader reader = BioLockJUtil.getFileReader( taxaTable );
+		int rowsRead = 0;
 		try {
 			otuNames.addAll( TaxaUtil.getOtuNames( reader.readLine() ) );
 			String nextLine = reader.readLine();
@@ -146,6 +183,8 @@ public class TaxaTable implements DataUnit {
 				sampleID + "] has [" + rowValues.size() + "] values.");
 				}
 	
+				rowsRead++;
+				if (test100 && rowsRead > 100 ) break;
 				nextLine = reader.readLine();
 			}
 		} finally {
@@ -154,10 +193,83 @@ public class TaxaTable implements DataUnit {
 		if (foundBigValues) Log.warn(TaxaUtil.class, "Values in this table may be larger than can be precisely stored as a Double.");
 		return data;
 	}
+	/**
+	 * See {@link #readTaxaTable(File).}
+	 * @param taxaTable
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 * @throws BioLockJException
+	 */
+	public static TaxaLevelTable readTaxaTable(final File taxaTable) throws FileNotFoundException, IOException, BioLockJException{
+		return readTaxaTable(taxaTable, false);
+	}
 
 	/**
 	 * Included in the file name of each file output. One file per sample is output by the ParserModule.
 	 */
 	public static final String TAXA_TABLE = "taxaCount";
+
+	
+	@Override
+	public Collection<TaxaTable> getActualData(final List<File> files, TaxaTable template, boolean useAllFiles) throws BioLockJException {
+		List<File> inFiles = new ArrayList<File>();
+		inFiles.addAll(files);
+		List<TaxaTable> list = new ArrayList<>();
+		Map<String, Map<String, File>> map = new HashMap<>();
+
+		List<String> levs = template.getLevels();
+		for (String level : levs ) {
+			for (File f : inFiles) {
+				String group = f.getName().replaceAll( level, "" );
+				if ( ! f.getName().equals( group ) ) {
+					if (map.get( group ) == null) map.put(group, new HashMap<>());
+					if (map.get( group ).get( level ) != null) {
+						throw new BioLockJException( "Can't allow multiple files for the same level in the same taxa table." );
+					}
+					map.get( group ).put(level, f);
+					inFiles.remove( f );
+				}
+			}
+		}
+		if (useAllFiles && !inFiles.isEmpty()) {
+			throw new BioLockJException("The following files could not be used to create TaxaTable objects: " + BioLockJUtil.getCollectionAsString( inFiles ));
+		}
+		for (String group : map.keySet()) {
+			TaxaTable tt = new TaxaTable(template.getLevels());
+			tt.setFiles( map.get( group ).values() );
+			list.add( tt );
+		}
+		return list;
+	}
+
+	@Override
+	public List<File> getFiles() throws BioLockJException {
+		List<File> list = new ArrayList<>();
+		for (String level : getLevels()) {
+			File levelFile = getTaxaTableFile( level );
+			if ( levelFile == null ) {
+				Log.warn(this.getClass(), "No table for taxonomic level: " + level);
+			}else {
+				list.add( levelFile );
+			}
+		}
+		return list;
+	}
+	
+	@Override
+	public DataUnitFactory<?> getFactory() {
+		return this;
+	}
+	
+	@Override
+	public Collection<TaxaTable> getActualData( List<File> files ) throws BioLockJException {
+		return getActualData(files, (TaxaTable) this);
+	}
+	
+	@Override
+	public void setFiles( List<File> files ) {
+		setFiles(files);
+	}
 
 }
