@@ -22,13 +22,17 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.dataType.DataUnit;
-import biolockj.dataType.InputSource;
+import biolockj.dataType.DataUnitFilter;
 import biolockj.dataType.MetaField;
+import biolockj.dataType.UnknownPipelineInput;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
+import biolockj.module.io.InputSource;
+import biolockj.module.io.InputSpecs;
+import biolockj.module.io.OutputSpecs;
 import biolockj.module.report.taxa.TaxaCountModule;
 import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.BioLockJUtil;
@@ -72,32 +76,49 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		Config.requireString( this, R_PVAL_ADJ_METHOD );
 		RMetaUtil.classifyReportableMetadata( this );
 		Config.getPositiveDoubleVal( this, Constants.R_RARE_OTU_THRESHOLD );
-		getInputSources();
+		assignInputSources();
 	}
 	
-	/**
-	 * We expect to have exactly one source for taxa tables (there may be multiple tables),
-	 * and we expect to have one or more input sources for metadata.
-	 */
 	@Override
-	protected List<InputSource> findInputSources() throws BioLockJException {
-		List<InputSource> inputs = new ArrayList<>();
-		try {
-			inputs.addAll( super.findInputSources() );
-		}catch(PipelineFormationException ex) {
-			Log.error(this.getClass(), "Failed to find Taxa tables for module [" + ModuleUtil.displaySignature( this ) + "]." );
-		}
-		if (inputs.isEmpty()) {
-			throw new PipelineFormationException( "Failed to find Taxa tables for module [" + ModuleUtil.displaySignature( this ) + "]." );
-		}else if (inputs.size() > 1 ) {
-			throw new PipelineFormationException( "Found multiple valid input dirs for [" + ModuleUtil.displaySignature( this ) + "]." );
-		}
-		for (String metaField : selectMetaFields() ) {
-			inputs.add( findMetaSource( metaField ) );
-		}
-		return inputs;
+	protected void defineInputSpecs() {
+		inputSpecs = new ArrayList<>();
+		inputSpecs.add( 
+			new InputSpecs("taxa table", 
+				"A taxa table, values should already be normalized. May include mutliple tables to represent multiple taxonomic levels.", 
+				TaxaTable.class.getName(), 
+				new DataUnitFilter() {
+
+				@Override
+				public boolean accept( DataUnit data ) {
+					return TaxaTable.class.isInstance( data );
+				}
+
+			}) );
+
+		inputSpecs.add( 
+			new InputSpecs("test design", 
+				"One or more metadata columns defining groups to use for statistical tests.", 
+				MetaField.class.getName(), 
+				new DataUnitFilter() {
+
+				@Override
+				public boolean accept( DataUnit data ) {
+					boolean useIt = false;
+					Set<String> fields = new HashSet<>();
+					try {
+						fields.addAll( selectMetaFields() ) ;
+					} catch( BioLockJException e ) {
+						fields.add( "[meta data field name]" ); //a stand-in shown in documentation
+					}
+					if ( !fields.isEmpty() && !MetaField.class.isInstance( data )) {
+						useIt = fields.contains( ((MetaField) data).getName() );
+					}
+					return useIt;
+				}
+
+			}) );
 	}
-	
+
 	/**
 	 * Determine the fields that were given in the meta data.
 	 * @return
@@ -116,46 +137,6 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 		return fields;
 	}
 	
-	/**
-	 * This mimics the logic in findInputSource in BioModuleImpl. Recursively look back through the pipeline modules,
-	 * and eventually into the original metadata file, looking for a source to credit for the meta data field of
-	 * interest.
-	 * 
-	 * @param field
-	 * @return
-	 * @throws PipelineFormationException
-	 */
-	private InputSource findMetaSource(String field) throws PipelineFormationException {
-		boolean foundSource = false;
-		BioModule prevMod = ModuleUtil.getPreviousModule( this );
-		InputSource in = null;
-		while( !foundSource ) {
-			if (prevMod == null) {
-				if ( MetaUtil.hasColumn( field ) ) {
-					foundSource = true;
-					in = new InputSource(null, field);
-				}else {
-					throw new PipelineFormationException( "Metadata field [" + field + " is not found in current metadata, nor expected from current modules." );
-				}
-			}else {
-				Collection<DataUnit> outs = prevMod.getOutputTypes();
-				if ( !outs.isEmpty() ) {
-					for ( DataUnit out : outs ) {
-						if (out instanceof MetaField) {
-							String outName = ((MetaField) out).getName();
-							if (outName.equals(field)) {
-								foundSource = true;
-								in = new InputSource(prevMod, field);
-							}
-						}
-					}
-				}
-			}
-			prevMod = ModuleUtil.getPreviousModule( prevMod );
-		}
-		return in;
-	}
-	
 	@Override
 	protected Map<String, String> requiredRPackages() {
 		Map<String, String> packages = super.requiredRPackages();
@@ -167,8 +148,7 @@ public class R_CalculateStats extends R_Module implements ApiModule {
 	@Override
 	public List<List<String>> buildScript( final List<File> files ) throws Exception {
 		List<List<String>> outer = new ArrayList<>();
-		TaxaTable tt = new TaxaTable();
-		tt.setFiles( files );
+		TaxaTable tt = new TaxaTable(files);
 		//Map<String, File> countTableByLevel = getFilesByLevel( files );
 		getFunctionLib();
 		File rscript = getModuleRScript();
