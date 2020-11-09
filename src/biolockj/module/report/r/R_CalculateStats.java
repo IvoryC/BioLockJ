@@ -32,6 +32,7 @@ import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
 import biolockj.module.io.InputSource;
 import biolockj.module.io.InputSpecs;
+import biolockj.module.io.ModuleIO;
 import biolockj.module.io.OutputSpecs;
 import biolockj.module.report.taxa.TaxaCountModule;
 import biolockj.module.report.taxa.TaxaTable;
@@ -45,7 +46,7 @@ import biolockj.util.RMetaUtil;
  * 
  * @blj.web_desc R Statistics Calculator
  */
-public class R_CalculateStats extends R_Module implements ApiModule {
+public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	
 	public R_CalculateStats() {
 		super();

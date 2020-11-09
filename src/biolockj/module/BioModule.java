@@ -12,14 +12,11 @@
 package biolockj.module;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.io.InputSource;
-import biolockj.module.io.InputSpecs;
-import biolockj.module.io.OutputSpecs;
 
 /**
  * Classes that implement this interface are eligible to be included in a BioLockJ pipeline.<br>
@@ -112,17 +109,6 @@ public interface BioModule {
 	public List<InputSource> getInputSources() throws BioLockJException;
 	
 	/**
-	 * A human and technical description of the modules input requirements.
-	 * @return
-	 */
-	public Collection<InputSpecs> getInputSpecs();
-	
-	/**
-	 * Determine an InputSource for each of the modules InputSpecs.
-	 */
-	public void assignInputSources();
-
-	/**
 	 * Updated/new metadata files are saved to the module output directory (if created by the module). Use param = FALSE
 	 * to return an empty file objects in preparation for building a new metadata file.
 	 *
@@ -143,12 +129,6 @@ public interface BioModule {
 	 * @return File directory containing the primary BioModule output
 	 */
 	public File getOutputDir();
-
-	/**
-	 * A human and technical definition of the module output types.
-	 * @return
-	 */
-	public Collection<OutputSpecs<?>> getOutputSpecs();
 
 	/**
 	 * {@link biolockj.Pipeline} calls this method when building the list of pipeline BioModules to execute. Any
