@@ -19,7 +19,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @return
 	 * @throws BioLockJException
 	 */
-	public Collection<T> getActualData(List<File> files) throws BioLockJException ;
+	public Collection<T> getActualData(List<File> files) throws ModuleInputException ;
 
 	/**
 	 * Interpret one or more files as DataUnit objects.
@@ -27,7 +27,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @param files a list of existing files on the file system
 	 * @return a collection of one or more DataUnit objects
 	 */
-	public default Collection<T> getActualData(List<File> files, T template) throws BioLockJException {
+	public default Collection<T> getActualData(List<File> files, T template) throws ModuleInputException {
 		return getActualData(files, template, false);
 	}
 	
@@ -41,14 +41,14 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @return a collection of one or more DataUnit objects
 	 */
 	@SuppressWarnings("unchecked")
-	public default Collection<T> getActualData(List<File> files, T template, boolean useAllFiles) throws BioLockJException {
+	public default Collection<T> getActualData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
 		if ( files == null || files.isEmpty() ) throw new ModuleInputException("The files arg is required.");
 		FilenameFilter filter = template.getFilenameFilter();
 		List<T> data = new LinkedList<>();
 		for (File file : files) {
 			if (file.isDirectory()) continue;
 			if (filter.accept( file.getParentFile(), file.getName() )) {
-				if (useAllFiles) throw new BioLockJException( "File name [" + file.getName() + "] is not an acceptable name for a data type: " + template.getClass().getName() );
+				if (useAllFiles) throw new ModuleInputException( "File name [" + file.getName() + "] is not an acceptable name for a data type: " + template.getClass().getName() );
 				else continue;
 			}
 			List<File> unitFiles = new ArrayList<>();
@@ -57,7 +57,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 				unit = (T) template.getClass().newInstance();
 			} catch( InstantiationException | IllegalAccessException e ) {
 				e.printStackTrace();
-				throw new BioLockJException( "Factory [" + this.getClass().getName() + "] could not create a new instance of: " + template.getClass().getName() );
+				throw new ModuleInputException( "Factory [" + this.getClass().getName() + "] could not create a new instance of: " + template.getClass().getName() );
 			}
 			unit.setFiles( unitFiles );
 			unitFiles.add( file );
