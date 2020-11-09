@@ -1,52 +1,53 @@
 package biolockj.module.io;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import biolockj.dataType.DataUnit;
+import biolockj.exception.BioLockJException;
 import biolockj.module.BioModule;
-import biolockj.util.MetaUtil;
 import biolockj.util.ModuleUtil;
 
 /**
  * This class allows modules and utility classes to model what a BioModule 
  * will use as its input, even at time when (like in checkDependencies) 
  * the input itself may not exist yet.
- * @author ieclabau
+ * @author Ivory Blakley
  *
  */
 public class InputSource {
-	public InputSource(BioModule module){
-		isMetaDataColumn = false;
+	
+	/**
+	 * Construct an InputSource based on the output a module in the pipeline will produce.
+	 * @param oput
+	 */
+	public InputSource(OutputSpecs<?> oput){
 		isBioModule = true;
-		this.module = module;
+		this.oput = oput;
 		this.file = null;
-		this.column = null;
-		name = ModuleUtil.displaySignature( module );
+		this.template = oput.getDataType();
+		name = oput.getModule() + ":" + oput.getLabel();
 	}
-	public InputSource(File folder){
-		isMetaDataColumn = false;
+	
+	/**
+	 * Construct an InputSource based data that already exists upon pipeline launch.
+	 * @param folder
+	 * @param template
+	 */
+	public InputSource(File folder, DataUnit template){
 		isBioModule = false;
+		this.oput = null;
 		this.file = folder;
-		this.module = null;
-		this.column = null;
+		this.template = template;
 		name = folder.getName() + ( folder.isDirectory() ? " folder" : "");
-	}
-	public InputSource(BioModule module, String columnName){
-		isMetaDataColumn = true;
-		isBioModule = module != null;
-		this.file = null;
-		this.module = module;
-		this.column = columnName;
-		name = "metadata column [" + columnName + "]" + ( isBioModule ? (" from module" + ModuleUtil.displaySignature( module ) ) : "");
 	}
 	
 	private final boolean isBioModule;
-	private final boolean isMetaDataColumn;
-	private final BioModule module;
-	private final String column;
+	private final OutputSpecs<?> oput;
 	private final File file;
 	private final String name;
 	
-	private DataUnit data = null;
+	private DataUnit template = null;
 	
 	/**
 	 * Is this input a BioLockJ module?
@@ -62,10 +63,8 @@ public class InputSource {
 	 */
 	public boolean isReady() {
 		boolean ready;
-		if (module != null) {
-			ready = ModuleUtil.isComplete( module );
-		}else if (isMetaDataColumn){
-			ready = MetaUtil.hasColumn( column );
+		if (isBioModule) {
+			ready = ModuleUtil.isComplete( oput.getModule() );
 		}else {
 			ready = file.exists();
 		}
@@ -78,7 +77,7 @@ public class InputSource {
 	 */
 	public File getFile() {
 		if (isBioModule) {
-			return module.getOutputDir();
+			return oput.getModule().getOutputDir();
 		}else {
 			return file;
 		}
@@ -86,7 +85,13 @@ public class InputSource {
 	
 	public BioModule getBioModule() {
 		if (isBioModule) {
-			return module;
+			return oput.getModule();
+		}else return null;
+	}
+	
+	public OutputSpecs<?> getOutputSpecs() {
+		if (isBioModule) {
+			return oput;
 		}else return null;
 	}
 	
@@ -94,16 +99,17 @@ public class InputSource {
 		return name;
 	}
 	
-	public String getMetaColumnName() {
-		return column;
-	}
-	
-	public Class<? extends DataUnit> getInputType() {
-		return typeClass;
+	public DataUnit getInputType() {
+		return template;
 	}
 	
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	public final List<? extends DataUnit> getActualData() throws BioLockJException {
+		return (List<? extends DataUnit>) template.getFactory()
+						.getActualData( Arrays.asList( getFile().listFiles() ) );
 	}
 }

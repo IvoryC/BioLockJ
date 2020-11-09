@@ -470,38 +470,22 @@ public class ModuleUtil {
 		return ids;
 	}
 	
-	/**
-	 * Find the most recent module that outputs a data type that satisfies the dataFilter.
-	 * @param module
-	 * @param dataFilter
-	 * @return
-	 */
-	public static BioModule findInputModule(BioModule module, DataUnitFilter dataFilter ){
-		return findInputModule(module, new BioModuleFilter(){
-			@Override
-			public boolean accept(BioModule qmodule) {
-				Collection<OutputSpecs> outputs = qmodule.getOutputSpecs();
-				if (outputs.isEmpty()) return false;
-				for (OutputSpecs output : outputs) {
-					if (dataFilter.accept( output.getDataType() )) return true;
-				}
-				return false;
-			}
-		});
-	}
-	
-	public static BioModule findInputModule(final BioModule module, final BioModuleFilter filter ){
+	public static OutputSpecs<?> findInputModule(final BioModule module, final DataUnitFilter dataFilter ){
 		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
 		BioModule prevMod = getPreviousModule( module );
-		BioModule returnModule = null;
-		while( returnModule == null ) {
+		OutputSpecs<?> useOutput = null;
+		while( useOutput == null ) {
 			if (prevMod == null) break;
-			if ( filter.accept( prevMod ) && defaultFilter.accept( prevMod ) ) {
-				returnModule = prevMod;
+			if ( defaultFilter.accept( prevMod ) ) {
+				for (OutputSpecs<?> oneOutput : prevMod.getOutputSpecs() ) {
+					if (dataFilter.accept( oneOutput.getDataType() )) {
+						useOutput = oneOutput;
+					}
+				}
 			}
 			prevMod = getPreviousModule( prevMod );
 		};
-		return returnModule;
+		return useOutput;
 	}
 	
 	public static void assignInputModules( BioModule module, List<InputSpecs> specs) throws BioLockJException {
@@ -511,14 +495,14 @@ public class ModuleUtil {
 			Log.info(module.getClass(), "Determineing module input to meet input: " + inspec.getLabel() );
 			DataUnitFilter inFilter = inspec.getFilter();
 			
-			BioModule inputModule = findInputModule( module, inFilter );
+			OutputSpecs<?> oput = findInputModule( module, inFilter );
 			
-			if( inputModule != null ) {
-				InputSource in = new InputSource( inputModule );
+			if( oput != null ) {
+				InputSource in = new InputSource( oput );
 				inspec.source.add( in );
 				Log.info( module.getClass(), "Found valid input module to satisfy the [" + inspec.getLabel() + "] input: " + in.getName() );
 			} else {
-				Log.debug( module.getClass(), "No prior pipeline module is a valid input module.  Return input from inputDirs.");
+				Log.debug( module.getClass(), "No prior pipeline module is a valid input module.  Use input from inputDirs.");
 			}
 		}
 	}
