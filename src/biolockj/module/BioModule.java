@@ -116,6 +116,11 @@ public interface BioModule {
 	 * @return
 	 */
 	public Collection<InputSpecs> getInputSpecs();
+	
+	/**
+	 * Determine an InputSource for each of the modules InputSpecs.
+	 */
+	public void assignInputSources();
 
 	/**
 	 * Updated/new metadata files are saved to the module output directory (if created by the module). Use param = FALSE
@@ -143,7 +148,7 @@ public interface BioModule {
 	 * A human and technical definition of the module output types.
 	 * @return
 	 */
-	public Collection<OutputSpecs> getOutputSpecs();
+	public Collection<OutputSpecs<?>> getOutputSpecs();
 
 	/**
 	 * {@link biolockj.Pipeline} calls this method when building the list of pipeline BioModules to execute. Any

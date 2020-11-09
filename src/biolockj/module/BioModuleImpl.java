@@ -499,6 +499,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	
 
 	@Override
+	@Deprecated
 	public List<InputSource> getInputSources() throws BioLockJException {
 		if( inputSources == null ) {
 			inputSources = new ArrayList<>();
@@ -536,9 +537,9 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 			throw new ModuleInputException( "No input dirs available for module [" + ModuleUtil.displaySignature( this ) + "]." );
 		}else{
 			for( File inFile: inputDirs ) {
-				DataUnit<?> inData = null;
+				DataUnit inData = null;
 				try {
-					inData = (DataUnit<?>) Class.forName( inspec.dataUnitClass ).newInstance();
+					inData = (DataUnit) Class.forName( inspec.dataUnitClass ).newInstance();
 				} catch( Exception e ) {
 					e.printStackTrace();
 					Log.error(this.getClass(), "Failed attempt to instantiate a DataUnit of type: " + inspec.dataUnitClass );
@@ -554,7 +555,14 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		}else if (validDirs.size() == 0) {
 			throw new ModuleInputException( "The input given for [" + ModuleUtil.displaySignature( this ) + "] were not suitable for input [" + inspec.getLabel() + "]." );
 		}else {
-			inspec.source.add( new InputSource( validDirs.get(0) ) );
+			DataUnit template;
+			try {
+				template = (DataUnit) Class.forName( inspec.dataUnitClass ).newInstance();
+			} catch( InstantiationException | IllegalAccessException | ClassNotFoundException e ) {
+				e.printStackTrace();
+				throw new BioLockJException( "Could not instantiate new instance of class: " + inspec.dataUnitClass );
+			}
+			inspec.source.add( new InputSource( validDirs.get(0), template ) );
 		}
 	}
 	

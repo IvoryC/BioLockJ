@@ -2,7 +2,6 @@ package biolockj.dataType;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.Collection;
 import java.util.List;
 import biolockj.exception.BioLockJException;
 import biolockj.module.io.InputSource;
