@@ -162,6 +162,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	public List<File> getInputFiles() throws ModuleInputException {
 		if ( calledPrematurely() ) return null;
 		if( getFileCache().isEmpty() ) {
+			List<File> files = new ArrayList<>();
 			cacheInputFiles ( findModuleInputFiles() );
 		}
 		return getFileCache();
@@ -460,41 +461,42 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		return moduleInputFiles;
 	}
 	
-	protected List<InputSource> findInputSources() throws BioLockJException {
-		List<InputSource> inputSources = new ArrayList<>();
-		Log.debug( getClass(), "Initialize input sources..." );
-		boolean validInput = false;
-		BioModule previousModule = ModuleUtil.getPreviousModule( this );
-		while( !validInput )
-			if( previousModule == null ) {
-				Log.debug( getClass(),
-					"No prior pipeline module is a valid input module.  Return pipleline input from: " + Constants.INPUT_DIRS );
-				List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
-				if (inputDirs != null && ! inputDirs.isEmpty() ) {
-					for (File input : Config.getExistingFileList( this, Constants.INPUT_DIRS ) ) {
-						if (isValidInputDir(input)) inputSources.add( new InputSource(input) );
-					}
-				}
-				validInput = true;
-			} else {
-				Log.debug( getClass(),
-					"Check previous module for valid input type: " + ModuleUtil.displaySignature( previousModule ) );
-				validInput = isValidInputModule( previousModule, true );
-				if( validInput ) {
-					InputSource input = new InputSource(previousModule);
-					Log.debug( getClass(),
-						"Found valid input module: " + input.getName() );
-					inputSources.add( input );
-				} else {
-					previousModule = ModuleUtil.getPreviousModule( previousModule );
-				}
-			}
-		if(inputSources.isEmpty()) {
-			Log.warn(this.getClass(), "No suitable input sources were found!");
-			throw new PipelineFormationException("Failed to find valid input source for module [" + ModuleUtil.displaySignature( this ) + "].");
-		}
-		return inputSources;
-	}
+//	@Deprecated
+//	protected List<InputSource> findInputSources() throws BioLockJException {
+//		List<InputSource> inputSources = new ArrayList<>();
+//		Log.debug( getClass(), "Initialize input sources..." );
+//		boolean validInput = false;
+//		BioModule previousModule = ModuleUtil.getPreviousModule( this );
+//		while( !validInput )
+//			if( previousModule == null ) {
+//				Log.debug( getClass(),
+//					"No prior pipeline module is a valid input module.  Return pipleline input from: " + Constants.INPUT_DIRS );
+//				List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
+//				if (inputDirs != null && ! inputDirs.isEmpty() ) {
+//					for (File input : Config.getExistingFileList( this, Constants.INPUT_DIRS ) ) {
+//						if (isValidInputDir(input)) inputSources.add( new InputSource(input) );
+//					}
+//				}
+//				validInput = true;
+//			} else {
+//				Log.debug( getClass(),
+//					"Check previous module for valid input type: " + ModuleUtil.displaySignature( previousModule ) );
+//				validInput = isValidInputModule( previousModule, true );
+//				if( validInput ) {
+//					InputSource input = new InputSource(previousModule);
+//					Log.debug( getClass(),
+//						"Found valid input module: " + input.getName() );
+//					inputSources.add( input );
+//				} else {
+//					previousModule = ModuleUtil.getPreviousModule( previousModule );
+//				}
+//			}
+//		if(inputSources.isEmpty()) {
+//			Log.warn(this.getClass(), "No suitable input sources were found!");
+//			throw new PipelineFormationException("Failed to find valid input source for module [" + ModuleUtil.displaySignature( this ) + "].");
+//		}
+//		return inputSources;
+//	}
 
 	
 
@@ -600,10 +602,9 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		}) );
 	}
 	
-	protected List<OutputSpecs> outputSpecs = null;
+	protected List<OutputSpecs<?>> outputSpecs = null;
 	
-	@Override
-	public Collection<OutputSpecs> getOutputSpecs(){
+	public List<OutputSpecs<?>> getOutputSpecs(){
 		if (outputSpecs == null) defineOutputSpecs();
 		return outputSpecs;
 	}
@@ -615,8 +616,8 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * All extending classes should provide their own, preferably more descriptive, output specifications.
 	 */
 	protected void defineOutputSpecs() {
-		Collection<OutputSpecs> outputs = new LinkedList<>();
-		outputs.add( new OutputSpecs("module output", new SpecificModuleOutput<>(this)) );
+		List<OutputSpecs<?>> outputs = new LinkedList<>();
+		outputs.add( new OutputSpecs<>(this, "module output", new SpecificModuleOutput<>(this)) );
 	}
 
 	

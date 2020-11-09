@@ -21,13 +21,13 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.dataType.DataUnit;
-import biolockj.dataType.InputSource;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
+import biolockj.module.io.InputSource;
 import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.MetaUtil;
@@ -132,7 +132,7 @@ public class R_PlotOtus extends R_Module implements ApiModule {
 					throw new PipelineFormationException( "Failed to find taxa table input" );
 				}
 			}else {
-				Collection<DataUnit> outs = prevMod.getOutputTypes();
+				Collection<DataUnit> outs = prevMod.getOutputSpecs();
 				if ( !outs.isEmpty() ) {
 					for ( DataUnit out : outs ) {
 						if (out instanceof TaxaTable) {
