@@ -16,18 +16,18 @@ COPY resources/docker/docker_build_scripts/imageForBioLockJ.sh /root/.
 RUN . /root/imageForBioLockJ.sh ~/.bashrc
 
 #4.1) Install R Packages that are usually good
-RUN Rscript -e "install.packages('Kendall', dependencies=TRUE)" && \
-	Rscript -e "install.packages('coin', dependencies=TRUE)" && \
-	Rscript -e "install.packages('vegan', dependencies=TRUE)" && \
-	Rscript -e "install.packages('properties', dependencies=TRUE)"
+RUN Rscript -e "install.packages('Kendall', dependencies=c('Depends', 'Imports'))" && \
+	Rscript -e "install.packages('coin', dependencies=c('Depends', 'Imports'))" && \
+	Rscript -e "install.packages('vegan', dependencies=c('Depends', 'Imports'))" && \
+	Rscript -e "install.packages('properties', dependencies=c('Depends', 'Imports'))"
 	
 #4.2) Install R Packages packages that got warnings
-RUN Rscript -e "install.packages('htmltools', dependencies=TRUE)"
+RUN Rscript -e "install.packages('htmltools', dependencies=c('Depends', 'Imports'))"
 	
 #4.3) Install R Packages that have failed
-RUN Rscript -e "install.packages('ggplot2', dependencies=TRUE)" && \
-	Rscript -e "install.packages('ggpubr', dependencies=TRUE)" && \
-	Rscript -e "install.packages('stringr', dependencies=TRUE)"
+RUN Rscript -e "install.packages('ggplot2', dependencies=c('Depends', 'Imports'))" && \
+	Rscript -e "install.packages('ggpubr', dependencies=c('Depends', 'Imports'))" && \
+	Rscript -e "install.packages('stringr', dependencies=c('Depends', 'Imports'))"
 
 #5.) check that packages installed
 RUN Rscript -e "library('Kendall'); library('coin'); library('vegan'); library('ggpubr'); library('properties'); library('htmltools'); library('stringr')"
