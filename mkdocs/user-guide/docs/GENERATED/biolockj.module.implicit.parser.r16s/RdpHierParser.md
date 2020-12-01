@@ -11,6 +11,7 @@ Create taxa tables from the _hierarchicalCount.tsv files output by RDP.
 ### RdpHierParser properties: 
 | Property| Description |
 | :--- | :--- |
+| *rdp.hierCounts* | _boolean_ <br>Set this property to "Y" to use this module instead as the follow-up to the RdpClassifier module.<br>*default:*  *null* |
 | *rdp.minThresholdScore* | _numeric_ <br>RdpClassifier will use this property and ignore OTU assignments below this threshold score (0-100)<br>*default:*  80 |
 
 ### General properties applicable to this module: 

@@ -45,6 +45,7 @@
 [RarefyOtuCounts](biolockj.module.report.otu/RarefyOtuCounts.md) - *Applies a mean iterative post-OTU classification rarefication algorithm so that each output sample will have approximately the same number of OTUs.*                   
 [RarefySeqs](biolockj.module.seq/RarefySeqs.md) - *Randomly sub-sample sequences to reduce all samples to the configured maximum.*                   
 [RdpClassifier](biolockj.module.classifier.r16s/RdpClassifier.md) - *Classify 16s samples with [RDP](http://rdp.cme.msu.edu/classifier/classifier.jsp).*                   
+[RdpHierParser](biolockj.module.implicit.parser.r16s/RdpHierParser.md) - *Create taxa tables from the _hierarchicalCount.tsv files output by RDP.*                   
 [RdpParser](biolockj.module.implicit.parser.r16s/RdpParser.md) - *Build OTU tables from [RDP](http://rdp.cme.msu.edu/classifier/classifier.jsp) reports.*                   
 [RegisterNumReads](biolockj.module.implicit/RegisterNumReads.md)                   
 [RemoveLowOtuCounts](biolockj.module.report.otu/RemoveLowOtuCounts.md) - *Removes OTUs with counts below report.minCount.*                   
@@ -58,4 +59,5 @@
 [SraMetaDB](biolockj.module.getData.sra/SraMetaDB.md) - *Makes sure that the SRAmetadb exists, downloads if it does not already exist.*                   
 [SraMetaData](biolockj.module.getData.sra/SraMetaData.md) - *Extract metadata via pysradb from local copy of SRAmetadb.sqlite.*                   
 [SrpSrrConverter](biolockj.module.getData.sra/SrpSrrConverter.md) - *Create an SraAccList.txt file from an SRA project identifier.*                   
+[Stop](biolockj.module/Stop.md) - *Stop a pipeline.*                   
 [TrimPrimers](biolockj.module.seq/TrimPrimers.md) - *Remove primers from reads, option to discard reads unless primers are attached to both forward and reverse reads.*                   

@@ -13,8 +13,10 @@ Classify 16s samples with [RDP](http://rdp.cme.msu.edu/classifier/classifier.jsp
 | :--- | :--- |
 | *rdp.containerJar* | _string_ <br>File path for RDP java executable JAR in docker.<br>*default:*  /app/classifier.jar |
 | *rdp.db* | _file path_ <br>File path used to define an alternate RDP database<br>*default:*  *null* |
+| *rdp.hierCounts* | _boolean_ <br>Generate TaxaTables using the RDP --hier_outfile option; uses the RdpHierParser instead of the standard RdpParser module.<br>*default:*  *null* |
 | *rdp.jar* | _file path_ <br>File path for RDP java executable JAR<br>*default:*  *null* |
 | *rdp.javaParams* | _list_ <br>the parameters to java when running rdp.<br>*default:*  *null* |
+| *rdp.minThresholdScore* | _numeric_ <br>IFF rdp.hierCounts=Y, RdpClassifier will ignore OTU assignments below this threshold score (0-100)<br>*default:*  80 |
 | *rdp.params* | _list_ <br>parameters to use when running rdp. (must include "-f fixrank")<br>*default:*  -f fixrank |
 
 ### General properties applicable to this module: 
@@ -46,7 +48,7 @@ biolockj.module.implicit.parser.r16s.RdpParser
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/rdp_classifier:v1.3.13
+biolockjdevteam/rdp_classifier:v1.3.14
 ```
 This can be modified using the following properties:<br>
 `RdpClassifier.imageOwner`<br>
@@ -55,5 +57,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.13
+BioLockJ v1.3.14
 

@@ -8,7 +8,7 @@
   
   <meta name="author" content="Ivory Blakley">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>FAQ - BioLockJ User Guide</title>
+  <title>FAQ & Troubleshooting - BioLockJ User Guide</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -17,7 +17,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "FAQ";
+    var mkdocs_page_name = "FAQ & Troubleshooting";
     var mkdocs_page_input_path = "FAQ.md";
     var mkdocs_page_url = null;
   </script>
@@ -170,7 +170,7 @@
           
             <li class="toctree-l1 current">
 		
-    <a class="current" href="./">FAQ</a>
+    <a class="current" href="./">FAQ & Troubleshooting</a>
     <ul class="subnav">
             
     <li class="toctree-l2"><a href="#faq-troublshooting-and-special-cases">FAQ, Troublshooting and Special Cases</a></li>
@@ -201,6 +201,8 @@
         
             <li><a class="toctree-l3" href="#question-shutting-down-a-pipeline-how-do-i-stop-a-pipeline-that-is-running">Question: Shutting down a pipeline.  How do I stop a pipeline that is running?</a></li>
         
+            <li><a class="toctree-l3" href="#question-how-can-i-get-color-coded-syntax-for-a-biolockj-config-file">Question: How can I get color-coded syntax for a BioLockJ config file?</a></li>
+        
         </ul>
     
 
@@ -229,7 +231,7 @@
     
       
     
-    <li>FAQ</li>
+    <li>FAQ & Troubleshooting</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -349,6 +351,15 @@ docker stop f55a39311eb5
 If you need to distinguish the BioLockJ containers from other docker containers running on your machine, you can see a list of them in the current modules script directory in a file named <code>MAIN*.sh_Started</code>.</p>
 <p>To kill the BioLockJ program that is run in the foreground (ie, the <code>-f</code> arg was used), then killing the current process will kill the program.  This is usually done with <code>ctrl</code>+<code>c</code> .</p>
 <p>To kill the BioLockJ program on a cluster environment, use <code>kill</code> just like the local case to stop a process on the head node, and use <code>qdel</code> (or the equivilent on your scheduler) to terminate workers running on compute nodes.</p>
+<hr />
+<h3 id="question-how-can-i-get-color-coded-syntax-for-a-biolockj-config-file"><strong>Question:</strong> How can I get color-coded syntax for a BioLockJ config file?<a class="headerlink" href="#question-how-can-i-get-color-coded-syntax-for-a-biolockj-config-file" title="Permanent link">#</a></h3>
+<hr />
+<p><strong>Answer:</strong> Treat it like a java properties file.</p>
+<p>A BioLockJ config file <em>is</em> a java properties file, with added "#BioModule" lines indicating which modules to run.  BioLockJ config files typically use the extension ".config" (preferred) or ".properties". Some editors have configurations to color-code text in a meaningful way based on the type of file.   For example, Sublime text will automatically apply the syntax highlighting for a java properties file to a file that ends in ".properties".                                <br />
+To extend this Sublime Text functionality to files that in ".config":                       <br />
+ 1. open a file with the ".config" extension,                                 <br />
+ 2. go to View -&gt; Syntax -&gt; Open all with current exension -&gt; Java -&gt; Java Properties</p>
+<p>( Much thanks to this helpful post: <a href="https://stackoverflow.com/questions/8088475/how-to-customise-file-type-to-syntax-associations-in-sublime-text">stack over flow</a> )</p>
               
             </div>
           </div>
