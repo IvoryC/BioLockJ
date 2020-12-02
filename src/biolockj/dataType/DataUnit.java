@@ -19,7 +19,7 @@ import biolockj.module.io.InputSource;
  *
  */
 public interface DataUnit {
-	
+
 	/**
 	 * A description to help a human decide if a given input is appropriate for a given method.
 	 * @return the description
@@ -29,7 +29,7 @@ public interface DataUnit {
 	/**
 	 * Once data is attached (such as files, objects, meta data columns); 
 	 * this method allows the class to check that a given instance actually upholds the class description.
-	 * For example: a module may say it makes an column in the metadata, called "Counts", that has numeric data.
+	 * For example: a module may say it makes a column in the metadata, called "Counts", that has numeric data.
 	 * That module returns a NumericMetaData object, that indicates column name "Counts".
 	 * Once that column has been made (or should have been made) this isValid method of the NumericMetaData class
 	 * can check that there actually is a metadata column named Counts, that contains numeric data.
@@ -67,40 +67,64 @@ public interface DataUnit {
 		List<File> files = null;
 		try {
 			files = getFiles();
-		} catch( BioLockJException e ) {
+		} catch( Exception e ) {
 			files = null;
 		}
 		boolean ready = files != null && !files.isEmpty();
-		for (File file : files) {
-			if ( !file.exists() ) ready = false;
-		}
 		return ready;
 	}
 	
+	//private List<File> files = null;
+	
 	/**
-	 * This will often accept only a list of exactly 1.
-	 * The List aspect accommodates things that have multiple files with a fixed relationship, 
-	 * such paired reads where one sample has a forward file and a reverse file.
-	 * If there are multiple instances of this unit type, this object will need to use iterate() before assigning files.
+	 * This method is typically called by a DataUnitFactory class. This method should be "dumb". The place for ensuring
+	 * that correct file types are added is in the DataUnitFactory class, or in the isValid method.
+	 * 
+	 * The List design accommodates things that have multiple files with a fixed relationship, such paired reads where
+	 * one sample has a forward file and a reverse file.
+	 * 
+	 * At the point when setFiles is called, if there are multiple instances of this file type, each instance is modeled by a
+	 * DataUnit instance.
+	 * 
 	 * @param files
 	 */
 	public void setFiles(List<File> files);
+	//this.files = files;
 	
 	/**
 	 * This will often return a list of exactly 1.
 	 * You cannot getFiles() from a DataUnit object that is not isReady().
-	 * You cannot getFiles() from a DataUnit object that isIterable - that object must iterate() 
+	 * You cannot getFiles() from a DataUnit object that canBeMultiple - that object must iterate() 
 	 * to create a List of DataUnit objects of the same type, each of which 
-	 * are isReady() and not isIterable() and can call getFiles().
+	 * are isReady() and not canBeMultiple() and can call getFiles().
 	 * Some implementations may do these steps and return all files, and the 
 	 * calling class would have to call iterate() to be able to list files per individual object.
 	 * @return
 	 */
 	public List<File> getFiles() throws BioLockJException;
+	//return files;
 	
+	/**
+	 * Return an object that can be used to produce instances of this data unit given one or more files. A class, clazz,
+	 * implementing DataUnit may also implement DataUnitFilter<clazz>, and its implementation of this method could be as
+	 * simple as: return this;
+	 * 
+	 * @return
+	 */
 	public DataUnitFactory<?> getFactory();
 
-	
+	/**
+	 * Returns a FilenameFilter object which accepts files of this data type. 
+	 * 
+	 * For example, a FastaSeqs class implementing
+	 * DataUnit would return a filter that accepts filenames ending in .fa or .fasta, thus making it easy for the
+	 * DataUnitUnitFactory class, or other classes, to pick out the relevant files and ignore 'readme.txt' and
+	 * 'metadada.csv'.
+	 * 
+	 * The default implementation excludes hidden files, and excludes files that have no file extension (no "." in the name).
+	 * 
+	 * @return
+	 */
 	public default FilenameFilter getFilenameFilter() {
 		return new FilenameFilter() {
 			@Override
@@ -111,5 +135,37 @@ public interface DataUnit {
 			}
 		};
 	}
-
+		
+	/**
+	 * Many programs will produce one OR MORE of a given file type depending on the inputs they receive. Some
+	 * programs accept exactly one object for each input and/or produce exactly one output.
+	 * 
+	 * For example FastQC takes in one sequence file and produces one summary, and if you give it many sequence files,
+	 * it will produce many summary files in parallel. So a FastQC module would produce one output type, a DataUnit
+	 * class that represents a FastQC summary, and it would return true for canBeMultiple() indicating to all downstream
+	 * modules that it produces one type, and it will create any number of instances of that type.
+	 * 
+	 * Conversely, BuildTaxaTables produces exactly one TaxaTable object regardless of how many sequence files go into
+	 * it; so it would return false.
+	 * 
+	 * An implementation could be smart enough to look at its own inputs and determine if multiple summaries will be
+	 * produced. Most implementations will simply return true, because it is possible that multiple instances will be
+	 * produced.
+	 * 
+	 * A module that can't handle multiple instances of an input type might have a DataUnitFilter that will disallow
+	 * canBeMultiple(). Most methods that take exactly one input will iterate over however many there are and produce
+	 * one instance of the output type for each instance of the input type.
+	 * 
+	 * @return
+	 */
+	public boolean canBeMultiple() ;
+	
+	/**
+	 *  Allow the module that uses this to model its output to specify if it has the 
+	 *  possibility of making more than one instance of this data type.
+	 *  See {@link DataUnit#isIterable()}
+	 * @param multiple can this output produce more than one instance of this output type
+	 */
+	public void canBeMultiple(boolean multiple) ;
+	
 }
