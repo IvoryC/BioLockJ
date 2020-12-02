@@ -48,7 +48,9 @@ public interface DataUnit {
 	 * 
 	 * @return
 	 */
-	public boolean isValid() throws BioLockJException;
+	public default boolean isValid() throws BioLockJException{
+		return isReady();
+	}
 	
 	/**
 	 * Object instance may be used for modules to communicate about outputs they will produce.
