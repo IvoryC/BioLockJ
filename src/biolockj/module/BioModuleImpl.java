@@ -29,8 +29,8 @@ import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.io.InputSource;
-import biolockj.module.io.InputSpecs;
-import biolockj.module.io.OutputSpecs;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 import biolockj.util.*;
 
 /**
@@ -505,7 +505,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	public List<InputSource> getInputSources() throws BioLockJException {
 		if( inputSources == null ) {
 			inputSources = new ArrayList<>();
-			for (InputSpecs inspec : inputSpecs ) {
+			for (ModuleInput inspec : inputSpecs ) {
 				if (inspec.source == null) assignInputSources();
 				inputSources.addAll( inspec.source );
 			}
@@ -518,8 +518,8 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * @throws BioLockJException 
 	 */
 	public void assignInputSources() throws BioLockJException {
-		ModuleUtil.assignInputModules(this, getInputSpecs());
-		for (InputSpecs inspec : getInputSpecs() ) {
+		ModuleUtil.assignInputModules(this, getInputTypes());
+		for (ModuleInput inspec : getInputTypes() ) {
 			if (inspec.source == null) {
 				assignInputDir( inspec );
 			}
@@ -532,7 +532,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * @param inspec
 	 * @throws BioLockJException 
 	 */
-	public void assignInputDir(InputSpecs inspec) throws BioLockJException {
+	public void assignInputDir(ModuleInput inspec) throws BioLockJException {
 		List<File> validDirs = new ArrayList<>();
 		List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
 		if( inputDirs == null || inputDirs.isEmpty() ) {
@@ -568,9 +568,9 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		}
 	}
 	
-	protected List<InputSpecs> inputSpecs = null;
+	protected List<ModuleInput> inputSpecs = null;
 	
-	public List<InputSpecs> getInputSpecs() {
+	public List<ModuleInput> getInputTypes() {
 		if (inputSpecs == null) defineInputSpecs();
 		return inputSpecs;
 	}
@@ -591,7 +591,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 */
 	protected void defineInputSpecs() {
 		inputSpecs = new ArrayList<>();
-		inputSpecs.add( new InputSpecs("input", "any input", UnknownPipelineInput.class.getName(), 
+		inputSpecs.add( new ModuleInput("input", "any input", UnknownPipelineInput.class.getName(), 
 			new DataUnitFilter() {
 
 			@Override
@@ -602,9 +602,9 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		}) );
 	}
 	
-	protected List<OutputSpecs<?>> outputSpecs = null;
+	protected List<ModuleOutput<?>> outputSpecs = null;
 	
-	public List<OutputSpecs<?>> getOutputSpecs(){
+	public List<ModuleOutput<?>> getOutputTypes(){
 		if (outputSpecs == null) defineOutputSpecs();
 		return outputSpecs;
 	}
@@ -616,8 +616,8 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * All extending classes should provide their own, preferably more descriptive, output specifications.
 	 */
 	protected void defineOutputSpecs() {
-		List<OutputSpecs<?>> outputs = new LinkedList<>();
-		outputs.add( new OutputSpecs<>(this, "module output", new SpecificModuleOutput<>(this)) );
+		List<ModuleOutput<?>> outputs = new LinkedList<>();
+		outputs.add( new ModuleOutput<>(this, "module output", new SpecificModuleOutput<>(this)) );
 	}
 
 	

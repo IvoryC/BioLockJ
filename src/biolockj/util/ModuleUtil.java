@@ -29,8 +29,8 @@ import biolockj.module.BioModuleFilter;
 import biolockj.module.JavaModule;
 import biolockj.module.classifier.ClassifierModule;
 import biolockj.module.io.InputSource;
-import biolockj.module.io.InputSpecs;
-import biolockj.module.io.OutputSpecs;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 import biolockj.module.report.r.R_Module;
 
 /**
@@ -470,14 +470,18 @@ public class ModuleUtil {
 		return ids;
 	}
 	
-	public static OutputSpecs<?> findInputModule(final BioModule module, final DataUnitFilter dataFilter ){
+	public static void assignInputs(BioModule module) {
+		//TODO
+	}
+	
+	public static ModuleOutput<?> findInputModule(final BioModule module, final DataUnitFilter dataFilter ){
 		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
 		BioModule prevMod = getPreviousModule( module );
-		OutputSpecs<?> useOutput = null;
+		ModuleOutput<?> useOutput = null;
 		while( useOutput == null ) {
 			if (prevMod == null) break;
 			if ( defaultFilter.accept( prevMod ) ) {
-				for (OutputSpecs<?> oneOutput : prevMod.getOutputSpecs() ) {
+				for (ModuleOutput<?> oneOutput : prevMod.getOutputTypes() ) {
 					if (dataFilter.accept( oneOutput.getDataType() )) {
 						useOutput = oneOutput;
 					}
@@ -488,14 +492,14 @@ public class ModuleUtil {
 		return useOutput;
 	}
 	
-	public static void assignInputModules( BioModule module, List<InputSpecs> specs) throws BioLockJException {
+	public static void assignInputModules( BioModule module, List<ModuleInput> specs) throws BioLockJException {
 		Log.debug( module.getClass(), "Initialize input sources..." );
 		
-		for (InputSpecs inspec : specs) {
+		for (ModuleInput inspec : specs) {
 			Log.info(module.getClass(), "Determineing module input to meet input: " + inspec.getLabel() );
 			DataUnitFilter inFilter = inspec.getFilter();
 			
-			OutputSpecs<?> oput = findInputModule( module, inFilter );
+			ModuleOutput<?> oput = findInputModule( module, inFilter );
 			
 			if( oput != null ) {
 				InputSource in = new InputSource( oput );

@@ -132,7 +132,7 @@ public class R_PlotOtus extends R_Module implements ApiModule {
 					throw new PipelineFormationException( "Failed to find taxa table input" );
 				}
 			}else {
-				Collection<DataUnit> outs = prevMod.getOutputSpecs();
+				Collection<DataUnit> outs = prevMod.getOutputTypes();
 				if ( !outs.isEmpty() ) {
 					for ( DataUnit out : outs ) {
 						if (out instanceof TaxaTable) {

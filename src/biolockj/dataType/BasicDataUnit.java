@@ -22,7 +22,7 @@ public abstract class BasicDataUnit<T extends BasicDataUnit> implements DataUnit
 	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<T> getActualData( List<File> files ) throws BioLockJException {
-		return getActualData(files, (T) this);
+		return getData(files, (T) this);
 	}
 
 }
