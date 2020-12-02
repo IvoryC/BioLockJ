@@ -3,6 +3,7 @@ package biolockj.module.io;
 import java.util.List;
 import biolockj.exception.BioLockJException;
 import biolockj.module.BioModule;
+import biolockj.util.ModuleUtil;
 
 public interface ModuleIO extends BioModule {
 
@@ -10,18 +11,20 @@ public interface ModuleIO extends BioModule {
 	 * A human and technical description of the modules input requirements.
 	 * @return
 	 */
-	public List<InputSpecs> getInputSpecs();
+	public List<ModuleInput> getInputTypes();
 
 	/**
 	 * Determine an InputSource for each of the modules InputSpecs.
 	 */
-	public void assignInputSources() throws BioLockJException;
+	public default void assignInputSources() throws BioLockJException{
+		ModuleUtil.assignInputs(this);
+	}
 
 	/**
 	 * A human and technical definition of the module output types.
 	 * @return
 	 */
-	public List<OutputSpecs<?>> getOutputSpecs();
+	public List<ModuleOutput<?>> getOutputTypes();
 	
 	
 

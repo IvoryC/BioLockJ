@@ -264,7 +264,7 @@ public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
 	
 	@Override
 	public Collection<TaxaTable> getActualData( List<File> files ) throws BioLockJException {
-		return getActualData(files, (TaxaTable) this);
+		return getData(files, (TaxaTable) this);
 	}
 	
 	@Override

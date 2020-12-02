@@ -29,7 +29,7 @@ import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.io.InputSource;
-import biolockj.module.io.InputSpecs;
+import biolockj.module.io.ModuleInput;
 import biolockj.module.io.ModuleIO;
 import biolockj.module.report.taxa.TaxaCountModule;
 import biolockj.module.report.taxa.TaxaTable;
@@ -81,7 +81,7 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	protected void defineInputSpecs() {
 		inputSpecs = new ArrayList<>();
 		inputSpecs.add( 
-			new InputSpecs("taxa table", 
+			new ModuleInput("taxa table", 
 				"A taxa table, values should already be normalized. May include mutliple tables to represent multiple taxonomic levels.", 
 				TaxaTable.class.getName(), 
 				new DataUnitFilter() {
@@ -94,7 +94,7 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 			}) );
 
 		inputSpecs.add( 
-			new InputSpecs("test design", 
+			new ModuleInput("test design", 
 				"One or more metadata columns defining groups to use for statistical tests.", 
 				MetaField.class.getName(), 
 				new DataUnitFilter() {

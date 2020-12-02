@@ -14,9 +14,9 @@ import biolockj.module.BioModule;
  * @author Ivory Blakley
  *
  */
-public class OutputSpecs<T extends DataUnit>{
+public class ModuleOutput<T extends DataUnit>{
 	
-	public OutputSpecs(BioModule module, String label, T type) {
+	public ModuleOutput(BioModule module, String label, T type) {
 		this.module = module;
 		this.label = label;
 		this.type = type;

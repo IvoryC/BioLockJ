@@ -21,7 +21,7 @@ public class InputSource {
 	 * Construct an InputSource based on the output a module in the pipeline will produce.
 	 * @param oput
 	 */
-	public InputSource(OutputSpecs<?> oput){
+	public InputSource(ModuleOutput<?> oput){
 		isBioModule = true;
 		this.oput = oput;
 		this.file = null;
@@ -43,7 +43,7 @@ public class InputSource {
 	}
 	
 	private final boolean isBioModule;
-	private final OutputSpecs<?> oput;
+	private final ModuleOutput<?> oput;
 	private final File file;
 	private final String name;
 	
@@ -89,7 +89,7 @@ public class InputSource {
 		}else return null;
 	}
 	
-	public OutputSpecs<?> getOutputSpecs() {
+	public ModuleOutput<?> getOutputSpecs() {
 		if (isBioModule) {
 			return oput;
 		}else return null;
@@ -108,8 +108,4 @@ public class InputSource {
 		return name;
 	}
 	
-	public final List<? extends DataUnit> getActualData() throws BioLockJException {
-		return (List<? extends DataUnit>) template.getFactory()
-						.getActualData( Arrays.asList( getFile().listFiles() ) );
-	}
 }

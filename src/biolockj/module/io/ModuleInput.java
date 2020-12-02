@@ -18,7 +18,7 @@ import biolockj.module.BioModule;
  * @author Ivory Blakley
  *
  */
-public class InputSpecs{
+public class ModuleInput{
 	
 	/**
 	 * Define an input.
@@ -27,7 +27,7 @@ public class InputSpecs{
 	 * @param dataUnitClass The required class for this input, the string will have to be matched to a class
 	 * @param criteria a {@link DataUnitFilter} that determines if a given DatUnit object is a suitable input.
 	 */
-	public InputSpecs(String label, String description, String dataUnitClass, DataUnitFilter criteria) {
+	public ModuleInput(String label, String description, String dataUnitClass, DataUnitFilter criteria) {
 		this.label = label;
 		this.description = description;
 		this.dataUnitClass = dataUnitClass;
@@ -40,7 +40,7 @@ public class InputSpecs{
 	 * @param description used as {@link #description}
 	 * @param clazz The required class of data for this input
 	 */
-	public InputSpecs(String label, String description, Class<? extends DataUnit> clazz) {
+	public ModuleInput(String label, String description, Class<? extends DataUnit> clazz) {
 		this(label, description, clazz.toString(), new BasicInputFilter(clazz));
 	}
 	
@@ -50,7 +50,7 @@ public class InputSpecs{
 	 * @param description used as {@link #description}
 	 * @param clazz The class of module that this input must come from
 	 */
-	public InputSpecs(String label, String description, String dataUnitClass, Class<? extends BioModule> clazz) {
+	public ModuleInput(String label, String description, String dataUnitClass, Class<? extends BioModule> clazz) {
 		this(label, description, dataUnitClass, new ModuleOutputFilter(clazz));
 	}
 	
