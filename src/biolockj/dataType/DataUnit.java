@@ -113,7 +113,7 @@ public interface DataUnit {
 	 * 
 	 * @return
 	 */
-	public DataUnitFactory<?> getFactory();
+	public <T extends DataUnit> DataUnitFactory<T> getFactory();
 
 	/**
 	 * Returns a FilenameFilter object which accepts files of this data type. 

@@ -11,16 +11,15 @@ import biolockj.exception.ModuleInputException;
  *
  * @param <T>
  */
-public abstract class BasicDataUnit<T extends DataUnitImpl> extends DataUnitImpl implements DataUnitFactory<T> {
+public abstract class BasicDataUnit extends DataUnitImpl implements DataUnitFactory<DataUnit> {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<T> getData( List<File> files, T template ) throws ModuleInputException {
-		return DataUnitFactory.super.getData( files, (T) this );
+	public Collection<DataUnit> getData( List<File> files, DataUnit template ) throws ModuleInputException {
+		return DataUnitFactory.super.getData( files, (DataUnit) this );
 	}
 
 	@Override
-	public DataUnitFactory<?> getFactory() {
+	public DataUnitFactory<DataUnit> getFactory() {
 		return this;
 	}
 
