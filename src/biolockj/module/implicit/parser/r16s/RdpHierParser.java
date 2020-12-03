@@ -22,6 +22,7 @@ import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.classifier.r16s.RdpClassifier;
@@ -225,7 +226,7 @@ public class RdpHierParser extends JavaModuleImpl implements ApiModule {
 	}
 	
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		ArrayList<File> list = new ArrayList<>(  );
 		BioModule rdp = ModuleUtil.getPreviousModule( this );
 		while( rdp != null & ! isValidInputModule( rdp ) ) {
