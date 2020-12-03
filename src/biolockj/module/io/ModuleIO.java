@@ -17,7 +17,7 @@ public interface ModuleIO extends BioModule {
 	 * Determine an InputSource for each of the modules InputSpecs.
 	 */
 	public default void assignInputSources() throws BioLockJException{
-		ModuleUtil.assignInputs(this);
+		ModuleUtil.assignInputSources(this);
 	}
 
 	/**
