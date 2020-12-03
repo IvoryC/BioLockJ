@@ -106,6 +106,10 @@ public class ModuleInput{
 		return source;
 	}
 	
+	public void setSource(InputSource src) {
+		source = src;
+	}
+	
 	/**
 	 * If reading from pipeline input files (rather than module outputs), 
 	 * this DataUnit object should be used as a template to create DataUnit objects representing the inputs.
@@ -120,6 +124,14 @@ public class ModuleInput{
 	 * Almost always true.  
 	 * If no suitable InputSource can be found, does that warrant an error?
 	 */
-	public boolean required = true;
+	private boolean required = true;
+	/**
+	 * Almost always true.  
+	 * If no suitable InputSource can be found, does that warrant an error?
+	 */
+	public boolean isRequired() { return required;}
+	public void setRequired(boolean req) {
+		required = req;
+	}
 	
 }
