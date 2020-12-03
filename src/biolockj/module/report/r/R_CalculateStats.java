@@ -21,15 +21,16 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
-import biolockj.dataType.DataUnit;
-import biolockj.dataType.DataUnitFilter;
+import biolockj.dataType.DataUnitFactory;
 import biolockj.dataType.MetaField;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.io.ModuleInput;
 import biolockj.module.io.ModuleOutput;
 import biolockj.module.io.SpecificModuleOutput;
+import biolockj.module.io.InputSource;
 import biolockj.module.io.ModuleIO;
 import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.BioLockJUtil;
@@ -54,6 +55,7 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		addGeneralProperty( RMetaUtil.R_NUMERIC_FIELDS, "(optional)" );
 		addNewProperty( R_ADJ_PVALS_SCOPE, Properties.STRING_TYPE, "defines R p.adjust( n ) parameter is calculated. Options:  " + ADJ_PVAL_ATTRIBUTE + ", " + ADJ_PVAL_LOCAL + ", " + ADJ_PVAL_TAXA + ", " + ADJ_PVAL_ATTRIBUTE + ".");
 		addNewProperty( R_PVAL_ADJ_METHOD, Properties.STRING_TYPE, "the p.adjust \"method\" parameter" );
+		addNewProperty( ADDED_FIELDS, Properties.BOOLEAN_TYPE, ADDED_FIELDS_DESC, Constants.FALSE);
 	}
 
 	/**
@@ -73,25 +75,6 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		Config.requireString( this, R_PVAL_ADJ_METHOD );
 		RMetaUtil.classifyReportableMetadata( this );
 		Config.getPositiveDoubleVal( this, Constants.R_RARE_OTU_THRESHOLD );
-		assignInputSources();
-	}
-
-	/**
-	 * Determine the fields that were given in the meta data.
-	 * @return
-	 * @throws BioLockJException
-	 */
-	private Set<String> selectMetaFields() throws BioLockJException{
-		RMetaUtil.classifyReportableMetadata( this );
-		Set<String> fields = new HashSet<>();
-		fields.addAll( Config.getList( null, RMetaUtil.R_REPORT_FIELDS ) );
-		if (fields.isEmpty()) {
-			fields.addAll( Config.getList( this, RMetaUtil.R_NOMINAL_FIELDS ) );
-			fields.addAll( Config.getList( this, RMetaUtil.R_NUMERIC_FIELDS ) );
-			fields.addAll( RMetaUtil.getBinaryFields( null ) );
-		}
-		fields.removeAll( Config.getList( this, RMetaUtil.R_EXCLUDE_FIELDS ) );
-		return fields;
 	}
 	
 	@Override
@@ -105,8 +88,7 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	@Override
 	public List<List<String>> buildScript( final List<File> files ) throws Exception {
 		List<List<String>> outer = new ArrayList<>();
-		TaxaTable tt = new TaxaTable(files);
-		//Map<String, File> countTableByLevel = getFilesByLevel( files );
+		TaxaTable tt = getInputTaxaTable(); //ignore the files arg
 		getFunctionLib();
 		File rscript = getModuleRScript();
 		String metaFilePath = MetaUtil.getMetadata().getAbsolutePath();
@@ -128,36 +110,31 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		return outer;
 	}
 	
-//	@Override
-//	protected List<File> findModuleInputFiles() throws ModuleInputException  {
-//		List<File> files = new ArrayList<>();
-//		// there may be multiple tables, but they are expected to all come from one source.
-//		InputSource taxaTableSource;
-//		try {
-//			taxaTableSource = getInputSources().get(0);
-//			for( final File f: taxaTableSource.getFile().listFiles() ) {
-//				if( TaxaTable.isTaxaTableFile( f ) ) files.add( f );
-//			}
-//		} catch( ModuleInputException e ) {
-//			throw e;
-//		} catch( BioLockJException e ) {
-//			e.printStackTrace();
-//			throw new ModuleInputException(e.getMessage());
-//		}
-//		return files;
-//	}
+	@Override
+	protected List<File> findModuleInputFiles() throws ModuleInputException {
+		List<File> files = new ArrayList<>();
+		TaxaTable t = getInputTaxaTable();
+		try {
+			files.addAll( t.getFiles() );
+			files.add( MetaUtil.getMetadata() );
+		} catch( BioLockJException ex ) {
+			throw new ModuleInputException( this, ex );
+		}
+		return files;
+	}
 	
-//	@Override
-//	public boolean isValidInputDir( File dir ) {
-//		boolean hasTaxaFiles = false;
-//		for( final File f: dir.listFiles() ) {
-//			if( TaxaTable.isTaxaTableFile( f ) ) {
-//				hasTaxaFiles = true;
-//				Log.info(this.getClass(), dir.getName() + " is a valid input dir because the file [" + f.getName() + "] is a taxa table file.");
-//			}
-//		}
-//		return hasTaxaFiles;
-//	}
+	private TaxaTable getInputTaxaTable() throws ModuleInputException {
+		TaxaTable tt;
+		@SuppressWarnings("unchecked")
+		InputSource<TaxaTable> is = ((InputSource<TaxaTable>) tableInput.getSource());
+		try {
+			tt = is.getData().get( 0 );
+		} catch( BioLockJException ex ) {
+			ex.printStackTrace();
+			throw new ModuleInputException (this, is, ex);
+		}
+		return tt;
+	}
 
 	/**
 	 * Get the stats file for the given fileType and taxonomy level.
@@ -170,6 +147,7 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	 * @throws Exception if errors occur
 	 */
 	@Deprecated
+
 	public static File getStatsFile( final BioModule module, final String level, final Boolean isParametric,
 		final Boolean isAdjusted ) throws Exception {
 		final String querySuffix = "_" + level + "_" + getSuffix( isParametric, isAdjusted ) + TSV_EXT;
@@ -333,37 +311,107 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	protected String getModulePrefix() {
 		return "r_CalculateStats";
 	}
-
+	
+	/**
+	 * {@value #ADDED_FIELDS_DESC}
+	 */
+	private static final String ADDED_FIELDS = "r_CalculateStats.useAddedFields";
+	private static final String ADDED_FIELDS_DESC = "Should the reports include tests using metadata columns added by pipeline modules.";
+	
 	@Override
-	public List<ModuleInput> getInputTypes() {
-		List<ModuleInput> inputTypes = new ArrayList<>();
+	public void assignInputSources() throws BioLockJException {
+		ModuleUtil.assignInputSources(this, tableInput );
+
+		metaInput.setSource( new InputSource<MetaField>( Arrays.asList( MetaUtil.getMetadata() ),
+			(MetaField) metaInput.getTemplate() ) );
 		
-		inputTypes.add( new ModuleInput("taxa table", 
+		if (Config.requireBoolean( this, ADDED_FIELDS ) ) {
+			Log.debug(this.getClass(), "Fields added by other modules will be included in " + this + " output.");
+			Log.debug(this.getClass(), "This will not include metadata fields added by modules that do not declare a MetaField output.");
+			ModuleUtil.assignInputSources(this, additional );
+		}else {
+			Log.debug(this.getClass(), "Fields added by other modules will NOT be included in " + this + " output.");
+			inputTypes.remove( additional );
+		}
+		
+	}
+	
+	/**
+	 * Determine the fields that were given in the meta data.
+	 * @return
+	 * @throws BioLockJException
+	 */
+	private Set<String> selectMetaFields() throws BioLockJException{
+		RMetaUtil.classifyReportableMetadata( this );
+		Set<String> fields = new HashSet<>();
+		fields.addAll( Config.getList( null, RMetaUtil.R_REPORT_FIELDS ) );
+		if (fields.isEmpty()) {
+			fields.addAll( Config.getList( this, RMetaUtil.R_NOMINAL_FIELDS ) );
+			fields.addAll( Config.getList( this, RMetaUtil.R_NUMERIC_FIELDS ) );
+			fields.addAll( RMetaUtil.getBinaryFields( null ) );
+		}
+		fields.removeAll( Config.getList( this, RMetaUtil.R_EXCLUDE_FIELDS ) );
+		return fields;
+	}
+
+	DataUnitFactory<MetaField> pickMetaFields = new DataUnitFactory<MetaField>() {
+
+		@Override
+		public List<MetaField> getData( List<File> files, MetaField template, boolean useAllFiles )
+			throws ModuleInputException {
+			List<MetaField> fields = new ArrayList<>();
+			try {
+				for( String field: selectMetaFields() ) {
+					fields.add( new MetaField( field ) );
+				}
+			} catch( BioLockJException e ) {
+				e.printStackTrace();
+				throw new ModuleInputException(e.getMessage());
+			}
+			return fields;
+		}
+		
+	};
+	
+	private void defineInputs() {
+		inputTypes = new ArrayList<>();
+		
+		tableInput = new ModuleInput("taxa table", 
 			"A taxa table, values should already be normalized. May include mutliple tables to represent multiple taxonomic levels.", 
-			new TaxaTable() ) );
-		
-		inputTypes.add( new ModuleInput( "test design",
-			"One or more metadata columns defining groups to use for statistical tests.",
-			new MetaField( "[meta data field name]" ), new DataUnitFilter() {
+			new TaxaTable() );
+		inputTypes.add( tableInput );
+
+		metaInput = new ModuleInput( "test design", 
+			"One or more metadata columns defining groups to use for statistical tests, see property _" + RMetaUtil.R_REPORT_FIELDS + "_.",
+			new MetaField( "[meta data field name]" ) {
 
 				@Override
-				public boolean accept( DataUnit data ) {
-					boolean useIt = false;
-					Set<String> fields = new HashSet<>();
-					try {
-						fields.addAll( selectMetaFields() );
-					} catch( BioLockJException e ) {
-						fields.add( "[meta data field name]" ); // a stand-in shown in documentation
-					}
-					if( !fields.isEmpty() && !MetaField.class.isInstance( data ) ) {
-						useIt = fields.contains( ( (MetaField) data ).getName() );
-					}
-					return useIt;
+				public DataUnitFactory<MetaField> getFactory() {
+					return pickMetaFields;
 				}
-			} ) );
-			
+
+			} ) ;
+		inputTypes.add( metaInput );
+		
+		additional = new ModuleInput( "test design from pipeline",
+			"One or more metadata columns created by pipeline modules defining groups to use for statistical tests, see property _" + RMetaUtil.R_REPORT_FIELDS + "_.",
+			new MetaField( "[meta data field name]" ));
+		additional.setRequired( false );
+		inputTypes.add( additional );
+		
+	}
+	
+	@Override
+	public List<ModuleInput> getInputTypes(){
+		if (inputTypes==null) defineInputs();
 		return inputTypes;
 	}
+	
+	List<ModuleInput> inputTypes = null;
+	
+	ModuleInput tableInput;
+	ModuleInput metaInput;
+	ModuleInput additional;
 
 	@Override
 	public List<ModuleOutput<?>> getOutputTypes() {
