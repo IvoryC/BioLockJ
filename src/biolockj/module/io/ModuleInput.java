@@ -1,12 +1,9 @@
 package biolockj.module.io;
 
-import java.util.ArrayList;
-import java.util.List;
 import biolockj.dataType.BasicInputFilter;
 import biolockj.dataType.DataUnit;
 import biolockj.dataType.DataUnitFilter;
 import biolockj.dataType.ModuleOutputFilter;
-import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 
 /**
@@ -21,16 +18,28 @@ import biolockj.module.BioModule;
 public class ModuleInput{
 	
 	/**
-	 * Define an input.
+	 * Standard way to define an input.
+	 * This will create a ModuleInput that requires that the input be an instance of the same DataUnit class as the template.
 	 * @param label used as {@link #label}
 	 * @param description used as {@link #description}
-	 * @param dataUnitClass The required class for this input, the string will have to be matched to a class
+	 * @param template a DataUnit instance that will be used as the template if the inputs must come from pipeline inputs rather than a module.
+	 */
+	public ModuleInput(String label, String description, DataUnit template) {
+		this(label, description, template, new BasicInputFilter(template.getClass()));
+	}
+	
+	/**
+	 * Define an input.
+	 * This allows the criteria to be defined independently of the template.
+	 * @param label used as {@link #label}
+	 * @param description used as {@link #description}
+	 * @param template a DataUnit instance that will be used as the template if the inputs must come from pipeline inputs rather than a module.
 	 * @param criteria a {@link DataUnitFilter} that determines if a given DatUnit object is a suitable input.
 	 */
-	public ModuleInput(String label, String description, String dataUnitClass, DataUnitFilter criteria) {
+	public ModuleInput(String label, String description, DataUnit template, DataUnitFilter criteria) {
 		this.label = label;
 		this.description = description;
-		this.dataUnitClass = dataUnitClass;
+		this.template = template;
 		this.criteria = criteria;
 	}
 	
@@ -38,20 +47,11 @@ public class ModuleInput{
 	 * Define an input.
 	 * @param label used as {@link #label}
 	 * @param description used as {@link #description}
-	 * @param clazz The required class of data for this input
+	 * @param template a DataUnit instance that will be used as the template if the inputs must come from pipeline inputs rather than a module.
+	 * @param clazz The class of BioModule that this input must come from
 	 */
-	public ModuleInput(String label, String description, Class<? extends DataUnit> clazz) {
-		this(label, description, clazz.toString(), new BasicInputFilter(clazz));
-	}
-	
-	/**
-	 * Define an input.
-	 * @param label used as {@link #label}
-	 * @param description used as {@link #description}
-	 * @param clazz The class of module that this input must come from
-	 */
-	public ModuleInput(String label, String description, String dataUnitClass, Class<? extends BioModule> clazz) {
-		this(label, description, dataUnitClass, new ModuleOutputFilter(clazz));
+	public ModuleInput(String label, String description, DataUnit template, Class<? extends BioModule> clazz) {
+		this(label, description, template, new ModuleOutputFilter(clazz));
 	}
 	
 	/**
@@ -98,33 +98,23 @@ public class ModuleInput{
 	}
 
 	/**
-	 * BioModule methods should assign a source to meet each InputSpecs during check dependencies.
-	 * If canTakeMultiple==false, then source will have a length of 1.
+	 * Where will this input source data from.
 	 */
-	public List<InputSource> source = new ArrayList<>();
-	List<InputSource> getInputSources() {
-		return source;
-	}
+	private InputSource source = null;
 	
-	public void addInputSource(InputSource in) throws ModuleInputException {
-		if ( canIterate || source.isEmpty() ) {
-			source.add( in );
-		}else {
-			throw new ModuleInputException( "Input [" + label + "] can only take one source." );
-		}
+	public InputSource getSource() {
+		return source;
 	}
 	
 	/**
 	 * If reading from pipeline input files (rather than module outputs), 
-	 * what DataUnit class should be used to interpret the inputs.
+	 * this DataUnit object should be used as a template to create DataUnit objects representing the inputs.
 	 */
-	public String dataUnitClass = null;
+	private DataUnit template;
 	
-	/**
-	 * Is this module capable of taking multiple matches for this input 
-	 * and still doing its thing for each/all of them ?
-	 */
-	public boolean canIterate = true;
+	public DataUnit getTemplate() {
+		return template;
+	}
 	
 	/**
 	 * Almost always true.  
