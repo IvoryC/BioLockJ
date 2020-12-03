@@ -13,10 +13,7 @@ package biolockj.module;
 
 import java.io.File;
 import java.util.List;
-import biolockj.exception.BioLockJException;
-import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
-import biolockj.module.io.InputSource;
 
 /**
  * Classes that implement this interface are eligible to be included in a BioLockJ pipeline.<br>
@@ -95,19 +92,9 @@ public interface BioModule {
 	 * </ul>
 	 * 
 	 * @return Input files
-	 * @throws ModuleInputException TODO
 	 */
-	public List<File> getInputFiles() throws ModuleInputException ;
-	
-	/**
-	 * A slightly abstracted representation of information returned by {@link #getInputFiles}.
-	 * Files returned by {@link #getInputFiles} be the files which exist and are actually used.  
-	 * The {@link InputSource}s returned by this method represent where this module expects to find its inputs.
-	 * @return
-	 * @deprecated use getInputSpecs instead; pull input sources from those.
-	 */
-	public List<InputSource> getInputSources() throws BioLockJException;
-	
+	public List<File> getInputFiles();
+
 	/**
 	 * Updated/new metadata files are saved to the module output directory (if created by the module). Use param = FALSE
 	 * to return an empty file objects in preparation for building a new metadata file.
@@ -270,5 +257,4 @@ public interface BioModule {
 	 * Name of the temporary sub-directory: {@value #RES_DIR}
 	 */
 	public static final String RES_DIR = "resources";
-	
 }
