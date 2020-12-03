@@ -19,18 +19,10 @@ import org.apache.commons.io.filefilter.HiddenFileFilter;
 import biolockj.*;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
-import biolockj.dataType.DataUnit;
-import biolockj.dataType.DataUnitFilter;
-import biolockj.dataType.SpecificModuleOutput;
-import biolockj.dataType.UnknownPipelineInput;
-import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
-import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
-import biolockj.module.io.InputSource;
-import biolockj.module.io.ModuleInput;
-import biolockj.module.io.ModuleOutput;
+import biolockj.exception.SequnceFormatException;
 import biolockj.util.*;
 
 /**
@@ -159,14 +151,11 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * BioModule {@link #getInputFiles()} is called to initialize upon first call and cached.
 	 */
 	@Override
-	public List<File> getInputFiles() throws ModuleInputException {
-		if( getFileCache().isEmpty() ) {
-			List<File> files = new ArrayList<>();
-			cacheInputFiles ( findModuleInputFiles() );
-		}
+	public List<File> getInputFiles() {
+		if( getFileCache().isEmpty() ) cacheInputFiles( findModuleInputFiles() );
 		return getFileCache();
 	}
-	
+
 	@Override
 	public File getMetadata() {
 		return new File( getOutputDir().getAbsolutePath() + File.separator + MetaUtil.getFileName() );
@@ -267,91 +256,22 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 		} else Log.info( getClass(), "Construct module [ " + ModuleUtil.displayID( this ) + " ] for existing " +
 			this.moduleDir.getAbsolutePath() );
 	}
-	
+
 	/**
-	 * When {@link #findInputSources(BioModule)} is called, this method determines if the previousModule output is valid 
-	 * input for the current BioModule. The default implementation of this method returns TRUE for any module.
-	 * The default implementation of {@link #findInputSources()} calls this method through {@link #findInputSources(BioModule, boolean)} 
-	 * which allows the user to specify the input module.
+	 * In the early stages of the pipeline, starting with the very 1st module
+	 * {@link biolockj.module.implicit.ImportMetadata}, most modules expect sequence files as input. This method returns
+	 * false if the previousModule only produced a new metadata file, such as
+	 * {@link biolockj.module.implicit.ImportMetadata} or {@link biolockj.module.implicit.RegisterNumReads}.
 	 * 
-	 * This is the appropriate method to override in child classes.
-	 * 
+	 * When {@link #getInputFiles()} is called, this method determines if the previousModule output is valid input for
+	 * the current BioModule. The default implementation of this method returns FALSE if the previousModule only
+	 * generates a new metadata file.
 	 */
 	@Override
 	public boolean isValidInputModule( final BioModule module ) {
-		return true;
+		return !ModuleUtil.isMetadataModule( module );
 	}
-	
-	/**
-	 * When {@link #findInputSources(BioModule)} is called, this method determines if the previousModule output is valid 
-	 * input for the current BioModule. This is a wrapper for {@link #isValidInputModule(BioModule)} that allows the user 
-	 * to configure a specific input module using the {@link biolockj.Config} property {@value biolockj.Constants#MODULE_INPUT_PROP}.
-	 */
-	protected final boolean isValidInputModule(final BioModule module, boolean validateConfiguredInput) {
-		boolean isValid;
-		String specificInputProp = Config.getModulePropName( this, Constants.MODULE_INPUT_PROP );
-		if ( Config.getString( this, specificInputProp ) == null ) {
-			isValid = isValidInputModule(module);
-		}else {
-			boolean matched = false; 
-			for (String target : Config.getList( this, specificInputProp ) ) {
-				if ( ModuleUtil.displayName( module ).equals( target ) ||
-								module.getClass().getSimpleName().equals( target ) ) matched = true;
-			}
-			if (validateConfiguredInput) {
-				isValid = matched && isValidInputModule(module);
-			}else {
-				isValid = matched;
-				if (matched && !isValidInputModule(module)) {
-					Log.warn(this.getClass(), "Module " + ModuleUtil.displaySignature( this ) 
-					+ " is being forced to use an input module that is NOT considered a valid input." + System.lineSeparator()
-					+ "See configured property [ " + specificInputProp + " = " + Config.getString( this, specificInputProp ) + " ]" + System.lineSeparator()
-					+ "And make sure you know what you are doing!!!");
-				}
-			}
-		}
-		return isValid;
-	}
-	
-	public boolean isValidInputDir(File dir) {
-		return dir != null && dir.isDirectory() && dir.listFiles().length > 0;
-	}
-	
-	/**
-	 * When {@link #findInputSources} is called, this method determines if a given input directory is a valid 
-	 * input for the current BioModule. This is a wrapper for {@link #isValidInputDir(File)} that allows the user 
-	 * to configure a specific input directory using the {@link biolockj.Config} property {@value biolockj.Constants#INPUT_DIRS}.
-	 * @param dir The directory to consider
-	 * @param validateConfiguredInput Should the input be validated even if it is specified using the module-specific input property. If false, the user can over-ride the modules built-in methods for determining appropriate inputs.
-	 */
-	public boolean isValidInputDir(File dir, boolean validateConfiguredInput) {
-		boolean isValid;
-		String specificInputProp = Config.getModulePropName( this, Constants.INPUT_DIRS );
-		if ( Config.getString( this, specificInputProp ) == null ) {
-			isValid = isValidInputDir(dir);
-		}else {
-			boolean matched = false; 
-			for (String target : Config.getList( this, specificInputProp ) ) {
-				File targetDir = new File(target);
-				if ( dir.getAbsolutePath().equals( targetDir.getAbsolutePath() ) ) {
-					matched = true;
-				}
-			}
-			if (validateConfiguredInput) {
-				isValid = matched && isValidInputDir(dir);
-			}else {
-				isValid = matched;
-				if (matched && !isValidInputDir(dir)) {
-					Log.warn(this.getClass(), "Module " + ModuleUtil.displaySignature( this ) 
-					+ " is being forced to use an input folder that is NOT considered a valid input." + System.lineSeparator()
-					+ "See configured property [ " + specificInputProp + " = " + Config.getString( this, specificInputProp ) + " ]" + System.lineSeparator()
-					+ "And make sure you know what you are doing!!!");
-				}
-			}
-		}
-		return isValid;
-	}
-	
+
 	@Override
 	public String toString() {
 		String val = getClass().getName();
@@ -384,204 +304,38 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * Call {@link #isValidInputModule(BioModule)} on each previous module until acceptable input files are found<br>
 	 * 
 	 * @return Set of input files
-	 * @throws BioLockJException 
 	 */
-	protected List<File> findModuleInputFiles() throws ModuleInputException {
-		final List<File> moduleInputFiles = new ArrayList<>();
+	protected List<File> findModuleInputFiles() {
+		final Set<File> moduleInputFiles = new HashSet<>();
 		Log.debug( getClass(), "Initialize input files..." );
-		List<InputSource> sources;
-		try {
-			sources = getInputSources();
-		} catch( BioLockJException e ) {
-			e.printStackTrace();
-			throw new ModuleInputException("A problem occured while determining the input sources for module: " + ModuleUtil.displaySignature( this ));
-		}
-		if ( sources != null && ! sources.isEmpty() ) {
-			for (InputSource is : sources ) {
-				if ( ! is.isReady() ) throw new ModuleInputException(this, is);
-				File file = is.getFile();
-				final Collection<File> files = new ArrayList<>();
-				if ( file.isDirectory() ) {
-					files.addAll( FileUtils.listFiles( file,
-						HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE ) ) ;
-				}else if ( file.exists() ){
-					files.add( file );
-				}else {
-					throw new ModuleInputException(this, is);
-				}
-				final Collection<File> goodFiles = BioLockJUtil.removeIgnoredAndEmptyFiles( files );
-				Log.debug( getClass(), "# Files found in input source [" + is.getName() + "]: " + goodFiles.size() );
-				//suggested for child class implementations
-				//			if (goodFiles.size() == 0) {
-				//				throw new ModuleInputException(this, is);
-				//			}
-				moduleInputFiles.addAll( goodFiles );
-			}
-		}
-		return moduleInputFiles;
-	}
-	
-//	@Deprecated
-//	protected List<InputSource> findInputSources() throws BioLockJException {
-//		List<InputSource> inputSources = new ArrayList<>();
-//		Log.debug( getClass(), "Initialize input sources..." );
-//		boolean validInput = false;
-//		BioModule previousModule = ModuleUtil.getPreviousModule( this );
-//		while( !validInput )
-//			if( previousModule == null ) {
-//				Log.debug( getClass(),
-//					"No prior pipeline module is a valid input module.  Return pipleline input from: " + Constants.INPUT_DIRS );
-//				List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
-//				if (inputDirs != null && ! inputDirs.isEmpty() ) {
-//					for (File input : Config.getExistingFileList( this, Constants.INPUT_DIRS ) ) {
-//						if (isValidInputDir(input)) inputSources.add( new InputSource(input) );
-//					}
-//				}
-//				validInput = true;
-//			} else {
-//				Log.debug( getClass(),
-//					"Check previous module for valid input type: " + ModuleUtil.displaySignature( previousModule ) );
-//				validInput = isValidInputModule( previousModule, true );
-//				if( validInput ) {
-//					InputSource input = new InputSource(previousModule);
-//					Log.debug( getClass(),
-//						"Found valid input module: " + input.getName() );
-//					inputSources.add( input );
-//				} else {
-//					previousModule = ModuleUtil.getPreviousModule( previousModule );
-//				}
-//			}
-//		if(inputSources.isEmpty()) {
-//			Log.warn(this.getClass(), "No suitable input sources were found!");
-//			throw new PipelineFormationException("Failed to find valid input source for module [" + ModuleUtil.displaySignature( this ) + "].");
-//		}
-//		return inputSources;
-//	}
-
-	
-
-	@Override
-	@Deprecated
-	public List<InputSource> getInputSources() throws BioLockJException {
-		if( inputSources == null ) {
-			inputSources = new ArrayList<>();
-			for (ModuleInput inspec : inputSpecs ) {
-				if (inspec.source == null) assignInputSources();
-				inputSources.addAll( inspec.source );
-			}
-		}
-		return inputSources;
-	}
-	
-	/**
-	 * Determine a suitable input source for each inputSpec.
-	 * @throws BioLockJException 
-	 */
-	public void assignInputSources() throws BioLockJException {
-		ModuleUtil.assignInputModules(this, getInputTypes());
-		for (ModuleInput inspec : getInputTypes() ) {
-			if (inspec.source == null) {
-				assignInputDir( inspec );
-			}
-		}
-	}
-	
-	/**
-	 * If a given input requirement cannot be satisfied by other modules.
-	 * The default is not very smart.
-	 * @param inspec
-	 * @throws BioLockJException 
-	 */
-	public void assignInputDir(ModuleInput inspec) throws BioLockJException {
-		List<File> validDirs = new ArrayList<>();
-		List<File> inputDirs = Config.getExistingFileList( this, Constants.INPUT_DIRS );
-		if( inputDirs == null || inputDirs.isEmpty() ) {
-			throw new ModuleInputException( "No input dirs available for module [" + ModuleUtil.displaySignature( this ) + "]." );
-		}else{
-			for( File inFile: inputDirs ) {
-				DataUnit inData = null;
-				try {
-					inData = (DataUnit) Class.forName( inspec.dataUnitClass ).newInstance();
-				} catch( Exception e ) {
-					e.printStackTrace();
-					Log.error(this.getClass(), "Failed attempt to instantiate a DataUnit of type: " + inspec.dataUnitClass );
-				}
-				if (inData == null) break;
-				if ( inspec.getFilter().accept( inData ) && inData.isValid() ) {
-					validDirs.add( inFile );
+		boolean validInput = false;
+		BioModule previousModule = ModuleUtil.getPreviousModule( this );
+		while( !validInput )
+			if( previousModule == null ) {
+				Log.debug( getClass(),
+					"Previous module is NULL.  Return pipleline input from: " + Constants.INPUT_DIRS );
+				moduleInputFiles.addAll( BioLockJUtil.getPipelineInputFiles() );
+				validInput = true;
+			} else {
+				Log.debug( getClass(),
+					"Check previous module for valid input files... # " + previousModule.getClass().getName() +
+						" ---> dir: " + previousModule.getOutputDir().getAbsolutePath() );
+				validInput = isValidInputModule( previousModule );
+				if( validInput ) {
+					Log.debug( getClass(),
+						"Found VALID input in the output dir of: " + previousModule.getClass().getName() + " --> " +
+							previousModule.getOutputDir().getAbsolutePath() );
+					moduleInputFiles.addAll( FileUtils.listFiles( previousModule.getOutputDir(),
+						HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE ) );
+					Log.debug( getClass(), "# Files found: " + moduleInputFiles.size() );
+				} else {
+					previousModule = ModuleUtil.getPreviousModule( previousModule );
 				}
 			}
-		}
-		if (validDirs.size() > 1) {
-			throw new ModuleInputException( "Too many input dirs for module [" + ModuleUtil.displaySignature( this ) + "]." );
-		}else if (validDirs.size() == 0) {
-			throw new ModuleInputException( "The input given for [" + ModuleUtil.displaySignature( this ) + "] were not suitable for input [" + inspec.getLabel() + "]." );
-		}else {
-			DataUnit template;
-			try {
-				template = (DataUnit) Class.forName( inspec.dataUnitClass ).newInstance();
-			} catch( InstantiationException | IllegalAccessException | ClassNotFoundException e ) {
-				e.printStackTrace();
-				throw new BioLockJException( "Could not instantiate new instance of class: " + inspec.dataUnitClass );
-			}
-			inspec.source.add( new InputSource( validDirs.get(0), template ) );
-		}
-	}
-	
-	protected List<ModuleInput> inputSpecs = null;
-	
-	public List<ModuleInput> getInputTypes() {
-		if (inputSpecs == null) defineInputSpecs();
-		return inputSpecs;
-	}
-	
-	/**
-	 * Create an instance of InputSpecs that has no technical criteria.
-	 * 
-	 * If this default DataUnitFilter is used to determine module inputs,
-	 * then the most recent module to produce any output will be used.
-	 * Use this when the input is intended to be VERY open ended, or when 
-	 * other methods are used to actually determine the modules inputs.
-	 * 
-	 * If there are no previous modules, then this dataUnitClass will 
-	 * accept any file as a an input file.
-	 * 
-	 * This default may be removed in the future.  
-	 * All extending classes should provide their own, more meaningful, input specifications.
-	 */
-	protected void defineInputSpecs() {
-		inputSpecs = new ArrayList<>();
-		inputSpecs.add( new ModuleInput("input", "any input", UnknownPipelineInput.class.getName(), 
-			new DataUnitFilter() {
 
-			@Override
-			public boolean accept( @SuppressWarnings("rawtypes") DataUnit data ) {
-				return true;
-			}
-
-		}) );
-	}
-	
-	protected List<ModuleOutput<?>> outputSpecs = null;
-	
-	public List<ModuleOutput<?>> getOutputTypes(){
-		if (outputSpecs == null) defineOutputSpecs();
-		return outputSpecs;
-	}
-	
-	/**
-	 * By default, the output type of each module is an instance of SpecificModuleOutput
-	 * that refers specifically to this module.
-	 * The default may be removed in the future.  
-	 * All extending classes should provide their own, preferably more descriptive, output specifications.
-	 */
-	protected void defineOutputSpecs() {
-		List<ModuleOutput<?>> outputs = new LinkedList<>();
-		outputs.add( new ModuleOutput<>(this, "module output", new SpecificModuleOutput<>(this)) );
+		return BioLockJUtil.removeIgnoredAndEmptyFiles( moduleInputFiles );
 	}
 
-	
-	
 	/**
 	 * Get cached input files
 	 * 
@@ -687,8 +441,6 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	public String getDockerImageTag() {
 		return DockerUtil.getDefaultImageTag();
 	}
-	
-	private List<InputSource> inputSources = null;
 
 	/**
 	 * BioLockJ gzip file extension constant: {@value #GZIP_EXT}
@@ -699,7 +451,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * BioLockJ log file extension constant: {@value #LOG_EXT}
 	 */
 	public static final String LOG_EXT = Constants.LOG_EXT;
-	
+
 	/**
 	 * BioLockJ PDF file extension constant: {@value #PDF_EXT}
 	 */
