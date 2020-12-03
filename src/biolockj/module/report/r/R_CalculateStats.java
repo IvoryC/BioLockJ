@@ -26,12 +26,11 @@ import biolockj.dataType.DataUnitFilter;
 import biolockj.dataType.MetaField;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
-import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
-import biolockj.module.io.InputSource;
 import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
+import biolockj.module.io.SpecificModuleOutput;
 import biolockj.module.io.ModuleIO;
-import biolockj.module.report.taxa.TaxaCountModule;
 import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.MetaUtil;
@@ -75,46 +74,6 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		RMetaUtil.classifyReportableMetadata( this );
 		Config.getPositiveDoubleVal( this, Constants.R_RARE_OTU_THRESHOLD );
 		assignInputSources();
-	}
-	
-	@Override
-	protected void defineInputSpecs() {
-		inputSpecs = new ArrayList<>();
-		inputSpecs.add( 
-			new ModuleInput("taxa table", 
-				"A taxa table, values should already be normalized. May include mutliple tables to represent multiple taxonomic levels.", 
-				TaxaTable.class.getName(), 
-				new DataUnitFilter() {
-
-				@Override
-				public boolean accept( DataUnit data ) {
-					return TaxaTable.class.isInstance( data );
-				}
-
-			}) );
-
-		inputSpecs.add( 
-			new ModuleInput("test design", 
-				"One or more metadata columns defining groups to use for statistical tests.", 
-				MetaField.class.getName(), 
-				new DataUnitFilter() {
-
-				@Override
-				public boolean accept( DataUnit data ) {
-					boolean useIt = false;
-					Set<String> fields = new HashSet<>();
-					try {
-						fields.addAll( selectMetaFields() ) ;
-					} catch( BioLockJException e ) {
-						fields.add( "[meta data field name]" ); //a stand-in shown in documentation
-					}
-					if ( !fields.isEmpty() && !MetaField.class.isInstance( data )) {
-						useIt = fields.contains( ((MetaField) data).getName() );
-					}
-					return useIt;
-				}
-
-			}) );
 	}
 
 	/**
@@ -169,45 +128,36 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		return outer;
 	}
 	
-	@Override
-	protected List<File> findModuleInputFiles() throws ModuleInputException  {
-		List<File> files = new ArrayList<>();
-		// there may be multiple tables, but they are expected to all come from one source.
-		InputSource taxaTableSource;
-		try {
-			taxaTableSource = getInputSources().get(0);
-			for( final File f: taxaTableSource.getFile().listFiles() ) {
-				if( TaxaTable.isTaxaTableFile( f ) ) files.add( f );
-			}
-		} catch( ModuleInputException e ) {
-			throw e;
-		} catch( BioLockJException e ) {
-			e.printStackTrace();
-			throw new ModuleInputException(e.getMessage());
-		}
-		return files;
-	}
+//	@Override
+//	protected List<File> findModuleInputFiles() throws ModuleInputException  {
+//		List<File> files = new ArrayList<>();
+//		// there may be multiple tables, but they are expected to all come from one source.
+//		InputSource taxaTableSource;
+//		try {
+//			taxaTableSource = getInputSources().get(0);
+//			for( final File f: taxaTableSource.getFile().listFiles() ) {
+//				if( TaxaTable.isTaxaTableFile( f ) ) files.add( f );
+//			}
+//		} catch( ModuleInputException e ) {
+//			throw e;
+//		} catch( BioLockJException e ) {
+//			e.printStackTrace();
+//			throw new ModuleInputException(e.getMessage());
+//		}
+//		return files;
+//	}
 	
-	@Override
-	public boolean isValidInputDir( File dir ) {
-		boolean hasTaxaFiles = false;
-		for( final File f: dir.listFiles() ) {
-			if( TaxaTable.isTaxaTableFile( f ) ) {
-				hasTaxaFiles = true;
-				Log.info(this.getClass(), dir.getName() + " is a valid input dir because the file [" + f.getName() + "] is a taxa table file.");
-			}
-		}
-		return hasTaxaFiles;
-	}
-	
-	@Override
-	public boolean isValidInputModule( BioModule module ) {
-		if ( module instanceof TaxaCountModule ) {
-			Log.debug(this.getClass(), "Module [" + ModuleUtil.displaySignature( module ) + "] is a valid input module for R_CalculateStats." );
-			return true;
-		}
-		else return false;
-	}
+//	@Override
+//	public boolean isValidInputDir( File dir ) {
+//		boolean hasTaxaFiles = false;
+//		for( final File f: dir.listFiles() ) {
+//			if( TaxaTable.isTaxaTableFile( f ) ) {
+//				hasTaxaFiles = true;
+//				Log.info(this.getClass(), dir.getName() + " is a valid input dir because the file [" + f.getName() + "] is a taxa table file.");
+//			}
+//		}
+//		return hasTaxaFiles;
+//	}
 
 	/**
 	 * Get the stats file for the given fileType and taxonomy level.
@@ -382,6 +332,44 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	@Override
 	protected String getModulePrefix() {
 		return "r_CalculateStats";
+	}
+
+	@Override
+	public List<ModuleInput> getInputTypes() {
+		List<ModuleInput> inputTypes = new ArrayList<>();
+		
+		inputTypes.add( new ModuleInput("taxa table", 
+			"A taxa table, values should already be normalized. May include mutliple tables to represent multiple taxonomic levels.", 
+			new TaxaTable() ) );
+		
+		inputTypes.add( new ModuleInput( "test design",
+			"One or more metadata columns defining groups to use for statistical tests.",
+			new MetaField( "[meta data field name]" ), new DataUnitFilter() {
+
+				@Override
+				public boolean accept( DataUnit data ) {
+					boolean useIt = false;
+					Set<String> fields = new HashSet<>();
+					try {
+						fields.addAll( selectMetaFields() );
+					} catch( BioLockJException e ) {
+						fields.add( "[meta data field name]" ); // a stand-in shown in documentation
+					}
+					if( !fields.isEmpty() && !MetaField.class.isInstance( data ) ) {
+						useIt = fields.contains( ( (MetaField) data ).getName() );
+					}
+					return useIt;
+				}
+			} ) );
+			
+		return inputTypes;
+	}
+
+	@Override
+	public List<ModuleOutput<?>> getOutputTypes() {
+		List<ModuleOutput<?>> list = new ArrayList<>();
+		list.add( new SpecificModuleOutput<R_CalculateStats>( this ) );
+		return list;
 	}
 
 }
