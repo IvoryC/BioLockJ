@@ -21,8 +21,8 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
-import biolockj.exception.SequnceFormatException;
 import biolockj.util.*;
 
 /**
@@ -151,7 +151,7 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * BioModule {@link #getInputFiles()} is called to initialize upon first call and cached.
 	 */
 	@Override
-	public List<File> getInputFiles() {
+	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) cacheInputFiles( findModuleInputFiles() );
 		return getFileCache();
 	}
@@ -304,8 +304,9 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 * Call {@link #isValidInputModule(BioModule)} on each previous module until acceptable input files are found<br>
 	 * 
 	 * @return Set of input files
+	 * @throws ModuleInputException if there is a problem in determining the input files
 	 */
-	protected List<File> findModuleInputFiles() {
+	protected List<File> findModuleInputFiles() throws ModuleInputException {
 		final Set<File> moduleInputFiles = new HashSet<>();
 		Log.debug( getClass(), "Initialize input files..." );
 		boolean validInput = false;
