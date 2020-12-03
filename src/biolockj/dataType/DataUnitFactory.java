@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import biolockj.exception.ModuleInputException;
 
-public interface DataUnitFactory {
+public interface DataUnitFactory<T extends DataUnit> {
 
 	/**
 	 * Interpret one or more files as DataUnit objects.
@@ -15,7 +15,7 @@ public interface DataUnitFactory {
 	 * @param files a list of existing files on the file system
 	 * @return a collection of one or more DataUnit objects
 	 */
-	public default <T extends DataUnit> List<T> getData(List<File> files, T template) throws ModuleInputException {
+	public default List<T> getData(List<File> files, T template) throws ModuleInputException {
 		return getData(files, template, false);
 	}
 	
@@ -29,7 +29,7 @@ public interface DataUnitFactory {
 	 * @return a collection of one or more DataUnit objects
 	 */
 	@SuppressWarnings("unchecked")
-	public default <T extends DataUnit> List<T> getData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
+	public default List<T> getData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
 		if ( files == null || files.isEmpty() ) throw new ModuleInputException("The files arg is required.");
 		FilenameFilter filter = template.getFilenameFilter();
 		List<T> data = new LinkedList<>();

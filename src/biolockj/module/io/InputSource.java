@@ -15,13 +15,21 @@ import biolockj.util.ModuleUtil;
  * @author Ivory Blakley
  *
  */
-public class InputSource {
+public class InputSource <T extends DataUnit> {
+	
+	private final boolean isBioModule;
+	private final ModuleOutput<T> oput;
+	private final List<File> files;
+	private final String name;
+	private T template = null;
+	private List<T> data;
+	
 	
 	/**
 	 * Construct an InputSource based on the output a module in the pipeline will produce.
 	 * @param oput
 	 */
-	public InputSource(ModuleOutput<?> oput){
+	public InputSource(ModuleOutput<T> oput){
 		isBioModule = true;
 		this.oput = oput;
 		this.files = new ArrayList<>(); // will be filled in after the module completes.
@@ -34,7 +42,7 @@ public class InputSource {
 	 * @param folder
 	 * @param template
 	 */
-	public InputSource(List<File> inFiles, DataUnit template) throws ModuleInputException {
+	public InputSource(List<File> inFiles, T template) throws ModuleInputException {
 		isBioModule = false;
 		this.oput = null;
 		this.files = inFiles;
@@ -44,28 +52,22 @@ public class InputSource {
 		}else{
 			name = template.toString() + " from [" + inFiles.size() + "] input files";
 		}
-		data = template.getFactory().getData( inFiles, template );
+		data = DataUnit.getFactory(template).getData( inFiles, template );
 	}
 	
-	private final boolean isBioModule;
-	private final ModuleOutput<?> oput;
-	private final List<File> files;
-	private final String name;
-	private DataUnit template = null;
-	private List<? extends DataUnit> data;
-	
+
 	/**
 	 * A list of DataUnit objects.  These may be the representation of pipeline input files, or of the output of other modules.
 	 * @return
 	 * @throws ModuleInputException
 	 */
-	public List<? extends DataUnit> getData() throws ModuleInputException{
+	public List<T> getData() throws ModuleInputException{
 		if (isBioModule) {
 			if ( ! ModuleUtil.isComplete( oput.getModule() )) {
 				throw new ModuleInputException("The source module [" + oput.getModule() + "] has not completed.");
 			}
 			files.addAll( Arrays.asList( oput.getModule().getOutputDir().listFiles( template.getFilenameFilter() ) ) );
-			data = template.getFactory().getData( files, template );
+			data = DataUnit.getFactory(template).getData( files, template );
 		}
 		return data;
 	}
