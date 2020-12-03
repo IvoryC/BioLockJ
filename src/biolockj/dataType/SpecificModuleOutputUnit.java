@@ -11,15 +11,15 @@ import biolockj.util.ModuleUtil;
  * @author Ivory Blakley
  *
  */
-public class SpecificModuleOutput<B extends BioModule> extends BasicDataUnit<SpecificModuleOutput<B>> {
+public class SpecificModuleOutputUnit<T extends BioModule> extends BasicDataUnit {
 
-	B fromModule = null;
+	T fromModule = null;
 	
-	public SpecificModuleOutput(B madeByModule) {
+	public SpecificModuleOutputUnit(T madeByModule) {
 		fromModule = madeByModule;
 	}
 	
-	public B getCreatingModule() {
+	public T getCreatingModule() {
 		return fromModule;
 	}
 
