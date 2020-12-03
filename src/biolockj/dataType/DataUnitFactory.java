@@ -3,12 +3,11 @@ package biolockj.dataType;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import biolockj.exception.ModuleInputException;
 
-public interface DataUnitFactory<T extends DataUnit> {
+public interface DataUnitFactory {
 
 	/**
 	 * Interpret one or more files as DataUnit objects.
@@ -16,7 +15,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @param files a list of existing files on the file system
 	 * @return a collection of one or more DataUnit objects
 	 */
-	public default Collection<T> getData(List<File> files, T template) throws ModuleInputException {
+	public default <T extends DataUnit> List<T> getData(List<File> files, T template) throws ModuleInputException {
 		return getData(files, template, false);
 	}
 	
@@ -30,7 +29,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @return a collection of one or more DataUnit objects
 	 */
 	@SuppressWarnings("unchecked")
-	public default Collection<T> getData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
+	public default <T extends DataUnit> List<T> getData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
 		if ( files == null || files.isEmpty() ) throw new ModuleInputException("The files arg is required.");
 		FilenameFilter filter = template.getFilenameFilter();
 		List<T> data = new LinkedList<>();
