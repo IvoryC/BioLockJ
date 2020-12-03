@@ -13,6 +13,7 @@ package biolockj.module;
 
 import java.io.File;
 import java.util.List;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
 
 /**
@@ -92,8 +93,9 @@ public interface BioModule {
 	 * </ul>
 	 * 
 	 * @return Input files
+	 * @throws ModuleInputException when there is a problem with the input files
 	 */
-	public List<File> getInputFiles();
+	public List<File> getInputFiles() throws ModuleInputException;
 
 	/**
 	 * Updated/new metadata files are saved to the module output directory (if created by the module). Use param = FALSE
