@@ -98,6 +98,7 @@ public class BioLockJ {
 		System.out.println( "Starting BioLockJ...");
 		try {
 			initBioLockJ( args );
+			Pipeline.initializePipeline();
 			checkDependencies();
 			runPipeline();
 		} catch( final Exception ex ) {
@@ -250,7 +251,6 @@ public class BioLockJ {
 			return;
 		}
 		
-		Pipeline.initializePipeline();
 	}
 	
 	private static void checkDependencies() throws Exception{
