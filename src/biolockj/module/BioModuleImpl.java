@@ -160,50 +160,11 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 */
 	@Override
 	public List<File> getInputFiles() throws ModuleInputException {
-		if ( calledPrematurely() ) return null;
 		if( getFileCache().isEmpty() ) {
 			List<File> files = new ArrayList<>();
 			cacheInputFiles ( findModuleInputFiles() );
 		}
 		return getFileCache();
-	}
-
-	/**
-	 * The methods to get specific input files should be called when the module executes, or after it has exacuted.
-	 * Until then, the inputs are abstractly represented as InputSource's, which can be listed using the {@link #getInputSources} method.
-	 * This method catches any times that the file-specific methods are called prematurely, so the method returns null.
-	 * With future changes, the specific methods will be private, and any outside class that needs the info will get 
-	 * it from a summary maintained by a utility class.
-	 * @return
-	 */
-	private boolean calledPrematurely() {
-		File flagFile = PipelineUtil.getPipelineStatusFlag();
-		String flag = flagFile == null ? "formation/checkDependencies" : flagFile.getName();
-		boolean premature = false;
-		if (Pipeline.exeModule() != this) {
-			Log.error( this.getClass(), "I am not the current module.");
-			if( !ModuleUtil.isComplete( this ) ) {
-				Log.error( this.getClass(), "I am not a completed module.");
-				premature = true;
-			}
-		}
-		if ( !flag.equals( Constants.BLJ_STARTED ) ) {
-			Log.error( this.getClass(), "The pipeline is not in the execution phase.");
-			premature = true;
-		}
-		if ( premature ) {
-			Log.error( this.getClass(), "Pipeline flag: " + flag);
-			Log.error( this.getClass(), "Current exe module: " + Pipeline.exeModule() );
-			Log.error( this.getClass(), "That " + (Pipeline.exeModule() == this ? "is" : "is not") + " me." );
-			String msg = "The exact input files cannot be determined until module [" + ModuleUtil.displaySignature( this ) + "] executes." 
-							+ System.lineSeparator() 
-							+ "Until then, the inputs are abstractly represented as InputSource's, which can be listed using the getInputSources() method.";
-			Log.error(this.getClass(), msg);
-			Throwable spot = new ModuleInputException(msg);
-			spot.printStackTrace();
-			//return true;
-		}
-		return false;
 	}
 	
 	@Override
@@ -427,7 +388,6 @@ public abstract class BioModuleImpl implements BioModule, Comparable<BioModule> 
 	 */
 	protected List<File> findModuleInputFiles() throws ModuleInputException {
 		final List<File> moduleInputFiles = new ArrayList<>();
-		if ( calledPrematurely() ) return null;
 		Log.debug( getClass(), "Initialize input files..." );
 		List<InputSource> sources;
 		try {
