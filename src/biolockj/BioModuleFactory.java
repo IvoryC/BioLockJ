@@ -16,6 +16,7 @@ import biolockj.api.ApiModule;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
 import biolockj.module.implicit.ImportMetadata;
+import biolockj.module.io.ModuleIO;
 import biolockj.util.*;
 
 /**
@@ -123,6 +124,7 @@ public class BioModuleFactory {
 				}
 			}
 			bioModules.add( module );
+			if (module instanceof ModuleIO) ((ModuleIO) module).assignInputSources();
 		}
 
 		return bioModules;
