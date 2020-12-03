@@ -471,30 +471,34 @@ public class ModuleUtil {
 		return ids;
 	}
 	
-	public static void assignInputs(ModuleIO module) throws BioLockJException {
+	public static void assignInputSources(ModuleIO module) throws BioLockJException {
 		Log.debug( module.getClass(), "Initializing input sources for module " + module + "..." );
 		for (ModuleInput input : module.getInputTypes() ) {
-			findInputModule(module, input);
-			
-			if (input.getSource() == null) {
-				Log.debug(module.getClass(), "Failed to find input from a pipeline module; looking in input dirs...");
-				List<File> allInFiles = new ArrayList<>();
-				for (File dir : Config.requireExistingDirs( module, Constants.INPUT_DIRS )) {
-					allInFiles.addAll( Arrays.asList( dir.listFiles(input.getTemplate().getFilenameFilter() ) ) );
-				}
-				input.setSource( new InputSource(allInFiles, input.getTemplate() ) );
-			} 
-			
-			if (input.getSource() == null) {
-				String msg = "Failed to find suitable input source for the [" + input.getLabel() + "] input to module [" + module +"].";
-				if(input.isRequired()) {
-					throw new ModuleInputException(msg);
-				}else {
-					Log.warn(module.getClass(), msg);
-				}
-			}else {
-				Log.info(module.getClass(), "Data for [" + input.getLabel() + "] input of module [" + module + "] will come from: " + input.getSource());
+			assignInputSources(module, input);
+		}
+	}
+	
+	public static void assignInputSources(ModuleIO module, ModuleInput input) throws BioLockJException {
+		findInputModule(module, input);
+		
+		if (input.getSource() == null) {
+			Log.debug(module.getClass(), "Failed to find input from a pipeline module; looking in input dirs...");
+			List<File> allInFiles = new ArrayList<>();
+			for (File dir : Config.requireExistingDirs( module, Constants.INPUT_DIRS )) {
+				allInFiles.addAll( Arrays.asList( dir.listFiles(input.getTemplate().getFilenameFilter() ) ) );
 			}
+			input.setSource( new InputSource(allInFiles, input.getTemplate() ) );
+		} 
+		
+		if (input.getSource() == null) {
+			String msg = "Failed to find suitable input source for the [" + input.getLabel() + "] input to module [" + module +"].";
+			if(input.isRequired()) {
+				throw new ModuleInputException(msg);
+			}else {
+				Log.warn(module.getClass(), msg);
+			}
+		}else {
+			Log.info(module.getClass(), "Data for [" + input.getLabel() + "] input of module [" + module + "] will come from: " + input.getSource());
 		}
 	}
 	
