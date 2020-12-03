@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.*;
 import biolockj.*;
 import biolockj.api.BioLockJ_API;
-import biolockj.dataType.DataUnit;
 import biolockj.dataType.DataUnitFilter;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.BioLockJStatusException;
@@ -29,8 +28,10 @@ import biolockj.module.BioModuleFilter;
 import biolockj.module.JavaModule;
 import biolockj.module.classifier.ClassifierModule;
 import biolockj.module.io.InputSource;
+import biolockj.module.io.ModuleIO;
 import biolockj.module.io.ModuleInput;
 import biolockj.module.io.ModuleOutput;
+import biolockj.module.io.SpecificModuleOutput;
 import biolockj.module.report.r.R_Module;
 
 /**
@@ -470,18 +471,48 @@ public class ModuleUtil {
 		return ids;
 	}
 	
-	public static void assignInputs(BioModule module) {
-		//TODO
+	public static void assignInputs(ModuleIO module) throws BioLockJException {
+		Log.debug( module.getClass(), "Initializing input sources for module " + module + "..." );
+		for (ModuleInput input : module.getInputTypes() ) {
+			findInputModule(module, input);
+			
+			if (input.getSource() == null) {
+				Log.debug(module.getClass(), "Failed to find input from a pipeline module; looking in input dirs...");
+				List<File> allInFiles = new ArrayList<>();
+				for (File dir : Config.requireExistingDirs( module, Constants.INPUT_DIRS )) {
+					allInFiles.addAll( Arrays.asList( dir.listFiles(input.getTemplate().getFilenameFilter() ) ) );
+				}
+				input.setSource( new InputSource(allInFiles, input.getTemplate() ) );
+			} 
+			
+			if (input.getSource() == null) {
+				String msg = "Failed to find suitable input source for the [" + input.getLabel() + "] input to module [" + module +"].";
+				if(input.isRequired()) {
+					throw new ModuleInputException(msg);
+				}else {
+					Log.warn(module.getClass(), msg);
+				}
+			}else {
+				Log.info(module.getClass(), "Data for [" + input.getLabel() + "] input of module [" + module + "] will come from: " + input.getSource());
+			}
+		}
 	}
 	
-	public static ModuleOutput<?> findInputModule(final BioModule module, final DataUnitFilter dataFilter ){
+	/**
+	 * 
+	 * @param module
+	 * @param input
+	 * @return the ModuleOutput object to c
+	 */
+	public static boolean findInputModule(final BioModule module, final ModuleInput input ){
+		DataUnitFilter dataFilter = input.getFilter();
 		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
 		BioModule prevMod = getPreviousModule( module );
 		ModuleOutput<?> useOutput = null;
 		while( useOutput == null ) {
 			if (prevMod == null) break;
 			if ( defaultFilter.accept( prevMod ) ) {
-				for (ModuleOutput<?> oneOutput : prevMod.getOutputTypes() ) {
+				for (ModuleOutput<?> oneOutput : getOutputTypes(prevMod) ) {
 					if (dataFilter.accept( oneOutput.getDataType() )) {
 						useOutput = oneOutput;
 					}
@@ -489,26 +520,22 @@ public class ModuleUtil {
 			}
 			prevMod = getPreviousModule( prevMod );
 		};
-		return useOutput;
+		if (useOutput == null ) {
+			return false;
+		}else {
+			input.setSource( new InputSource(useOutput) );
+			return true;
+		}
 	}
 	
-	public static void assignInputModules( BioModule module, List<ModuleInput> specs) throws BioLockJException {
-		Log.debug( module.getClass(), "Initialize input sources..." );
-		
-		for (ModuleInput inspec : specs) {
-			Log.info(module.getClass(), "Determineing module input to meet input: " + inspec.getLabel() );
-			DataUnitFilter inFilter = inspec.getFilter();
-			
-			ModuleOutput<?> oput = findInputModule( module, inFilter );
-			
-			if( oput != null ) {
-				InputSource in = new InputSource( oput );
-				inspec.source.add( in );
-				Log.info( module.getClass(), "Found valid input module to satisfy the [" + inspec.getLabel() + "] input: " + in.getName() );
-			} else {
-				Log.debug( module.getClass(), "No prior pipeline module is a valid input module.  Use input from inputDirs.");
-			}
+	public static <T extends BioModule> List<ModuleOutput<?>> getOutputTypes(T module){
+		List<ModuleOutput<?>> outputs = new ArrayList<>();
+		if (module instanceof ModuleIO) {
+			outputs.addAll( ((ModuleIO) module).getOutputTypes() );
+		}else {
+			outputs.add( new SpecificModuleOutput<T>( module ) );
 		}
+		return outputs;
 	}
 	
 	/**
