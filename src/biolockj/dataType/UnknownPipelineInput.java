@@ -6,7 +6,7 @@ package biolockj.dataType;
  * @author Ivory Blakley
  *
  */
-public class UnknownPipelineInput extends BasicDataUnit<UnknownPipelineInput> {
+public class UnknownPipelineInput extends BasicDataUnit {
 
 	@Override
 	public String getDescription() {

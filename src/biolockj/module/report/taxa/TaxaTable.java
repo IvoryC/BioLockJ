@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import biolockj.Constants;
 import biolockj.Log;
+import biolockj.dataType.BasicDataUnit;
 import biolockj.dataType.DataUnit;
 import biolockj.dataType.DataUnitFactory;
 import biolockj.exception.BioLockJException;
+import biolockj.exception.ModuleInputException;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.TaxaUtil;
 
@@ -27,7 +29,7 @@ import biolockj.util.TaxaUtil;
  * @author Ivory Blakley
  *
  */
-public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
+public class TaxaTable extends BasicDataUnit {
 	
 	public TaxaTable(List<String> levels) {
 		this.levels = levels;
@@ -212,10 +214,11 @@ public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
 
 	
 	@Override
-	public Collection<TaxaTable> getActualData(final List<File> files, TaxaTable template, boolean useAllFiles) throws BioLockJException {
+	public List<DataUnit> getData(final List<File> files, DataUnit intemplate, boolean useAllFiles) throws ModuleInputException {
+		TaxaTable template = (TaxaTable) intemplate;
 		List<File> inFiles = new ArrayList<File>();
 		inFiles.addAll(files);
-		List<TaxaTable> list = new ArrayList<>();
+		List<DataUnit> list = new ArrayList<>();
 		Map<String, Map<String, File>> map = new HashMap<>();
 
 		List<String> levs = template.getLevels();
@@ -225,7 +228,7 @@ public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
 				if ( ! f.getName().equals( group ) ) {
 					if (map.get( group ) == null) map.put(group, new HashMap<>());
 					if (map.get( group ).get( level ) != null) {
-						throw new BioLockJException( "Can't allow multiple files for the same level in the same taxa table." );
+						throw new ModuleInputException( "Can't allow multiple files for the same level in the same taxa table." );
 					}
 					map.get( group ).put(level, f);
 					inFiles.remove( f );
@@ -233,11 +236,16 @@ public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
 			}
 		}
 		if (useAllFiles && !inFiles.isEmpty()) {
-			throw new BioLockJException("The following files could not be used to create TaxaTable objects: " + BioLockJUtil.getCollectionAsString( inFiles ));
+			throw new ModuleInputException("The following files could not be used to create TaxaTable objects: " + BioLockJUtil.getCollectionAsString( inFiles ));
 		}
 		for (String group : map.keySet()) {
 			TaxaTable tt = new TaxaTable(template.getLevels());
-			tt.setFiles( map.get( group ).values() );
+			try {
+				tt.setFiles( map.get( group ).values() );
+			} catch( BioLockJException e ) {
+				e.printStackTrace();
+				throw new ModuleInputException(e);
+			}
 			list.add( tt );
 		}
 		return list;
@@ -255,16 +263,6 @@ public class TaxaTable implements DataUnit, DataUnitFactory<TaxaTable> {
 			}
 		}
 		return list;
-	}
-	
-	@Override
-	public DataUnitFactory<?> getFactory() {
-		return this;
-	}
-	
-	@Override
-	public Collection<TaxaTable> getActualData( List<File> files ) throws BioLockJException {
-		return getData(files, (TaxaTable) this);
 	}
 	
 	@Override
