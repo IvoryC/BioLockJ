@@ -90,7 +90,7 @@ public interface DataUnit {
 	 * 
 	 * @param files
 	 */
-	public void setFiles(List<File> files);
+	public void setFiles(List<File> files) throws BioLockJException;
 	//this.files = files;
 	
 	/**
@@ -107,18 +107,27 @@ public interface DataUnit {
 	//return files;
 	
 	/**
-	 * Return an object that can be used to produce instances of this data unit given one or more files. A class, clazz,
-	 * implementing DataUnit may also implement DataUnitFilter<clazz>, and its implementation of this method could be as
+	 * Outside classes should use {@link #getFactory(DataUnit)} to ensure type consistency.
+	 * Return an object that can be used to produce instances of this data unit given one or more files. 
+	 * 
+	 * A class, clazz, implementing DataUnit may also implement DataUnitFactory<clazz>, and its implementation of this method could be as
 	 * simple as: return this;
 	 * 
 	 * @return
 	 */
-	public default DataUnitFactory<?> getFactory(){
-		return getFactory(this);
+	public default <T extends DataUnit> DataUnitFactory<T> getFactory(){
+		return new DataUnitFactory<T>() {};
 	}
 	
+	/**
+	 * Given a DataUnit instance, return a factory that makes more objects of the same class.
+	 * If the class itself
+	 * @param <T>
+	 * @param template  
+	 * @return
+	 */
 	public static <T extends DataUnit> DataUnitFactory<T> getFactory(T template){
-		return new DataUnitFactory<T>() {};
+		return template.getFactory();
 	}
 
 	/**

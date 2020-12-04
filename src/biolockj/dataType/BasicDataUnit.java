@@ -8,11 +8,12 @@ package biolockj.dataType;
  *
  * @param <T>
  */
-public abstract class BasicDataUnit<T extends DataUnit> extends DataUnitImpl implements DataUnitFactory<T> {
+public abstract class BasicDataUnit<T extends DataUnitImpl> extends DataUnitImpl implements DataUnitFactory<T> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public DataUnitFactory<T> getFactory() {
-		return (DataUnitFactory<T>) this;
+		return this;
 	}
 	
 }
