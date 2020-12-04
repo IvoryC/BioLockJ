@@ -474,12 +474,12 @@ public class ModuleUtil {
 	
 	public static void assignInputSources(ModuleIO module) throws BioLockJException {
 		Log.debug( module.getClass(), "Initializing input sources for module " + module + "..." );
-		for (ModuleInput<?> input : module.getInputTypes() ) {
+		for (ModuleInput input : module.getInputTypes() ) {
 			assignInputSources(module, input);
 		}
 	}
 	
-	public static <T extends DataUnit> void assignInputSources(ModuleIO module, ModuleInput<T> input) throws BioLockJException {
+	public static  void assignInputSources(ModuleIO module, ModuleInput input) throws BioLockJException {
 		findInputModule(module, input);
 		
 		if (input.getSource() == null) {
@@ -488,7 +488,7 @@ public class ModuleUtil {
 			for (File dir : Config.requireExistingDirs( module, Constants.INPUT_DIRS )) {
 				allInFiles.addAll( Arrays.asList( dir.listFiles(input.getTemplate().getFilenameFilter() ) ) );
 			}
-			input.setSource( new InputSource<T>(allInFiles, input.getTemplate() ) );
+			input.setSource( new InputSource<?>(allInFiles, input.getTemplate() ) );
 		} 
 		
 		if (input.getSource() == null) {
@@ -509,7 +509,7 @@ public class ModuleUtil {
 	 * @param input
 	 * @return the ModuleOutput object to c
 	 */
-	public static <T extends DataUnit> boolean findInputModule(final BioModule module, final ModuleInput<T> input ){
+	public static boolean findInputModule(final BioModule module, final ModuleInput input ){
 		DataUnitFilter dataFilter = input.getFilter();
 		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
 		BioModule prevMod = getPreviousModule( module );
@@ -518,7 +518,7 @@ public class ModuleUtil {
 			if (prevMod == null) break;
 			if ( defaultFilter.accept( prevMod ) ) {
 				for (ModuleOutput<?> oneOutput : getOutputTypes(prevMod) ) {
-					if (dataFilter.accept( oneOutput.getDataType() )) {
+					if (dataFilter.accept( oneOutput.getTemplate() )) {
 						useOutput = oneOutput;
 					}
 				}
