@@ -100,13 +100,13 @@ public class ModuleInput{
 	/**
 	 * Where will this input source data from.
 	 */
-	private InputSource<? extends DataUnit> source = null;
+	private InputSource source = null;
 	
-	public InputSource<? extends DataUnit> getSource() {
+	public InputSource getSource() {
 		return source;
 	}
 	
-	public void setSource(InputSource<? extends DataUnit> src) {
+	public void setSource(InputSource src) {
 		source = src;
 	}
 	
