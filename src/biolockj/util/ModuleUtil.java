@@ -488,7 +488,7 @@ public class ModuleUtil {
 			for (File dir : Config.requireExistingDirs( module, Constants.INPUT_DIRS )) {
 				allInFiles.addAll( Arrays.asList( dir.listFiles(input.getTemplate().getFilenameFilter() ) ) );
 			}
-			input.setSource( new InputSource<?>(allInFiles, input.getTemplate() ) );
+			input.setSource( new InputSource(allInFiles, input.getTemplate() ) );
 		} 
 		
 		if (input.getSource() == null) {
@@ -513,11 +513,11 @@ public class ModuleUtil {
 		DataUnitFilter dataFilter = input.getFilter();
 		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
 		BioModule prevMod = getPreviousModule( module );
-		ModuleOutput<?> useOutput = null;
+		ModuleOutput useOutput = null;
 		while( useOutput == null ) {
 			if (prevMod == null) break;
 			if ( defaultFilter.accept( prevMod ) ) {
-				for (ModuleOutput<?> oneOutput : getOutputTypes(prevMod) ) {
+				for (ModuleOutput oneOutput : getOutputTypes(prevMod) ) {
 					if (dataFilter.accept( oneOutput.getTemplate() )) {
 						useOutput = oneOutput;
 					}
@@ -533,8 +533,8 @@ public class ModuleUtil {
 		}
 	}
 	
-	public static <T extends BioModule> List<ModuleOutput<?>> getOutputTypes(T module){
-		List<ModuleOutput<?>> outputs = new ArrayList<>();
+	public static <T extends BioModule> List<ModuleOutput> getOutputTypes(T module){
+		List<ModuleOutput> outputs = new ArrayList<>();
 		if (module instanceof ModuleIO) {
 			outputs.addAll( ((ModuleIO) module).getOutputTypes() );
 		}else {
@@ -544,7 +544,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * If {@link Config} property {@value biolockj.Constants#MODULE_INPUT_PROP} is configured for the callingModule, 
+	 * If {@link biolockj.Config} property {@value biolockj.Constants#MODULE_INPUT_PROP} is configured for the callingModule, 
 	 * then return a filter that only allows modules that match that list.
 	 * Otherwise, return an accept-all filter.
 	 * @param callingModule
