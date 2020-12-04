@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.*;
 import biolockj.*;
 import biolockj.api.BioLockJ_API;
+import biolockj.dataType.DataUnit;
 import biolockj.dataType.DataUnitFilter;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.BioLockJStatusException;
@@ -473,12 +474,12 @@ public class ModuleUtil {
 	
 	public static void assignInputSources(ModuleIO module) throws BioLockJException {
 		Log.debug( module.getClass(), "Initializing input sources for module " + module + "..." );
-		for (ModuleInput input : module.getInputTypes() ) {
+		for (ModuleInput<?> input : module.getInputTypes() ) {
 			assignInputSources(module, input);
 		}
 	}
 	
-	public static void assignInputSources(ModuleIO module, ModuleInput input) throws BioLockJException {
+	public static <T extends DataUnit> void assignInputSources(ModuleIO module, ModuleInput<T> input) throws BioLockJException {
 		findInputModule(module, input);
 		
 		if (input.getSource() == null) {
@@ -487,7 +488,7 @@ public class ModuleUtil {
 			for (File dir : Config.requireExistingDirs( module, Constants.INPUT_DIRS )) {
 				allInFiles.addAll( Arrays.asList( dir.listFiles(input.getTemplate().getFilenameFilter() ) ) );
 			}
-			input.setSource( new InputSource(allInFiles, input.getTemplate() ) );
+			input.setSource( new InputSource<T>(allInFiles, input.getTemplate() ) );
 		} 
 		
 		if (input.getSource() == null) {
@@ -508,7 +509,7 @@ public class ModuleUtil {
 	 * @param input
 	 * @return the ModuleOutput object to c
 	 */
-	public static boolean findInputModule(final BioModule module, final ModuleInput input ){
+	public static <T extends DataUnit> boolean findInputModule(final BioModule module, final ModuleInput<T> input ){
 		DataUnitFilter dataFilter = input.getFilter();
 		BioModuleFilter defaultFilter = getConfigInputModuleFilter(module);
 		BioModule prevMod = getPreviousModule( module );
