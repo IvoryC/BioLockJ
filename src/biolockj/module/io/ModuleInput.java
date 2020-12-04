@@ -15,7 +15,7 @@ import biolockj.module.BioModule;
  * @author Ivory Blakley
  *
  */
-public class ModuleInput{
+public class ModuleInput<T extends DataUnit>{
 	
 	/**
 	 * Standard way to define an input.
@@ -24,7 +24,7 @@ public class ModuleInput{
 	 * @param description used as {@link #description}
 	 * @param template a DataUnit instance that will be used as the template if the inputs must come from pipeline inputs rather than a module.
 	 */
-	public ModuleInput(String label, String description, DataUnit template) {
+	public ModuleInput(String label, String description, T template) {
 		this(label, description, template, new BasicInputFilter(template.getClass()));
 	}
 	
@@ -36,7 +36,7 @@ public class ModuleInput{
 	 * @param template a DataUnit instance that will be used as the template if the inputs must come from pipeline inputs rather than a module.
 	 * @param criteria a {@link DataUnitFilter} that determines if a given DatUnit object is a suitable input.
 	 */
-	public ModuleInput(String label, String description, DataUnit template, DataUnitFilter criteria) {
+	public ModuleInput(String label, String description, T template, DataUnitFilter criteria) {
 		this.label = label;
 		this.description = description;
 		this.template = template;
@@ -50,7 +50,7 @@ public class ModuleInput{
 	 * @param template a DataUnit instance that will be used as the template if the inputs must come from pipeline inputs rather than a module.
 	 * @param clazz The class of BioModule that this input must come from
 	 */
-	public ModuleInput(String label, String description, DataUnit template, Class<? extends BioModule> clazz) {
+	public ModuleInput(String label, String description, T template, Class<? extends BioModule> clazz) {
 		this(label, description, template, new ModuleOutputFilter(clazz));
 	}
 	
@@ -100,13 +100,13 @@ public class ModuleInput{
 	/**
 	 * Where will this input source data from.
 	 */
-	private InputSource source = null;
+	private InputSource<? extends T> source = null;
 	
-	public InputSource getSource() {
+	public InputSource<? extends T> getSource() {
 		return source;
 	}
 	
-	public void setSource(InputSource src) {
+	public void setSource(InputSource<? extends T> src) {
 		source = src;
 	}
 	
@@ -114,9 +114,9 @@ public class ModuleInput{
 	 * If reading from pipeline input files (rather than module outputs), 
 	 * this DataUnit object should be used as a template to create DataUnit objects representing the inputs.
 	 */
-	private DataUnit template;
+	private T template;
 	
-	public DataUnit getTemplate() {
+	public T getTemplate() {
 		return template;
 	}
 	
