@@ -18,6 +18,12 @@ public class ModuleInputException extends BioLockJException {
 		super( msg );
 	}
 	
+	public ModuleInputException( Exception ex ) {
+		super( "There was a problem setting inputs." + System.lineSeparator() + "Underlying Exception Type: " + ex.getClass().getSimpleName() +
+			System.lineSeparator() + "Message:" + ex.getMessage() );
+		this.cause = ex;
+	}
+	
 	public ModuleInputException( BioModule current, Exception ex ) {
 		super( "Module " + current + " has a problem with its inputs." + System.lineSeparator() + "Underlying Exception Type: " + ex.getClass().getSimpleName() +
 			System.lineSeparator() + "Message:" + ex.getMessage() );
