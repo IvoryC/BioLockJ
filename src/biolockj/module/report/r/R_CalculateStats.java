@@ -21,6 +21,7 @@ import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
+import biolockj.dataType.DataUnit;
 import biolockj.dataType.DataUnitFactory;
 import biolockj.dataType.MetaField;
 import biolockj.exception.BioLockJException;
@@ -353,25 +354,6 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		fields.removeAll( Config.getList( this, RMetaUtil.R_EXCLUDE_FIELDS ) );
 		return fields;
 	}
-
-	DataUnitFactory<MetaField> pickMetaFields = new DataUnitFactory<MetaField>() {
-
-		@Override
-		public List<MetaField> getData( List<File> files, MetaField template, boolean useAllFiles )
-			throws ModuleInputException {
-			List<MetaField> fields = new ArrayList<>();
-			try {
-				for( String field: selectMetaFields() ) {
-					fields.add( new MetaField( field ) );
-				}
-			} catch( BioLockJException e ) {
-				e.printStackTrace();
-				throw new ModuleInputException(e.getMessage());
-			}
-			return fields;
-		}
-		
-	};
 	
 	private void defineInputs() {
 		inputTypes = new ArrayList<>();
@@ -385,10 +367,20 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 			"One or more metadata columns defining groups to use for statistical tests, see property _" + RMetaUtil.R_REPORT_FIELDS + "_.",
 			new MetaField( "[meta data field name]" ) {
 
-				@Override
-				public DataUnitFactory<MetaField> getFactory() {
-					return pickMetaFields;
+			@Override
+			public List<DataUnit> getData( List<File> files, DataUnit template, boolean useAllFiles )
+				throws ModuleInputException {
+				List<DataUnit> fields = new ArrayList<>();
+				try {
+					for( String field: selectMetaFields() ) {
+						fields.add( new MetaField( field ) );
+					}
+				} catch( BioLockJException e ) {
+					e.printStackTrace();
+					throw new ModuleInputException(e.getMessage());
 				}
+				return fields;
+			}
 
 			} ) ;
 		inputTypes.add( metaInput );

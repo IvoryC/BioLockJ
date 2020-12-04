@@ -1,13 +1,13 @@
 package biolockj.dataType;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import biolockj.exception.BioLockJException;
+import biolockj.Log;
 import biolockj.exception.MetadataException;
+import biolockj.exception.ModuleInputException;
 import biolockj.util.MetaUtil;
 
-public class MetaField implements DataUnit{
+public class MetaField extends BasicDataUnit{
 	
 	public MetaField(String name) {
 		this.name = name;
@@ -43,7 +43,9 @@ public class MetaField implements DataUnit{
 	 * Always uses the current metadata file
 	 */
 	@Override
-	public void setFiles( List<File> files ) {}
+	public void setFiles( List<File> files ) {
+		Log.warn(this.getClass(), "The file associated with a metaField object is always the metadata file.");
+	}
 
 	@Override
 	public List<File> getFiles() throws MetadataException {
@@ -54,17 +56,25 @@ public class MetaField implements DataUnit{
 		}
 		return null;
 	}
-
+	
 	@Override
-	public DataUnitFactory<?> getFactory() {
-		return new DataUnitFactory<MetaField>() {
-
-			@Override
-			public Collection<MetaField> getActualData( List<File> files ) throws BioLockJException {
-				List<MetaField> list = new ArrayList<MetaField>();
-				list.add( MetaField.this );
-				return list;
-			}};
+	public List<DataUnit> getData( List<File> files, DataUnit template, boolean useAllFiles )
+		throws ModuleInputException {
+		List<DataUnit> data = new ArrayList<>();
+		for (String field : MetaUtil.getFieldNames() ) {
+			if (isAcceptableColumn(field)) {
+				data.add( new MetaField(field) );
+			}
+		}
+		return data;
 	}
 	
+	/**
+	 * Designed for child classes that have restrictions.
+	 * @return
+	 */
+	protected boolean isAcceptableColumn(String field) {
+		return true;
+	}
+
 }
