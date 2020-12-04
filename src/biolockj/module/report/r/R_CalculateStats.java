@@ -22,7 +22,6 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.dataType.DataUnit;
-import biolockj.dataType.DataUnitFactory;
 import biolockj.dataType.MetaField;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
@@ -126,10 +125,9 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	
 	private TaxaTable getInputTaxaTable() throws ModuleInputException {
 		TaxaTable tt;
-		@SuppressWarnings("unchecked")
-		InputSource<TaxaTable> is = ((InputSource<TaxaTable>) tableInput.getSource());
+		InputSource is = tableInput.getSource();
 		try {
-			tt = is.getData().get( 0 );
+			tt = (TaxaTable) is.getData().get( 0 );
 		} catch( BioLockJException ex ) {
 			ex.printStackTrace();
 			throw new ModuleInputException (this, is, ex);
@@ -323,7 +321,7 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	public void assignInputSources() throws BioLockJException {
 		ModuleUtil.assignInputSources(this, tableInput );
 
-		metaInput.setSource( new InputSource<MetaField>( Arrays.asList( MetaUtil.getMetadata() ),
+		metaInput.setSource( new InputSource( Arrays.asList( MetaUtil.getMetadata() ),
 			(MetaField) metaInput.getTemplate() ) );
 		
 		if (Config.requireBoolean( this, ADDED_FIELDS ) ) {

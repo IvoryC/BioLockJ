@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import biolockj.Log;
 import biolockj.exception.BioLockJException;
 
-public class FastaSeq extends BasicDataUnit<FastaSeq> {
+public class FastaSeq extends BasicDataUnit {
 
 	public FastaSeq() {	}
 
@@ -18,11 +18,6 @@ public class FastaSeq extends BasicDataUnit<FastaSeq> {
 	public boolean isValid() throws BioLockJException {
 		// read the first 500 lines 
 		return true;
-	}
-
-	@Override
-	public DataUnitFactory<FastaSeq> getFactory() {
-		return this;
 	}
 
 	@Override

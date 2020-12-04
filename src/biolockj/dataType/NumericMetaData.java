@@ -5,7 +5,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import biolockj.exception.MetadataException;
 import biolockj.util.MetaUtil;
 
-public class NumericMetaData<T extends NumericMetaData<?>> extends MetaField<T> {
+public class NumericMetaData extends MetaField {
 
 	public NumericMetaData( String name ) {
 		super( name );
@@ -31,6 +31,17 @@ public class NumericMetaData<T extends NumericMetaData<?>> extends MetaField<T> 
 			if ( !NumberUtils.isNumber( val ) ) allNumbers = false;
 		}
 		return allNumbers;
+	}
+	
+	@Override
+	protected boolean isAcceptableColumn(String field) {
+		boolean accept = false;
+		try {
+			accept = verifyNumeric( MetaUtil.getFieldValues( getName(), true ) );
+		} catch( MetadataException e ) {
+			e.printStackTrace();
+		}
+		return accept;
 	}
 	
 }

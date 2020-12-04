@@ -30,13 +30,13 @@ public class ModuleInputException extends BioLockJException {
 		this.cause = ex;
 	}
 	
-	public ModuleInputException( BioModule current, InputSource<?> is, Exception ex ) {
+	public ModuleInputException( BioModule current, InputSource is, Exception ex ) {
 		super( buildMessage( current, is ) + System.lineSeparator() + "Underlying Exception Type: " + ex.getClass().getSimpleName() +
 			System.lineSeparator() + "Message:" + ex.getMessage() );
 		this.cause = ex;
 	}
 	
-	public ModuleInputException( BioModule current, InputSource<?> is ) {
+	public ModuleInputException( BioModule current, InputSource is ) {
 		super( buildMessage( current, is ) );
 	}
 	
@@ -47,7 +47,7 @@ public class ModuleInputException extends BioLockJException {
 		return cause;
 	}
 	
-	private static String buildMessage( BioModule current, InputSource<?> is ) {
+	private static String buildMessage( BioModule current, InputSource is ) {
 		String msgStart = "Module [" + current + "] cannot take its inputs";
 		String msgMid;
 		String msgEnd;
