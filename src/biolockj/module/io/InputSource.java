@@ -18,7 +18,7 @@ import biolockj.util.ModuleUtil;
 public class InputSource {
 	
 	private final boolean isBioModule;
-	private final ModuleOutput<DataUnit> oput;
+	private final ModuleOutput oput;
 	private final List<File> files;
 	private final String name;
 	private DataUnit template = null;
@@ -29,7 +29,7 @@ public class InputSource {
 	 * Construct an InputSource based on the output a module in the pipeline will produce.
 	 * @param oput
 	 */
-	public InputSource(ModuleOutput<DataUnit> oput){
+	public InputSource(ModuleOutput oput){
 		isBioModule = true;
 		this.oput = oput;
 		this.files = new ArrayList<>(); // will be filled in after the module completes.
@@ -94,7 +94,7 @@ public class InputSource {
 		return true;
 	}
 	
-	public ModuleOutput<?> getModuleOutput() {
+	public ModuleOutput getModuleOutput() {
 		if (isBioModule) {
 			return oput;
 		}else return null;
