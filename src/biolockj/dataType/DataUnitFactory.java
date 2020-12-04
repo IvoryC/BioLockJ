@@ -5,9 +5,10 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 
-public interface DataUnitFactory<T extends DataUnit> {
+public interface DataUnitFactory {
 
 	/**
 	 * Interpret one or more files as DataUnit objects.
@@ -15,7 +16,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @param files a list of existing files on the file system
 	 * @return a collection of one or more DataUnit objects
 	 */
-	public default List<T> getData(List<File> files, T template) throws ModuleInputException {
+	public default <T extends DataUnit> List<T> getData(List<File> files, T template) throws ModuleInputException {
 		return getData(files, template, false);
 	}
 	
@@ -29,7 +30,7 @@ public interface DataUnitFactory<T extends DataUnit> {
 	 * @return a collection of one or more DataUnit objects
 	 */
 	@SuppressWarnings("unchecked")
-	public default List<T> getData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
+	public default <T extends DataUnit> List<T> getData(List<File> files, T template, boolean useAllFiles) throws ModuleInputException {
 		if ( files == null || files.isEmpty() ) throw new ModuleInputException("The files arg is required.");
 		FilenameFilter filter = template.getFilenameFilter();
 		List<T> data = new LinkedList<>();
@@ -43,11 +44,15 @@ public interface DataUnitFactory<T extends DataUnit> {
 			T unit;
 			try {
 				unit = (T) template.getClass().newInstance();
+				unit.setFiles( unitFiles );
 			} catch( InstantiationException | IllegalAccessException e ) {
 				e.printStackTrace();
 				throw new ModuleInputException( "Factory [" + this.getClass().getName() + "] could not create a new instance of: " + template.getClass().getName() );
+			}catch( BioLockJException e ) {
+				e.printStackTrace();
+				throw new ModuleInputException( "Factory [" + this.getClass().getName() + "] could not create a new instance of: " + template.getClass().getName() );
 			}
-			unit.setFiles( unitFiles );
+			
 			unitFiles.add( file );
 			data.add( unit );
 		}

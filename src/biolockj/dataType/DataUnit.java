@@ -115,8 +115,8 @@ public interface DataUnit {
 	 * 
 	 * @return
 	 */
-	public default <T extends DataUnit> DataUnitFactory<T> getFactory(){
-		return new DataUnitFactory<T>() {};
+	public default DataUnitFactory getFactory(){
+		return new DataUnitFactory() {};
 	}
 	
 	/**
@@ -126,7 +126,7 @@ public interface DataUnit {
 	 * @param template  
 	 * @return
 	 */
-	public static <T extends DataUnit> DataUnitFactory<T> getFactory(T template){
+	public static DataUnitFactory getFactory(DataUnit template){
 		return template.getFactory();
 	}
 
