@@ -14,9 +14,9 @@ import biolockj.module.BioModule;
  * @author Ivory Blakley
  *
  */
-public class ModuleOutput<T extends DataUnit>{
+public class ModuleOutput {
 	
-	public ModuleOutput(BioModule module, String label, T type) {
+	public ModuleOutput(BioModule module, String label, DataUnit type) {
 		this.module = module;
 		this.label = label;
 		this.type = type;
@@ -49,9 +49,9 @@ public class ModuleOutput<T extends DataUnit>{
 		return label;
 	}
 
-	private final T type;
+	private final DataUnit type;
 
-	public T getDataType() {
+	public DataUnit getTemplate() {
 		return type;
 	}
 	

@@ -414,8 +414,8 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	ModuleInput additional;
 
 	@Override
-	public List<ModuleOutput<?>> getOutputTypes() {
-		List<ModuleOutput<?>> list = new ArrayList<>();
+	public List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> list = new ArrayList<>();
 		list.add( new SpecificModuleOutput<R_CalculateStats>( this ) );
 		return list;
 	}

@@ -15,25 +15,25 @@ import biolockj.util.ModuleUtil;
  * @author Ivory Blakley
  *
  */
-public class InputSource <T extends DataUnit> {
+public class InputSource {
 	
 	private final boolean isBioModule;
-	private final ModuleOutput<T> oput;
+	private final ModuleOutput<DataUnit> oput;
 	private final List<File> files;
 	private final String name;
-	private T template = null;
-	private List<T> data;
+	private DataUnit template = null;
+	private List<DataUnit> data;
 	
 	
 	/**
 	 * Construct an InputSource based on the output a module in the pipeline will produce.
 	 * @param oput
 	 */
-	public InputSource(ModuleOutput<T> oput){
+	public InputSource(ModuleOutput<DataUnit> oput){
 		isBioModule = true;
 		this.oput = oput;
 		this.files = new ArrayList<>(); // will be filled in after the module completes.
-		this.template = oput.getDataType();
+		this.template = oput.getTemplate();
 		name = oput.getModule() + ":" + oput.getLabel();
 	}
 	
@@ -42,7 +42,7 @@ public class InputSource <T extends DataUnit> {
 	 * @param folder
 	 * @param template
 	 */
-	public InputSource(List<File> inFiles, T template) throws ModuleInputException {
+	public InputSource(List<File> inFiles, DataUnit template) throws ModuleInputException {
 		isBioModule = false;
 		this.oput = null;
 		this.files = inFiles;
@@ -61,7 +61,7 @@ public class InputSource <T extends DataUnit> {
 	 * @return
 	 * @throws ModuleInputException
 	 */
-	public List<T> getData() throws ModuleInputException{
+	public List<DataUnit> getData() throws ModuleInputException{
 		if (isBioModule) {
 			if ( ! ModuleUtil.isComplete( oput.getModule() )) {
 				throw new ModuleInputException("The source module [" + oput.getModule() + "] has not completed.");

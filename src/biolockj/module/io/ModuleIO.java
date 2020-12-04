@@ -24,7 +24,7 @@ public interface ModuleIO extends BioModule {
 	 * A human and technical definition of the module output types.
 	 * @return
 	 */
-	public List<ModuleOutput<?>> getOutputTypes();
+	public List<ModuleOutput> getOutputTypes();
 	
 	
 
