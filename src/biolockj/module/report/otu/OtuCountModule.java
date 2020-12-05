@@ -18,36 +18,26 @@ import biolockj.Log;
 import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
+import biolockj.module.report.taxa.TaxaTable;
 import biolockj.util.OtuUtil;
 
 /**
  * OtuCount modules reads OTU count assignment tables (1 file/sample) with 2 columns.<br>
- * Col1: Full OTU pathway spanning top to bottom level Col2: Count (# of reads) for the sample.
+ * See {@link biolockj.module.report.otu.OtuTable}
  */
-public abstract class OtuCountModule extends JavaModuleImpl {
-
-	@Override
-	public List<File> getInputFiles() throws ModuleInputException {
-		if( getFileCache().isEmpty() ) {
-			final List<File> files = new ArrayList<>();
-			for( final File f: findModuleInputFiles() )
-				if( OtuUtil.isOtuFile( f ) ) files.add( f );
-			cacheInputFiles( files );
-		}
-		return getFileCache();
-	}
-
-	@Override
-	public boolean isValidInputModule( final BioModule module ) {
-		return isOtuModule( module );
-	}
+public abstract class OtuCountModule extends JavaModuleImpl implements ModuleIO {
 
 	/**
 	 * Check the module to determine if it generated OTU count files.
+	 * This method was deprecated when the OtoCountModule framework moved to the ModuleIO system.
 	 * 
 	 * @param module BioModule
 	 * @return TRUE if module generated OTU count files
 	 */
+	@Deprecated
 	protected boolean isOtuModule( final BioModule module ) {
 		try {
 			final File[] files = module.getOutputDir().listFiles();
@@ -59,6 +49,25 @@ public abstract class OtuCountModule extends JavaModuleImpl {
 			ex.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public List<ModuleInput> getInputTypes() {
+		List<ModuleInput> inputs = new ArrayList<>();
+		inputs.add( new ModuleInput("OTU tables", "Usually the output of a paser module that follows a classifier module.", new OtuTable()) );
+		return inputs;
+	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes(){
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new ModuleOutput(this, "A taxa table that is merged result of all input OTU tables.", new TaxaTable()) );
+		return outputs;
+	}
+	
+	@Override
+	public List<File> getInputFiles() throws ModuleInputException {
+		return ModuleIO.super.getInputFiles();
 	}
 
 }
