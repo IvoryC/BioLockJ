@@ -20,25 +20,20 @@ import biolockj.api.API_Exception;
 import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.TaxaUtil;
 
 /**
  * TBD
  */
-public abstract class TaxaCountModule extends JavaModuleImpl {
-
+public abstract class TaxaCountModule extends JavaModuleImpl implements ModuleIO {
+	
 	@Override
 	public List<File> getInputFiles() throws ModuleInputException {
-		if( getFileCache().isEmpty() ) {
-			final List<File> files = new ArrayList<>();
-			for( final File f: findModuleInputFiles() )
-				if( TaxaTable.isTaxaTableFile( f ) ) files.add( f );
-
-			cacheInputFiles( filterByProcessLevel( files ) );
-		}
-
-		return getFileCache();
+		return ModuleIO.super.getInputFiles();
 	}
 
 	/**
@@ -68,6 +63,7 @@ public abstract class TaxaCountModule extends JavaModuleImpl {
 	 * @param module BioModule
 	 * @return TRUE if module generated taxonomy table files
 	 */
+	@Deprecated
 	public boolean isTaxaModule( final BioModule module ) {
 		try {
 			final Collection<File> files = BioLockJUtil.removeIgnoredAndEmptyFiles(
@@ -85,6 +81,20 @@ public abstract class TaxaCountModule extends JavaModuleImpl {
 	@Override
 	public boolean isValidInputModule( final BioModule module ) {
 		return isTaxaModule( module );
+	}
+	
+	@Override
+	public List<ModuleInput> getInputTypes(){
+		List<ModuleInput> inputTypes = new ArrayList<>();
+		inputTypes.add( new ModuleInput( "input taxa table", "A taxa table.", new TaxaTable() ) );
+		return inputTypes;
+	}
+	
+	@Override
+	public List<ModuleOutput> getOutputTypes(){
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new ModuleOutput(this, "output taxa table", new TaxaTable()) );
+		return outputs;
 	}
 
 	/**
