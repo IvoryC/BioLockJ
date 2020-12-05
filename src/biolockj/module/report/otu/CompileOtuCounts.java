@@ -14,6 +14,7 @@ package biolockj.module.report.otu;
 import java.io.*;
 import java.util.*;
 import biolockj.Log;
+import biolockj.api.ApiModule;
 import biolockj.util.*;
 
 /**
@@ -22,7 +23,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Compile OTU Counts
  */
-public class CompileOtuCounts extends OtuCountModule {
+public class CompileOtuCounts extends OtuCountModule implements ApiModule {
 
 	/**
 	 * Add summary with unique OTU counts/level.
@@ -156,4 +157,20 @@ public class CompileOtuCounts extends OtuCountModule {
 	 * Output file prefix: {@value #SUMMARY}
 	 */
 	public static final String SUMMARY = "summary";
+
+	@Override
+	public String getDescription() {
+		return "Merge all OTU tables into a single OTU table";
+	}
+	
+	@Override
+	public String getDetails() {
+		return "This BioModule compiles the counts from all OTU count files into a single summary OTU count file containing OTU counts for the entire dataset";
+	}
+
+	@Override
+	public String getCitationString() {
+		return "Module developed by Mike Sioda" + System.lineSeparator()
+		+ "BioLockJ " + BioLockJUtil.getVersion();
+	}
 }

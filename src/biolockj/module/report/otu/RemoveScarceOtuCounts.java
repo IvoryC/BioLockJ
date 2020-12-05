@@ -14,6 +14,7 @@ package biolockj.module.report.otu;
 import java.io.*;
 import java.util.*;
 import biolockj.*;
+import biolockj.api.ApiModule;
 import biolockj.exception.ConfigFormatException;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.util.*;
@@ -24,14 +25,20 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Remove Scarce OTU Counts
  */
-public class RemoveScarceOtuCounts extends OtuCountModule {
+public class RemoveScarceOtuCounts extends OtuCountModule implements ApiModule {
 
+	public RemoveScarceOtuCounts() {
+		addGeneralProperty( Constants.REPORT_SCARCE_CUTOFF, RANGE );
+	}
+	
 	@Override
 	public void checkDependencies() throws Exception {
 		super.checkDependencies();
 		if( getScarceCutoff() > 1 )
-			throw new ConfigFormatException( Constants.REPORT_SCARCE_CUTOFF, "Required range 0.0 - 1.0 " );
+			throw new ConfigFormatException( Constants.REPORT_SCARCE_CUTOFF, RANGE );
 	}
+	
+	private static final String RANGE = "Required range 0.0 - 1.0 ";
 
 	/**
 	 * Set the number of hits field.
@@ -244,4 +251,21 @@ public class RemoveScarceOtuCounts extends OtuCountModule {
 	private final TreeSet<String> sampleIds = new TreeSet<>();
 	private long totalOtuRemoved = 0;
 	private final Set<String> uniqueOtuRemoved = new HashSet<>();
+	
+	@Override
+	public String getDescription() {
+		return "Removes OTUs found is too-few samples.";
+	}
+	
+	@Override
+	public String getDetails() {
+		return "This BioModule removes scarce OTUs not found in enough samples. The OTU must be found in a configurable percentage of samples, configured by _" +
+			Constants.REPORT_SCARCE_CUTOFF + "_.";
+	}
+
+	@Override
+	public String getCitationString() {
+		return "Module developed by Mike Sioda" + System.lineSeparator() 
+			+ "BioLockJ " + BioLockJUtil.getVersion();
+	}
 }

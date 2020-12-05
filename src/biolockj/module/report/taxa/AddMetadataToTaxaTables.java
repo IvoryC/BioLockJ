@@ -19,6 +19,8 @@ import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.module.implicit.RegisterNumReads;
 import biolockj.module.implicit.parser.ParserModuleImpl;
+import biolockj.module.io.ModuleOutput;
+import biolockj.module.io.SpecificModuleOutput;
 import biolockj.util.*;
 
 /**
@@ -225,5 +227,12 @@ public class AddMetadataToTaxaTables extends TaxaCountModule implements ApiModul
 	 * File suffix added to OTU table file name once merged with metadata.
 	 */
 	public static final String META_MERGED = "_metaMerged" + TSV_EXT;
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> list = new ArrayList<>();
+		list.add( new SpecificModuleOutput<AddMetadataToTaxaTables>( this ) );
+		return list;
+	}
 
 }
