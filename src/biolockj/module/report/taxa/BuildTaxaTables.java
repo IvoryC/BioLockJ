@@ -17,6 +17,7 @@ import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Log;
 import biolockj.api.ApiModule;
+import biolockj.module.io.ModuleOutput;
 import biolockj.module.report.otu.OtuCountModule;
 import biolockj.util.*;
 
@@ -159,4 +160,12 @@ public class BuildTaxaTables extends OtuCountModule implements ApiModule {
 		return new File( dir.getAbsolutePath() + File.separator + Config.pipelineName() + "_" + TaxaTable.TAXA_TABLE + mySuffix +
 			level + Constants.TSV_EXT );
 	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes(){
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new ModuleOutput(this, "A taxa table that is merged result of all input OTU tables.", new TaxaTable()) );
+		return outputs;
+	}
+
 }

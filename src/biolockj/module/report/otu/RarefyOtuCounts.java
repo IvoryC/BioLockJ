@@ -18,6 +18,7 @@ import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.exception.ConfigFormatException;
 import biolockj.module.implicit.parser.ParserModuleImpl;
+import biolockj.module.io.ModuleOutput;
 import biolockj.util.*;
 
 /**
@@ -49,7 +50,7 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 		Config.requirePositiveInteger( this, NUM_ITERATIONS );
 		Config.getBoolean( this, REMOVE_LOW_ABUNDANT_SAMPLES );
 		Config.requirePositiveDouble( this, LOW_ABUNDANT_CUTOFF );
-
+		getMetaColName();
 	}
 
 	/**
@@ -58,7 +59,7 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 	@Override
 	public void cleanUp() throws Exception {
 		super.cleanUp();
-		ParserModuleImpl.setNumHitsFieldName( getMetaColName() + "_" + Constants.OTU_COUNT );
+		ParserModuleImpl.setNumHitsFieldName( getMetaColName() );
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 		}
 
 		if( Config.getBoolean( this, Constants.REPORT_NUM_HITS ) ) MetaUtil
-			.addColumn( getMetaColName() + "_" + Constants.OTU_COUNT, this.hitsPerSample, getOutputDir(), true );
+			.addColumn( getMetaColName(), this.hitsPerSample, getOutputDir(), true );
 	}
 
 	/**
@@ -221,7 +222,7 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 	}
 
 	private String getMetaColName() throws Exception {
-		return "postRareQ" + new Double( Config.requirePositiveDouble( this, QUANTILE ) * 100 ).intValue();
+		return PREFIX + new Double( Config.requirePositiveDouble( this, QUANTILE ) * 100 ).intValue() + "_" + Constants.OTU_COUNT;
 	}
 
 	/**
@@ -282,7 +283,13 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 
 	@Override
 	public String getDescription() {
-		return "Applies a mean iterative post-OTU classification rarefication algorithm so that each output sample will have approximately the same number of OTUs.";
+		return "Applies a rarefication algorithm.";
+	}
+	
+	@Override
+	public String getDetails() {
+		return "Applies a mean iterative post-OTU classification rarefication algorithm so that each output sample will have approximately the same number of OTUs.<br>IFF _" +
+			Constants.REPORT_NUM_HITS + "=" + Constants.TRUE + "_ then the a \"" + Constants.OTU_COUNT + "\" column will added to the metada.";
 	}
 
 	@Override
@@ -315,5 +322,22 @@ public class RarefyOtuCounts extends OtuCountModule implements ApiModule {
 	 * quantile sample are removed.
 	 */
 	protected static final String REMOVE_LOW_ABUNDANT_SAMPLES = "rarefyOtuCounts.rmLowSamples";
+	
+	private static final String PREFIX = "postRareQ";
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> outputs = super.getOutputTypes();
+		try {
+			ModuleOutput counts = new ModuleOutput(this, "optional metadata column: " + getMetaColName(), 
+				new OtuCountField( getMetaColName() ) );
+			if (Config.getBoolean( this, Constants.REPORT_NUM_HITS )) outputs.add( counts );
+		} catch( Exception e ) {
+			Log.warn(this.getClass(), "Ignoring value of property: " + Constants.REPORT_NUM_HITS);
+			e.printStackTrace();
+		}
+		
+		return outputs;
+	}
 
 }
