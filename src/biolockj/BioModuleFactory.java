@@ -13,6 +13,7 @@ package biolockj;
 
 import java.util.*;
 import biolockj.api.ApiModule;
+import biolockj.exception.ModuleInputException;
 import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
 import biolockj.module.implicit.ImportMetadata;
@@ -124,7 +125,13 @@ public class BioModuleFactory {
 				}
 			}
 			bioModules.add( module );
-			if (module instanceof ModuleIO) ((ModuleIO) module).assignInputSources();
+			if( module instanceof ModuleIO ) {
+				try {
+					( (ModuleIO) module ).assignInputSources();
+				} catch( Exception e ) {
+					throw new ModuleInputException( module, e );
+				}
+			}
 		}
 
 		return bioModules;
