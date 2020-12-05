@@ -537,9 +537,8 @@ public class ModuleUtil {
 		List<ModuleOutput> outputs = new ArrayList<>();
 		if (module instanceof ModuleIO) {
 			outputs.addAll( ((ModuleIO) module).getOutputTypes() );
-		}else {
-			outputs.add( new SpecificModuleOutput<T>( module ) );
 		}
+		outputs.add( new SpecificModuleOutput<T>( module ) );
 		return outputs;
 	}
 	
