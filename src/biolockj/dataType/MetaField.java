@@ -11,6 +11,7 @@ public class MetaField extends BasicDataUnit{
 	
 	public MetaField(String name) {
 		this.name = name;
+		canBeMultiple(false);
 	}
 	
 	String name;
@@ -21,7 +22,7 @@ public class MetaField extends BasicDataUnit{
 	public String getName() {
 		return name;
 	};
-
+	
 	/**
 	 * @return the description
 	 */
@@ -74,6 +75,7 @@ public class MetaField extends BasicDataUnit{
 	 * @return
 	 */
 	protected boolean isAcceptableColumn(String field) {
+		if ( ! canBeMultiple() && !getName().equals( field ) ) return false;
 		return true;
 	}
 
