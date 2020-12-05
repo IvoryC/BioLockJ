@@ -319,6 +319,8 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 	
 	@Override
 	public void assignInputSources() throws BioLockJException {
+		defineInputs();
+
 		ModuleUtil.assignInputSources(this, tableInput );
 
 		metaInput.setSource( new InputSource( Arrays.asList( MetaUtil.getMetadata() ),
