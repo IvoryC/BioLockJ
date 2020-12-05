@@ -1,40 +1,32 @@
-package biolockj.dataType;
+package biolockj.module.report.otu;
 
-import java.util.List;
-import org.apache.commons.lang.math.NumberUtils;
+import biolockj.Constants;
 import biolockj.exception.MetadataException;
 import biolockj.util.MetaUtil;
 
-public class NumericMetaData extends MetaField {
+public class OtuCountField extends CountField {
 
-	public NumericMetaData( String name ) {
+	public OtuCountField( String name ) {
 		super( name );
 	}
-
+	
 	/**
 	 * @return the description
 	 */
 	@Override
 	public String getDescription() {
-		return "A metadata attribute with numeric data.";
+		return "A metadata attribute with OTU counts data. The column name ends with \"" + Constants.OTU_COUNT + "\" All non-null values are integers >= 0.";
 	}
 	
 	public boolean isValid() throws MetadataException {
 		if ( !super.isValid() ) return false;
+		if ( ! getName().endsWith( Constants.OTU_COUNT )) return false;
 		return verifyVals( MetaUtil.getFieldValues( getName(), true ) );
-	}
-	
-	protected boolean verifyVals(List<String> vals) {
-		if (vals.isEmpty()) return false;
-		boolean allNumbers = true;
-		for (String val : vals) {
-			if ( !NumberUtils.isNumber( val ) ) allNumbers = false;
-		}
-		return allNumbers;
 	}
 	
 	@Override
 	protected boolean isAcceptableColumn(String field) {
+		if (!field.endsWith( Constants.OTU_COUNT )) return false;
 		boolean accept = false;
 		try {
 			accept = verifyVals( MetaUtil.getFieldValues( getName(), true ) );
@@ -43,5 +35,5 @@ public class NumericMetaData extends MetaField {
 		}
 		return accept;
 	}
-	
+
 }
