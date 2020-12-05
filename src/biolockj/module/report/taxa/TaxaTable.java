@@ -121,13 +121,17 @@ public class TaxaTable extends BasicDataUnit {
 					Log.debug(this.getClass(), "Determined file for level [" + level + "] is: " + file);
 				}
 			}
+			if ( !files.containsKey( level ) ) Log.debug(this.getClass(), "No file was found for level [" + level + "].");
+		}
+		for( final File file: inFiles ) { 
+			if ( !files.containsValue( file ) ) Log.debug(this.getClass(), "This file was not assigned to any level in the taxa table [" + file.getName() + "].");
 		}
 		List<String> origLevels = new ArrayList<>();
 		origLevels.addAll( levels );
 		levels.removeIf( (lev) -> !files.containsKey( lev ) );
 		Log.debug(this.getClass(), "Found input files for levels: " + files.keySet());
 		if (levels.isEmpty()) {
-			throw new BioLockJException("There was a complete diconnect between the expected levels {" 
+			throw new BioLockJException("There was a complete disconnect between the expected levels {" 
 							+ BioLockJUtil.getCollectionAsString( origLevels ) 
 							+ "} and the found levels {" + BioLockJUtil.getCollectionAsString(files.keySet()) 
 							+ "}.");
@@ -223,7 +227,9 @@ public class TaxaTable extends BasicDataUnit {
 
 		List<String> levs = template.getLevels();
 		for (String level : levs ) {
-			for (File f : inFiles) {
+			List<File> remaining = new ArrayList<>();
+			remaining.addAll( inFiles );
+			for (File f : remaining) {
 				String group = f.getName().replaceAll( level, "" );
 				if ( ! f.getName().equals( group ) ) {
 					if (map.get( group ) == null) map.put(group, new HashMap<>());
