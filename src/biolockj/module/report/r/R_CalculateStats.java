@@ -110,19 +110,6 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		return outer;
 	}
 	
-	@Override
-	protected List<File> findModuleInputFiles() throws ModuleInputException {
-		List<File> files = new ArrayList<>();
-		TaxaTable t = getInputTaxaTable();
-		try {
-			files.addAll( t.getFiles() );
-			files.add( MetaUtil.getMetadata() );
-		} catch( BioLockJException ex ) {
-			throw new ModuleInputException( this, ex );
-		}
-		return files;
-	}
-	
 	private TaxaTable getInputTaxaTable() throws ModuleInputException {
 		TaxaTable tt;
 		InputSource is = tableInput.getSource();
@@ -410,6 +397,11 @@ public class R_CalculateStats extends R_Module implements ApiModule, ModuleIO {
 		List<ModuleOutput> list = new ArrayList<>();
 		list.add( new SpecificModuleOutput<R_CalculateStats>( this ) );
 		return list;
+	}
+
+	@Override
+	public List<File> getInputFiles() throws ModuleInputException {
+		return ModuleIO.super.getInputFiles();
 	}
 
 }
