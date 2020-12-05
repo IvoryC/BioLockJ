@@ -1,17 +1,22 @@
 package biolockj.module;
 
+import java.util.ArrayList;
+import java.util.List;
 import biolockj.Constants;
 import biolockj.Log;
 import biolockj.api.ApiModule;
 import biolockj.util.ModuleUtil;
 import biolockj.exception.PipelineFormationException;
 import biolockj.exception.StopModuleException;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 /**
  * Stop a pipeline.
  * @author Ivory Blakley
  *
  */
-public class Stop extends BioModuleImpl implements ApiModule{
+public class Stop extends BioModuleImpl implements ApiModule, ModuleIO{
 
 	public Stop() throws PipelineFormationException {
 		// Takes no properties.
@@ -57,6 +62,18 @@ public class Stop extends BioModuleImpl implements ApiModule{
 	
 	private String getMessage(){
 		return "This pipeline is configured to stop upon completing module: " + ModuleUtil.getPreviousModule( this );
+	}
+
+	@Override
+	public List<ModuleInput> getInputTypes() {
+		// takes no input
+		return new ArrayList<ModuleInput>();
+	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() {
+		// makes no output
+		return new ArrayList<ModuleOutput>();
 	}
 
 }
