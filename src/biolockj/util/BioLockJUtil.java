@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import biolockj.*;
 import biolockj.Properties;
+import biolockj.dataType.DataUnit;
 import biolockj.exception.*;
 import biolockj.launch.Launcher;
 import biolockj.module.BioModule;
@@ -554,6 +555,11 @@ public class BioLockJUtil {
 					"It may be necissary to supply the input types via property [" + Constants.INPUT_TYPES + "]." );
 		}
 		return bool;
+	}
+	
+	public static boolean pipelineHasInputType( final DataUnit type ) throws ConfigNotFoundException {
+		String ty = type.name();
+		return pipelineInputType(ty);
 	}
 	
 	/**
