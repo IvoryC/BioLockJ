@@ -185,4 +185,12 @@ public interface DataUnit {
 	 */
 	public void canBeMultiple(boolean multiple) ;
 	
+	/**
+	 * Return the string to indicate this type in config files.
+	 * @return
+	 */
+	public default String name() {
+		return this.getClass().getSimpleName();
+	}
+	
 }
