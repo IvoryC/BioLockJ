@@ -1,8 +1,7 @@
-package biolockj.module.report.otu;
+package biolockj.dataType.metatdata;
 
 import java.util.List;
 import org.apache.commons.lang.math.NumberUtils;
-import biolockj.dataType.NumericMetaData;
 
 /**
  * An extension of {@link NumericMetaData} that additionally requires that the column include only count data, that is,

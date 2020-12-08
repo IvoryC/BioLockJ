@@ -22,7 +22,7 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.dataType.DataUnit;
-import biolockj.dataType.MetaField;
+import biolockj.dataType.metatdata.MetaField;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ModuleInputException;

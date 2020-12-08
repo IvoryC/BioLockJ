@@ -1,4 +1,4 @@
-package biolockj.dataType;
+package biolockj.dataType.metatdata;
 
 import java.util.List;
 import org.apache.commons.lang.math.NumberUtils;

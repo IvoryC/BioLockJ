@@ -1,8 +1,10 @@
-package biolockj.dataType;
+package biolockj.dataType.metatdata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import biolockj.Log;
+import biolockj.dataType.BasicDataUnit;
+import biolockj.dataType.DataUnit;
 import biolockj.exception.MetadataException;
 import biolockj.exception.ModuleInputException;
 import biolockj.util.MetaUtil;
