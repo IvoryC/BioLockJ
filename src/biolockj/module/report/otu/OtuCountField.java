@@ -1,6 +1,7 @@
 package biolockj.module.report.otu;
 
 import biolockj.Constants;
+import biolockj.dataType.metatdata.CountField;
 import biolockj.exception.MetadataException;
 import biolockj.util.MetaUtil;
 
