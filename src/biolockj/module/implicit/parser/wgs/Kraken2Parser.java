@@ -15,21 +15,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.util.*;
 import biolockj.*;
+import biolockj.api.ApiModule;
 import biolockj.exception.OtuFileException;
-import biolockj.module.BioModule;
 import biolockj.module.classifier.wgs.Kraken2Classifier;
+import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.node.*;
 import biolockj.node.wgs.Kraken2Node;
 import biolockj.util.*;
 
 /**
- * This BioModules parses KrakenClassifier output reports to build standard OTU abundance tables.
+ * This BioModules parses Kraken2Classifier output reports to build standard OTU abundance tables.
  * 
  * @blj.web_desc Kraken2 Parser
  */
-public class Kraken2Parser extends KrakenParser {
+public class Kraken2Parser extends ParserModuleImpl implements ApiModule {
 	
-	@Override
 	protected void parseSample( final File file ) throws Exception {
 		final BufferedReader reader = BioLockJUtil.getFileReader( file );
 		try {
@@ -201,8 +201,29 @@ public class Kraken2Parser extends KrakenParser {
 	}
 	
 	@Override
-	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof Kraken2Classifier ;
+	public Class<Kraken2Classifier> getParnerModule() {
+		return Kraken2Classifier.class;
+	}
+
+	@Override
+	public void addOtuNode( final OtuNode node ) throws Exception {
+		if( isValid( node ) ) {
+			final ParsedSample sample = getParsedSample( node.getSampleId() );
+			if( sample == null ) addParsedSample( new ParsedSample( node ) );
+			else sample.addNode( node );
+		}
+	}
+
+	@Override
+	public String getDescription() {
+		return "Build OTU tables from [KRAKEN2](https://ccb.jhu.edu/software/kraken2/) mpa-format reports.";
+	}
+
+	@Override
+	public String getCitationString() {
+		return "The [KRAKEN2](https://ccb.jhu.edu/software/kraken2/) tool is described in [_Improved metagenomic analysis with Kraken 2_](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1891-0) (2019)." +
+			System.lineSeparator() + "The BioLockJ wrapper module was developed by Mike Sioda and Ivory Blakley." + System.lineSeparator() + "BioLockJ " +
+			BioLockJUtil.getVersion();
 	}
 
 }

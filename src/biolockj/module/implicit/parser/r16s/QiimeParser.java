@@ -16,10 +16,14 @@ import java.io.File;
 import java.util.*;
 import biolockj.Constants;
 import biolockj.Log;
+import biolockj.dataType.SpecificModuleOutputUnit;
 import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
+import biolockj.module.classifier.ClassifierModule;
+import biolockj.module.classifier.wgs.Metaphlan2Classifier;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.module.implicit.qiime.QiimeClassifier;
+import biolockj.module.io.ModuleInput;
 import biolockj.node.OtuNode;
 import biolockj.node.r16s.QiimeNode;
 import biolockj.util.BioLockJUtil;
@@ -274,8 +278,8 @@ public class QiimeParser extends ParserModuleImpl {
 	}
 	
 	@Override
-	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof QiimeClassifier ;
+	public Class<QiimeClassifier> getParnerModule() {
+		return QiimeClassifier.class;
 	}
 
 	/**
@@ -295,4 +299,5 @@ public class QiimeParser extends ParserModuleImpl {
 	protected static final Map<String, String> sampleIdToQiimeIdMap = new HashMap<>();
 
 	private static final String OTU_ID = "#OTU ID";
+
 }
