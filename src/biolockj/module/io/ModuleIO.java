@@ -15,7 +15,7 @@ public interface ModuleIO extends BioModule {
 	 * A human and technical description of the modules input requirements.
 	 * @return
 	 */
-	public List<ModuleInput> getInputTypes();
+	public List<ModuleInput> getInputTypes() throws ModuleInputException;
 
 	/**
 	 * Determine an InputSource for each of the modules InputSpecs.
@@ -28,7 +28,7 @@ public interface ModuleIO extends BioModule {
 	 * A human and technical definition of the module output types.
 	 * @return
 	 */
-	public List<ModuleOutput> getOutputTypes();
+	public List<ModuleOutput> getOutputTypes() throws ModuleInputException;
 	
 	/**
 	 * This does not override {@link biolockj.module.BioModuleImpl#getInputFiles()}.
