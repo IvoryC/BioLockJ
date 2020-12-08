@@ -1,5 +1,7 @@
 package biolockj.dataType;
 
+import biolockj.Pipeline;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.util.ModuleUtil;
 
@@ -13,7 +15,16 @@ import biolockj.util.ModuleUtil;
  */
 public class SpecificModuleOutputUnit<T extends BioModule> extends BasicDataUnit {
 
-	T fromModule = null;
+	private T fromModule = null;
+
+	public SpecificModuleOutputUnit(Class<T> clazz) throws ModuleInputException {
+		try {
+			fromModule = clazz.newInstance();
+		} catch( InstantiationException | IllegalAccessException e ) {
+			e.printStackTrace();
+			throw new ModuleInputException( e );
+		}
+	}
 	
 	public SpecificModuleOutputUnit(T madeByModule) {
 		fromModule = madeByModule;
@@ -37,7 +48,8 @@ public class SpecificModuleOutputUnit<T extends BioModule> extends BasicDataUnit
 
 	@Override
 	public boolean isReady() {
-		return ModuleUtil.isComplete( fromModule );
+		if (Pipeline.getModules().contains( fromModule )) return ModuleUtil.isComplete( fromModule );
+		return super.isReady();
 	}
 
 }
