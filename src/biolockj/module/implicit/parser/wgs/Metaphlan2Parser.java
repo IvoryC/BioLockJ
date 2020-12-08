@@ -13,7 +13,6 @@ package biolockj.module.implicit.parser.wgs;
 
 import java.io.BufferedReader;
 import java.io.File;
-import biolockj.module.BioModule;
 import biolockj.module.classifier.wgs.Metaphlan2Classifier;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.node.wgs.MetaphlanNode;
@@ -55,7 +54,8 @@ public class Metaphlan2Parser extends ParserModuleImpl {
 	}
 	
 	@Override
-	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof Metaphlan2Classifier ;
+	public Class<Metaphlan2Classifier> getParnerModule() {
+		return Metaphlan2Classifier.class;
 	}
+
 }

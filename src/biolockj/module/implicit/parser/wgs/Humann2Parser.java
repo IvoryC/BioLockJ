@@ -17,9 +17,13 @@ import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Properties;
 import biolockj.api.ApiModule;
+import biolockj.dataType.SpecificModuleOutputUnit;
+import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.classifier.wgs.Humann2Classifier;
 import biolockj.module.implicit.parser.ParserModuleImpl;
+import biolockj.module.implicit.qiime.QiimeClassifier;
+import biolockj.module.io.ModuleInput;
 import biolockj.util.*;
 
 /**
@@ -203,6 +207,11 @@ public class Humann2Parser extends ParserModuleImpl implements ApiModule {
 				break;
 		}
 		return isValid;
+	}
+	
+	@Override
+	public Class<Humann2Classifier> getParnerModule() {
+		return Humann2Classifier.class;
 	}
 
 	private Integer numGeneFamilies = null;

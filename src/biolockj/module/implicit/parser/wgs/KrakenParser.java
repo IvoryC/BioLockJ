@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import biolockj.*;
 import biolockj.api.ApiModule;
-import biolockj.module.BioModule;
 import biolockj.module.classifier.wgs.KrakenClassifier;
 import biolockj.module.implicit.parser.ParserModuleImpl;
 import biolockj.node.*;
@@ -98,8 +97,8 @@ public class KrakenParser extends ParserModuleImpl implements ApiModule {
 	}
 	
 	@Override
-	public boolean isValidInputModule( BioModule module ) {
-		return module instanceof KrakenClassifier ;
+	public Class<? extends KrakenClassifier> getParnerModule() {
+		return KrakenClassifier.class;
 	}
 
 	@Override
@@ -109,6 +108,8 @@ public class KrakenParser extends ParserModuleImpl implements ApiModule {
 
 	@Override
 	public String getCitationString() {
-		return "Module developed by Mike Sioda" + System.lineSeparator() + "BioLockJ " + BioLockJUtil.getVersion();
+		return "For the [KRAKEN](http://ccb.jhu.edu/software/kraken/) tool, cite: Wood DE, Salzberg SL: [_Kraken: ultrafast metagenomic sequence classification using exact alignments_](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2014-15-3-r46). Genome Biology 2014, 15:R46." +
+			System.lineSeparator() + "Module developed by Mike Sioda" + System.lineSeparator() + "BioLockJ " +
+			BioLockJUtil.getVersion();
 	}
 }
