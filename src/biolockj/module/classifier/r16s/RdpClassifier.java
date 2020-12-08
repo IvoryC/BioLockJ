@@ -20,6 +20,9 @@ import biolockj.api.ApiModule;
 import biolockj.exception.*;
 import biolockj.module.classifier.ClassifierModuleImpl;
 import biolockj.module.implicit.parser.r16s.RdpHierParser;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 import biolockj.util.*;
 
 /**
@@ -27,7 +30,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc RDP Classifier
  */
-public class RdpClassifier extends ClassifierModuleImpl implements ApiModule {
+public class RdpClassifier extends ClassifierModuleImpl implements ApiModule, ModuleIO {
 	
 	public RdpClassifier() {
 		super();
@@ -239,6 +242,20 @@ public class RdpClassifier extends ClassifierModuleImpl implements ApiModule {
 		}
 		else list.addAll( super.getPostRequisiteModules() );
 		return list;
+	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> outputs = super.getOutputTypes();
+		try {
+			if (Config.getBoolean( this, HIER_COUNTS ) ){
+				outputs.add( new ModuleOutput(this, "hierachical table", new RdpHierarchicalTable()));
+			}
+		} catch( ConfigFormatException e ) {
+			e.printStackTrace();
+			Log.warn(this.getClass(), "Ignoring the " + HIER_COUNTS + " property... Not declaring the hierarchical output.");
+		}
+		return outputs;
 	}
 
 }
