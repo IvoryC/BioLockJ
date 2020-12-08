@@ -26,14 +26,19 @@ import biolockj.exception.ModuleInputException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.classifier.r16s.RdpClassifier;
+import biolockj.module.classifier.r16s.RdpHierarchicalTable;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 import biolockj.util.BashScriptBuilder;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.ModuleUtil;
 import biolockj.util.SeqUtil;
 import biolockj.util.TaxaUtil;
 import biolockj.module.report.taxa.TaxaLevelTable;
+import biolockj.module.report.taxa.TaxaTable;
 
-public class RdpHierParser extends JavaModuleImpl implements ApiModule {
+public class RdpHierParser extends JavaModuleImpl implements ApiModule, ModuleIO {
 
 	public RdpHierParser()  {
 		addNewProperty( Constants.RDP_THRESHOLD_SCORE, Properties.NUMERTIC_TYPE, "RdpClassifier will use this property and ignore OTU assignments below this threshold score (0-100)" );
@@ -325,5 +330,19 @@ public class RdpHierParser extends JavaModuleImpl implements ApiModule {
 	private final String CN_ADJ = "cnadjusted_";
 	
 	private static final String[] okInputTypes = {"ModuleOutput[RdpClassifier]"};
+
+	@Override
+	public List<ModuleInput> getInputTypes() throws ModuleInputException {
+		List<ModuleInput>  inputs = new ArrayList<>();
+		inputs.add( new ModuleInput("hierarchical table", "The hierarchical table output of the RDP classifier.", new RdpHierarchicalTable()) );
+		return inputs;
+	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() throws ModuleInputException {
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new ModuleOutput(this, "taxa table", new TaxaTable()) );
+		return outputs;
+	}
 
 }
