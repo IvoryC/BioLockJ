@@ -16,16 +16,24 @@ import java.util.ArrayList;
 import java.util.List;
 import biolockj.Constants;
 import biolockj.Log;
+import biolockj.dataType.seq.GenericSeqData;
 import biolockj.exception.*;
 import biolockj.module.*;
 import biolockj.module.implicit.parser.ParserModule;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
+import biolockj.module.io.SpecificModuleOutput;
 import biolockj.util.ModuleUtil;
 import biolockj.util.SummaryUtil;
 
 /**
  * This is the superclass for all WGS and 16S biolockj.module.classifier BioModules.
+ * All classifiers reference a data base.
+ * All classifiers take some form of sequence data as their input.
+ * The default output is a module-specific DataUnit.
  */
-public abstract class ClassifierModuleImpl extends SeqModuleImpl implements ClassifierModule, DatabaseModule {
+public abstract class ClassifierModuleImpl extends SeqModuleImpl implements ClassifierModule, DatabaseModule, ModuleIO {
 
 	/**
 	 * Validate module dependencies:
@@ -125,6 +133,20 @@ public abstract class ClassifierModuleImpl extends SeqModuleImpl implements Clas
 
 		return "r16s";
 
+	}
+	
+	@Override
+	public List<ModuleInput> getInputTypes() {
+		List<ModuleInput> inputs = new ArrayList<>();
+		inputs.add( new ModuleInput("sequence data", "Sequences to classify.", new GenericSeqData()) );
+		return inputs;
+	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new SpecificModuleOutput<BioModule>( this ) );
+		return outputs;
 	}
 
 	private File dbCache = null;
