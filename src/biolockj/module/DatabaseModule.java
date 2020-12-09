@@ -12,6 +12,7 @@
 package biolockj.module;
 
 import java.io.File;
+import biolockj.Constants;
 import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
@@ -33,5 +34,13 @@ public interface DatabaseModule extends BioModule {
 	 * @throws DockerVolCreationException 
 	 */
 	public File getDB() throws ConfigPathException, ConfigNotFoundException, DockerVolCreationException;
+	
+	public default String dbSummary() throws ConfigPathException, ConfigNotFoundException, DockerVolCreationException {
+		return "Database: " + ( getDB() == null ? "null" : getDB().getAbsolutePath()) + Constants.RETURN;
+	}
+	
+	public default String getSummary() throws ConfigPathException, ConfigNotFoundException, DockerVolCreationException {
+		return dbSummary();
+	}
 
 }
