@@ -1,7 +1,5 @@
-package biolockj.dataTypes.seq;
+package biolockj.dataType.seq;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import biolockj.dataType.BasicDataUnit;
 
 /**
@@ -20,31 +18,12 @@ public class GenericSeqData extends BasicDataUnit implements SeqData{
 
 	@Override
 	public SequenceAlphabet getAlphabet() {
-		return new SequenceAlphabet() {
-			
-			@Override
-			public char[] getCharacters() {
-				// Anything that actually wants to examine the alphabet, will surely use a less generic class.
-				return "abcdefjhijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-.?1234567890".toCharArray();
-			}
-		};
+		return new SequenceAlphabet() {};
 	}
 
 	@Override
 	public SequenceFormat getFormat() {
-		return new SequenceFormat() {
-			
-			@Override
-			public FilenameFilter getFilenameFilter() {
-				return new FilenameFilter() {
-					
-					@Override
-					public boolean accept( File dir, String name ) {
-						return true;
-					}
-				};
-			}
-		};
+		return new SequenceFormat() {};
 	}
 
 	@Override
