@@ -247,7 +247,7 @@ public class QiimeClassifier extends ClassifierModuleImpl {
 		if( getFileCache().isEmpty() ) if( getClass().getName().equals( QiimeClassifier.class.getName() ) )
 			cacheInputFiles( findModuleInputFiles() );
 		else try {
-			cacheInputFiles( getSeqFiles( findModuleInputFiles() ) );
+			cacheInputFiles( SeqUtil.getSeqFiles( findModuleInputFiles() ) );
 		} catch( final SequnceFormatException ex ) {
 			Log.error( getClass(), "Unable to find module input sequence files: " + ex.getMessage(), ex );
 		}

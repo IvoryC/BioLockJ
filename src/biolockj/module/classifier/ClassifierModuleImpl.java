@@ -33,7 +33,7 @@ import biolockj.util.SummaryUtil;
  * All classifiers take some form of sequence data as their input.
  * The default output is a module-specific DataUnit.
  */
-public abstract class ClassifierModuleImpl extends SeqModuleImpl implements ClassifierModule, DatabaseModule, ModuleIO {
+public abstract class ClassifierModuleImpl extends ScriptModuleImpl implements ClassifierModule, DatabaseModule, SeqModule, ModuleIO {
 
 	/**
 	 * Validate module dependencies:
@@ -78,7 +78,7 @@ public abstract class ClassifierModuleImpl extends SeqModuleImpl implements Clas
 
 	@Override
 	public String getSummary() throws Exception {
-		return super.getSummary() + SummaryUtil.getInputSummary( this );
+		return DatabaseModule.super.getSummary() + SummaryUtil.getInputSummary( this );
 	}
 
 	/**

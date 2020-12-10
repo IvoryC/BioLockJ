@@ -77,11 +77,6 @@ public class SeqFileValidator extends JavaModuleImpl implements SeqModule, ApiMo
 		RegisterNumReads.setNumReadFieldName( getMetaColName() );
 	}
 
-	@Override
-	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
-		return SeqUtil.getSeqFiles( files );
-	}
-
 	/**
 	 * Produce a summary message with counts on total number of reads and number of valid reads containing a barcode
 	 * defined in the metadata file.

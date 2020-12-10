@@ -11,27 +11,33 @@
  */
 package biolockj.module;
 
-import java.io.File;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import biolockj.exception.SequnceFormatException;
+import biolockj.dataType.BasicInputFilter;
+import biolockj.dataType.seq.GenericSeqData;
+import biolockj.dataType.seq.SeqData;
+import biolockj.module.io.ModuleIO;
+import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 
 /**
  * Classes that implement this interface requires sequence files for input.<br>
  */
-public interface SeqModule extends ScriptModule {
+public interface SeqModule extends ScriptModule, ModuleIO {
 
-	/**
-	 * Return only sequence files for sample IDs found in the metadata file.<br>
-	 * If {@link biolockj.Config}.{@value biolockj.util.MetaUtil#META_REQUIRED} = {@value biolockj.Constants#TRUE}, an
-	 * error is thrown to list the files that cannot be matched to a metadata row.
-	 * 
-	 * @param files Module input files
-	 * @return Module sequence files
-	 * @throws SequnceFormatException If {@link biolockj.Config}.{@value biolockj.util.MetaUtil#META_REQUIRED} =
-	 * {@value biolockj.Constants#TRUE} but sequence files found that do not have a corresponding record in the metadata
-	 * file or if invalid metadata prevents parsing SEQ files.
-	 */
-	public List<File> getSeqFiles( Collection<File> files ) throws SequnceFormatException;
-
+	@Override
+	public default List<ModuleInput> getInputTypes() {
+		List<ModuleInput> inputs = new ArrayList<>();
+		inputs.add( new ModuleInput( "Sequence data", "Sequence data.", new GenericSeqData(),
+			new BasicInputFilter( SeqData.class ) ) );
+		return inputs;
+	}
+		
+	@Override
+	public default List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new ModuleOutput(this, "Sequence data", new GenericSeqData()) );
+		return outputs;
+	}
+	
 }

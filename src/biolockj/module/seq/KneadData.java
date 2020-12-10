@@ -21,7 +21,8 @@ import biolockj.dataType.DataUnit;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 import biolockj.module.ReferenceDataModule;
-import biolockj.module.SeqModuleImpl;
+import biolockj.module.ScriptModuleImpl;
+import biolockj.module.SeqModule;
 import biolockj.module.io.InputSource;
 import biolockj.module.io.ModuleInput;
 import biolockj.util.*;
@@ -33,7 +34,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Knead Data Sanitizer
  */
-public class KneadData extends SeqModuleImpl implements ApiModule, SequenceOutputModule, ReferenceDataModule {
+public class KneadData extends ScriptModuleImpl implements ApiModule, SeqModule, ReferenceDataModule {
 
 	public KneadData() {
 		super();

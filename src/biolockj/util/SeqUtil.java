@@ -479,11 +479,13 @@ public class SeqUtil {
 	}
 
 	/**
+	 * @Deprecated - use the modules {@link biolockj.module.io.ModuleIO#getOutputTypes()} method to know its outputs--before it runs.
 	 * Check the module to determine if it generated sequence file output.
 	 * 
 	 * @param module BioModule
 	 * @return TRUE if module generated OTU count files
 	 */
+	@Deprecated
 	public static boolean isSeqModule( final BioModule module ) {
 		final Collection<File> files = BioLockJUtil.removeIgnoredAndEmptyFiles(
 			FileUtils.listFiles( module.getOutputDir(), HiddenFileFilter.VISIBLE, HiddenFileFilter.VISIBLE ) );
