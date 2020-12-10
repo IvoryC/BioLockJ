@@ -18,6 +18,10 @@ import java.util.List;
 import biolockj.*;
 import biolockj.api.ApiModule;
 import biolockj.dataType.DataUnit;
+import biolockj.dataType.DataUnitFilter;
+import biolockj.dataType.seq.FastqData;
+import biolockj.dataType.seq.FastqFormat;
+import biolockj.dataType.seq.SeqData;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 import biolockj.module.ReferenceDataModule;
@@ -25,6 +29,7 @@ import biolockj.module.ScriptModuleImpl;
 import biolockj.module.SeqModule;
 import biolockj.module.io.InputSource;
 import biolockj.module.io.ModuleInput;
+import biolockj.module.io.ModuleOutput;
 import biolockj.util.*;
 
 /**
@@ -67,6 +72,16 @@ public class KneadData extends ScriptModuleImpl implements ApiModule, SeqModule,
 	public void checkDependencies() throws Exception {
 		super.checkDependencies();
 		if( !SeqUtil.isFastQ() ) throw new Exception( getClass().getName() + " requires FASTQ format!" );
+		
+		if (inSeqs.getSource() == null) {
+			throw new ModuleInputException( "Module [" + this + "] failed to find required input: [" + inSeqs.getLabel() + "]." );
+		}else if (inSeqs.getSource().isReady() ) {
+			for (DataUnit ins : inSeqs.getSource().getData()) {
+				if (ins.isReady() && ! ins.isValid()) {
+					throw new ModuleInputException( this, inSeqs.getSource() );
+				}
+			}
+		}
 		
 		if (refDB.getSource() == null ) {
 			throw new ModuleInputException( "Module [" + this + "] failed to find a source for reference data [" + refDB.getLabel() + "]." );
@@ -266,9 +281,30 @@ public class KneadData extends ScriptModuleImpl implements ApiModule, SeqModule,
 	public List<File> getReferenceFiles() throws ModuleInputException {
 		return ReferenceDataModule.super.getReferenceFiles();
 	}
+
+	@Override
+	public List<ModuleInput> getInputTypes() {
+		List<ModuleInput> inputs = new ArrayList<>();
+		inputs.add( inSeqs );
+		return SeqModule.super.getInputTypes();
+	}
+
+	@Override
+	public List<ModuleOutput> getOutputTypes() {
+		List<ModuleOutput> outputs = new ArrayList<>();
+		outputs.add( new ModuleOutput(this, "Filerted data", new FastqData() ) );
+		return outputs;
+	}
 	
 	private final ModuleInput refDB = new ModuleInput( "Reference genome", 
 		"Sequences to remove from the sample data, must be a valide KneadData database.", 
 		new KneadDataDB() );
+	
+	private final ModuleInput inSeqs = new ModuleInput( "Sequence data", "Fastq files", new FastqData(), new DataUnitFilter() {
+		@Override
+		public boolean accept( DataUnit data ) {
+			return data instanceof SeqData && ( (SeqData) data ).getFormat() instanceof FastqFormat;
+		}
+	} ) ;
 	
 }
