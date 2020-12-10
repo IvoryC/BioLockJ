@@ -27,6 +27,7 @@ import biolockj.exception.PipelineFormationException;
 import biolockj.module.BioModule;
 import biolockj.module.BioModuleFilter;
 import biolockj.module.JavaModule;
+import biolockj.module.ReferenceDataModule;
 import biolockj.module.classifier.ClassifierModule;
 import biolockj.module.io.InputSource;
 import biolockj.module.io.ModuleIO;
@@ -533,7 +534,7 @@ public class ModuleUtil {
 		}
 	}
 	
-	public static <T extends BioModule> List<ModuleOutput> getOutputTypes(T module){
+	public static <T extends BioModule> List<ModuleOutput> getOutputTypes(T module) throws ModuleInputException{
 		List<ModuleOutput> outputs = new ArrayList<>();
 		if (module instanceof ModuleIO) {
 			outputs.addAll( ((ModuleIO) module).getOutputTypes() );
@@ -570,6 +571,32 @@ public class ModuleUtil {
 			};
 		}
 		return filter;
+	}
+	
+	public static void checkInputs( ModuleIO module ) throws BioLockJException {
+		for( ModuleInput input: module.getInputTypes() ) {
+			checkModuleInput(module, input);
+		}
+	}
+	
+	public static void checkRefData( ReferenceDataModule module ) throws BioLockJException {
+		for( ModuleInput input: module.getReferenceTypes() ) {
+			checkModuleInput(module, input);
+		}
+	}
+	
+	public static void checkModuleInput( BioModule module, ModuleInput input ) throws BioLockJException {
+		if( input.getSource() == null && input.isRequired() ) {
+			throw new ModuleInputException(
+				"Module [" + module + "] failed to find required input: [" + input.getLabel() + "]." );
+		} else if( input.getSource().isReady() ) {
+			for( DataUnit du: input.getSource().getData() ) {
+				if( du.isReady() && !du.isValid() ) {
+					//TODO: be more forgiving for types that are not required.
+					throw new ModuleInputException( module, input.getSource() );
+				}
+			}
+		}
 	}
 	
 	/**

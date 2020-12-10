@@ -50,5 +50,10 @@ public interface ModuleIO extends BioModule {
 		}
 		return files;
 	}
+	
+	@Override
+	public default void checkDependencies() throws Exception {
+		ModuleUtil.checkInputs( this );
+	}
 
 }

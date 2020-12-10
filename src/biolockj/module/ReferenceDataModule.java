@@ -59,5 +59,10 @@ public interface ReferenceDataModule extends BioModule {
 		}
 		return files;
 	}
+	
+	@Override
+	public default void checkDependencies() throws Exception {
+		ModuleUtil.checkRefData( this );
+	}
 
 }

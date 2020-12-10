@@ -70,29 +70,9 @@ public class KneadData extends ScriptModuleImpl implements ApiModule, SeqModule,
 
 	@Override
 	public void checkDependencies() throws Exception {
-		super.checkDependencies();
-		if( !SeqUtil.isFastQ() ) throw new Exception( getClass().getName() + " requires FASTQ format!" );
-		
-		if (inSeqs.getSource() == null) {
-			throw new ModuleInputException( "Module [" + this + "] failed to find required input: [" + inSeqs.getLabel() + "]." );
-		}else if (inSeqs.getSource().isReady() ) {
-			for (DataUnit ins : inSeqs.getSource().getData()) {
-				if (ins.isReady() && ! ins.isValid()) {
-					throw new ModuleInputException( this, inSeqs.getSource() );
-				}
-			}
-		}
-		
-		if (refDB.getSource() == null ) {
-			throw new ModuleInputException( "Module [" + this + "] failed to find a source for reference data [" + refDB.getLabel() + "]." );
-		}else if (refDB.getSource().isReady()) {
-			for (DataUnit ref : refDB.getSource().getData()) {
-				if ( ref.isReady() && ! ref.isValid() ) {
-					throw new ModuleInputException(this, refDB.getSource());
-				}
-			}
-		}
-		
+		super.checkDependencies();		
+		SeqModule.super.checkDependencies();
+		ReferenceDataModule.super.checkDependencies();
 		getParams();
 	}
 
@@ -100,7 +80,9 @@ public class KneadData extends ScriptModuleImpl implements ApiModule, SeqModule,
 	public String getSummary() throws Exception {
 		final StringBuffer sb = new StringBuffer();
 		try {
-			sb.append( "Removed contaminents in DB: " + Config.getList( this, KNEAD_DBS ) );
+			for (String line : SummaryUtil.addRefDataSummaryLines( this ) ) {
+				sb.append( line + RETURN );
+			}
 		} catch( final Exception ex ) {
 			final String msg = "Unable to complete module summary: " + ex.getMessage();
 			sb.append( msg + RETURN );
