@@ -2,9 +2,10 @@ package biolockj.dataType;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import biolockj.Log;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ModuleInputException;
 
@@ -35,15 +36,22 @@ public interface DataUnitFactory {
 		List<DataUnit> data = new LinkedList<>();
 		for (File file : files) {
 			if (file.isDirectory()) continue;
-			if (filter.accept( file.getParentFile(), file.getName() )) {
+			if ( !filter.accept( file.getParentFile(), file.getName() )) {
 				if (useAllFiles) throw new ModuleInputException( "File name [" + file.getName() + "] is not an acceptable name for a data type: " + template.getClass().getName() );
 				else continue;
 			}
-			List<File> unitFiles = new ArrayList<>();
 			DataUnit unit;
 			try {
 				unit = template.getClass().newInstance();
-				unit.setFiles( unitFiles );
+				unit.canBeMultiple(false);
+				unit.setFiles( Arrays.asList( file ) );
+				if (unit.isValid()) {
+					data.add( unit );
+				}else {
+					String msg = "File [" + file.getName() + "] did not result in a valid [" + template.name() + "] object.";
+					Log.debug(this.getClass(), msg);
+					if (useAllFiles) throw new ModuleInputException(msg);
+				}
 			} catch( InstantiationException | IllegalAccessException e ) {
 				e.printStackTrace();
 				throw new ModuleInputException( "Factory [" + this.getClass().getName() + "] could not create a new instance of: " + template.getClass().getName() );
@@ -51,9 +59,6 @@ public interface DataUnitFactory {
 				e.printStackTrace();
 				throw new ModuleInputException( "Factory [" + this.getClass().getName() + "] could not create a new instance of: " + template.getClass().getName() );
 			}
-			
-			unitFiles.add( file );
-			data.add( unit );
 		}
 		return data;
 	}
