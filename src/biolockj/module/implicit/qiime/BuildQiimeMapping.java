@@ -15,7 +15,8 @@ import java.io.*;
 import java.util.*;
 import biolockj.*;
 import biolockj.module.ScriptModule;
-import biolockj.module.SeqModuleImpl;
+import biolockj.module.ScriptModuleImpl;
+import biolockj.module.SeqModule;
 import biolockj.util.*;
 
 /**
@@ -39,7 +40,7 @@ import biolockj.util.*;
  * <li>Rename the validated mapping file to the original metadata file name and save to the module output directory.
  * </ol>
  */
-public class BuildQiimeMapping extends SeqModuleImpl {
+public class BuildQiimeMapping extends ScriptModuleImpl implements SeqModule {
 	/**
 	 * Create QIIME mapping based on metadata file, output to temp dir. Add required fields if missing.
 	 *

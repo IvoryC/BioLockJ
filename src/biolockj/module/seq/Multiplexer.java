@@ -17,7 +17,6 @@ import java.util.zip.GZIPOutputStream;
 import biolockj.*;
 import biolockj.Properties;
 import biolockj.api.ApiModule;
-import biolockj.exception.SequnceFormatException;
 import biolockj.module.*;
 import biolockj.module.classifier.ClassifierModule;
 import biolockj.module.report.Email;
@@ -52,11 +51,6 @@ public class Multiplexer extends JavaModuleImpl implements SeqModule, SequenceOu
 		super.checkDependencies();
 		Log.warn( getClass(), "BioLockJ requires demultiplexed data, so this must be the last module except Email" );
 		validateModuleOrder();
-	}
-
-	@Override
-	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
-		return SeqUtil.getSeqFiles( files );
 	}
 
 	/**

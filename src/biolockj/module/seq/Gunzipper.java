@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import biolockj.*;
 import biolockj.api.ApiModule;
-import biolockj.module.SeqModuleImpl;
+import biolockj.module.ScriptModuleImpl;
+import biolockj.module.SeqModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.SeqUtil;
 
@@ -25,7 +26,7 @@ import biolockj.util.SeqUtil;
  * 
  * @blj.web_desc Decompress .gz Files
  */
-public class Gunzipper extends SeqModuleImpl implements ApiModule, SequenceOutputModule {
+public class Gunzipper extends ScriptModuleImpl implements SeqModule, ApiModule {
 
 	public Gunzipper() {
 		addGeneralProperty( Constants.EXE_GZIP );

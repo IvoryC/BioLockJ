@@ -19,7 +19,6 @@ import biolockj.*;
 import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.exception.ConfigFormatException;
-import biolockj.exception.SequnceFormatException;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
 import biolockj.module.SeqModule;
@@ -82,11 +81,6 @@ public class RarefySeqs extends JavaModuleImpl implements SeqModule, SequenceOut
 		else if( SeqUtil.piplineHasSeqInput() && needsCountModule() ) preReqs.add( RegisterNumReads.class.getName() );
 
 		return preReqs;
-	}
-
-	@Override
-	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
-		return SeqUtil.getSeqFiles( files );
 	}
 
 	/**

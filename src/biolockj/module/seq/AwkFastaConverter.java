@@ -16,8 +16,8 @@ import java.util.*;
 import biolockj.*;
 import biolockj.api.ApiModule;
 import biolockj.exception.ModuleInputException;
-import biolockj.exception.SequnceFormatException;
-import biolockj.module.SeqModuleImpl;
+import biolockj.module.ScriptModuleImpl;
+import biolockj.module.SeqModule;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.SeqUtil;
 
@@ -26,7 +26,7 @@ import biolockj.util.SeqUtil;
  * 
  * @blj.web_desc Awk Fastq to Fasta Converter
  */
-public class AwkFastaConverter extends SeqModuleImpl implements ApiModule, SequenceOutputModule {
+public class AwkFastaConverter extends ScriptModuleImpl implements SeqModule, ApiModule {
 	
 	public AwkFastaConverter(){
 		addGeneralProperty( Constants.EXE_GZIP );
@@ -81,11 +81,6 @@ public class AwkFastaConverter extends SeqModuleImpl implements ApiModule, Seque
 		super.cleanUp();
 		Config.setConfigProperty( Constants.INTERNAL_SEQ_TYPE, Constants.FASTA );
 		Config.setConfigProperty( Constants.INTERNAL_SEQ_HEADER_CHAR, SeqUtil.FASTA_HEADER_DEFAULT_DELIM );
-	}
-
-	@Override
-	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
-		return SeqUtil.getSeqFiles( files );
 	}
 
 	/**

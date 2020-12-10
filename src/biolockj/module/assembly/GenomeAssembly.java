@@ -17,7 +17,8 @@ import biolockj.Config;
 import biolockj.Constants;
 import biolockj.api.ApiModule;
 import biolockj.exception.*;
-import biolockj.module.SeqModuleImpl;
+import biolockj.module.ScriptModuleImpl;
+import biolockj.module.SeqModule;
 import biolockj.module.seq.PearMergeReads;
 import biolockj.util.BioLockJUtil;
 import biolockj.util.SeqUtil;
@@ -28,7 +29,7 @@ import biolockj.util.SeqUtil;
  *
  * @blj.web_desc Genome Assembly
  */
-public class GenomeAssembly extends SeqModuleImpl implements ApiModule {
+public class GenomeAssembly extends ScriptModuleImpl implements SeqModule, ApiModule {
 
 	@Override
 	public List<List<String>> buildScript( final List<File> files ) throws Exception {

@@ -15,7 +15,6 @@ import java.io.File;
 import java.util.*;
 import org.apache.commons.io.FileUtils;
 import biolockj.Log;
-import biolockj.exception.SequnceFormatException;
 import biolockj.module.ReadCounter;
 import biolockj.module.BioModule;
 import biolockj.module.JavaModuleImpl;
@@ -30,11 +29,6 @@ import biolockj.util.*;
  * @blj.web_desc Register Number of Reads
  */
 public class RegisterNumReads extends JavaModuleImpl implements SeqModule, ReadCounter {
-
-	@Override
-	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
-		return SeqUtil.getSeqFiles( files );
-	}
 
 	/**
 	 * Produce summary message with min, max, mean, and median number of reads.

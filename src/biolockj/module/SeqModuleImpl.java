@@ -20,8 +20,10 @@ import biolockj.exception.SequnceFormatException;
 import biolockj.util.SeqUtil;
 
 /**
+ * @Deprecated The default implementations for SeqModule methods are in the SeqModule interface.
  * Superclass for SeqModules that take sequence files as input for pre-processing prior to classification.
  */
+@Deprecated
 public abstract class SeqModuleImpl extends ScriptModuleImpl implements SeqModule {
 
 	/**
@@ -30,24 +32,16 @@ public abstract class SeqModuleImpl extends ScriptModuleImpl implements SeqModul
 	 */
 	@Override
 	public List<File> getInputFiles() throws ModuleInputException {
-		if( getFileCache().isEmpty() ) try {
-			cacheInputFiles( getSeqFiles( findModuleInputFiles() ) );
-		} catch( SequnceFormatException e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch( BioLockJException e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return getFileCache();
+		return SeqModule.super.getInputFiles();
 	}
-
-	@Override
+	
+	@Deprecated
 	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
 		return SeqUtil.getSeqFiles( files );
 	}
 
 	@Override
+	@Deprecated
 	public boolean isValidInputModule( final BioModule module ) {
 		return SeqUtil.isSeqModule( module );
 	}

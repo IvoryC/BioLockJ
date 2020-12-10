@@ -19,7 +19,8 @@ import biolockj.api.ApiModule;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.exception.MetadataException;
 import biolockj.module.ReadCounter;
-import biolockj.module.SeqModuleImpl;
+import biolockj.module.ScriptModuleImpl;
+import biolockj.module.SeqModule;
 import biolockj.module.implicit.RegisterNumReads;
 import biolockj.util.*;
 
@@ -31,7 +32,7 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Merge Reads with PEAR
  */
-public class PearMergeReads extends SeqModuleImpl implements ApiModule, SequenceOutputModule, ReadCounter {
+public class PearMergeReads extends ScriptModuleImpl implements ApiModule, SeqModule, ReadCounter {
 	
 	public PearMergeReads() {
 		super();

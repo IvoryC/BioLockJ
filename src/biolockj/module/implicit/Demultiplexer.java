@@ -123,16 +123,11 @@ public class Demultiplexer extends JavaModuleImpl implements SeqModule, Sequence
 	@Override
 	public List<File> getInputFiles() throws ModuleInputException {
 		if( getFileCache().isEmpty() ) try {
-			cacheInputFiles( getSeqFiles( findModuleInputFiles() ) );
+			cacheInputFiles( SeqUtil.getSeqFiles( findModuleInputFiles() ) );
 		} catch( final SequnceFormatException ex ) {
 			Log.error( getClass(), "Unable to find module input sequence files: " + ex.getMessage(), ex );
 		}
 		return getFileCache();
-	}
-
-	@Override
-	public List<File> getSeqFiles( final Collection<File> files ) throws SequnceFormatException {
-		return SeqUtil.getSeqFiles( files );
 	}
 
 	/**
