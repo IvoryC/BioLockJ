@@ -18,9 +18,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
 import biolockj.*;
+import biolockj.dataType.DataUnit;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.module.BioModule;
+import biolockj.module.ReferenceDataModule;
 import biolockj.module.ScriptModule;
+import biolockj.module.io.ModuleInput;
 
 /**
  * This module builds an execution summary for the pipeline which is printed to the log file and is be sent to the user
@@ -186,6 +189,47 @@ public class SummaryUtil {
 		}
 
 		return sb.toString();
+	}
+	
+	/**
+	 * Given a list of summary lines for a module, add more lines to the list to represent the reference data that the module declared.
+	 * @param module
+	 * @param summary
+	 * @return
+	 */
+	public static List<String> addRefDataSummaryLines(final ReferenceDataModule module, final List<String> summary) {
+		try {
+			summary.add( "Reference data: " );
+			for( ModuleInput ref: module.getReferenceTypes() ) {
+				summary.add( INDENT + ref.getLabel() + ":" );
+				if( ref.getSource() == null ) {
+					summary.add( INDENT + (ref.isRequired() ? "unknown source for required reference" : "none; reference is not required" ));
+				} else {
+					if( ref.getSource().isModule() )
+						summary.add( "(from module " + ref.getSource().getModuleOutput().getModule() + ")" );
+					for( DataUnit data: ref.getSource().getData() ) {
+						for( File file: data.getFiles() ) {
+							summary.add( INDENT + INDENT + data.name() + ": " + file.getAbsolutePath() );
+						}
+					}
+				}
+			}
+		}catch(Exception e) {
+			Log.error(SummaryUtil.class, "There was a problem generating the summary of the reference data for mdoule " + module);
+			e.printStackTrace();
+		}
+		return summary;
+	}
+	
+	/**
+	 * Given a {@link ReferenceDataModule} create a summary (a list of lines) describing the reference data associated with this module.
+	 * @param module
+	 * @return
+	 */
+	public static List<String> addRefDataSummaryLines(final ReferenceDataModule module){
+		List<String> summary = new ArrayList<>();
+		addRefDataSummaryLines(module, summary);
+		return summary;
 	}
 
 	/**
@@ -738,6 +782,7 @@ public class SummaryUtil {
 	private static final String PIPELINE_RUNTIME = "Pipeline Runtime";
 	public static final String PIPELINE_STATUS = "Pipeline Status";
 	private static final String RETURN = Constants.RETURN;
+	private static final String INDENT = "\t";
 	private static final String RUN_TIME = "Runtime";
 	private static final String RUNTIME_ENV = "Runtime Env";
 	private static String runtimeEnv = null;

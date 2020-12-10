@@ -13,14 +13,17 @@ package biolockj.module.seq;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import biolockj.*;
 import biolockj.api.ApiModule;
-import biolockj.exception.ConfigNotFoundException;
-import biolockj.exception.ConfigPathException;
-import biolockj.exception.DockerVolCreationException;
-import biolockj.module.DatabaseModule;
+import biolockj.dataType.DataUnit;
+import biolockj.exception.BioLockJException;
+import biolockj.exception.ModuleInputException;
+import biolockj.module.ReferenceDataModule;
 import biolockj.module.SeqModuleImpl;
+import biolockj.module.io.InputSource;
+import biolockj.module.io.ModuleInput;
 import biolockj.util.*;
 
 /**
@@ -30,13 +33,13 @@ import biolockj.util.*;
  * 
  * @blj.web_desc Knead Data Sanitizer
  */
-public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModule, SequenceOutputModule {
+public class KneadData extends SeqModuleImpl implements ApiModule, SequenceOutputModule, ReferenceDataModule {
 
 	public KneadData() {
 		super();
 		addNewProperty( EXE_KNEADDATA, "", "" );
 		addNewProperty( EXE_KNEADDATA_PARAMS, Properties.STRING_TYPE, "Optional parameters passed to kneaddata" );
-		addNewProperty( KNEAD_DBS, Properties.FILE_PATH, "Path to database for KneadData program" );
+		addNewProperty( KNEAD_DBS, Properties.FILE_PATH_LIST, "Path to database(s) for KneadData program" );
 	}
 
 	@Override
@@ -63,12 +66,18 @@ public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModul
 	public void checkDependencies() throws Exception {
 		super.checkDependencies();
 		if( !SeqUtil.isFastQ() ) throw new Exception( getClass().getName() + " requires FASTQ format!" );
+		
+		if (refDB.getSource() == null ) {
+			throw new ModuleInputException( "Module [" + this + "] failed to find a source for reference data [" + refDB.getLabel() + "]." );
+		}else if (refDB.getSource().isReady()) {
+			for (DataUnit ref : refDB.getSource().getData()) {
+				if ( ref.isReady() && ! ref.isValid() ) {
+					throw new ModuleInputException(this, refDB.getSource());
+				}
+			}
+		}
+		
 		getParams();
-	}
-
-	@Override
-	public File getDB() throws ConfigPathException, ConfigNotFoundException {
-		return new File(""); //TODO: modify the role of the DatabaseModule interface.
 	}
 
 	@Override
@@ -144,13 +153,11 @@ public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModul
 		return new File( getTempDir().getAbsolutePath() + File.separator + sampleId + suffix + fastqExt() );
 	}
 
-	private String getDBs() throws ConfigPathException, ConfigNotFoundException, DockerVolCreationException {
+	private String getDBs() throws ModuleInputException {
 		String dbs = "";
-		if( DockerUtil.inDockerEnv() && Config.getString( this, KNEAD_DBS ) == null) {
-				dbs += DB_PARAM + " " + DEFAULT_DB_IN_DOCKER + " ";
-		}
-		else for( final File db: Config.requireExistingDirs( this, KNEAD_DBS ) )
+		for ( File db : getReferenceFiles() ) {
 			dbs += DB_PARAM + " " + db.getAbsolutePath() + " ";
+		}
 		return dbs;
 	}
 
@@ -215,12 +222,12 @@ public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModul
 	
 	@Override
 	public String getDescription() {
-		return "Run the Biobakery [KneadData](https://bitbucket.org/biobakery/kneaddata/wiki/Home) program to remove contaminated DNA.";
+		return "Run the Biobakery [KneadData](https://github.com/biobakery/kneaddata) program to remove contaminated DNA.";
 	}
 
 	@Override
 	public String getCitationString() {
-		return "https://bitbucket.org/biobakery/kneaddata/wiki/Home" + System.lineSeparator() + "Module developed by Mike Sioda";
+		return "https://github.com/biobakery/kneaddata" + System.lineSeparator() + "Module developed by Mike Sioda";
 	}
 	
 	@Override
@@ -233,4 +240,34 @@ public class KneadData extends SeqModuleImpl implements DatabaseModule, ApiModul
 		}
 		return isValid;
 	}
+
+	@Override
+	public List<ModuleInput> getReferenceTypes() {
+		List<ModuleInput> refs = Arrays.asList( refDB );
+		return refs;
+	}
+
+	@Override
+	public void assignReferenceSources() throws BioLockJException {
+		List<File> configedDbs = null;
+		if ( Config.getString( this, KNEAD_DBS ) != null) {
+			configedDbs = Config.requireExistingDirs( this, KNEAD_DBS );
+			refDB.setSource( new InputSource( configedDbs, refDB.getTemplate() ) );
+		}else if ( DockerUtil.inDockerEnv() ){
+			configedDbs = Arrays.asList( new File( DEFAULT_DB_IN_DOCKER ) );
+			refDB.setSource( new InputSource( configedDbs, refDB.getTemplate() ) );
+		}else {
+			ModuleUtil.findInputModule(this, refDB);
+		}
+	}
+
+	@Override
+	public List<File> getReferenceFiles() throws ModuleInputException {
+		return ReferenceDataModule.super.getReferenceFiles();
+	}
+	
+	private final ModuleInput refDB = new ModuleInput( "Reference genome", 
+		"Sequences to remove from the sample data, must be a valide KneadData database.", 
+		new KneadDataDB() );
+	
 }
