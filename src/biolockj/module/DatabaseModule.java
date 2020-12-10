@@ -18,9 +18,12 @@ import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 
 /**
+ * Deprecated.  Modules should migrate to using ReferenceDataModule interface instead.
+ * 
  * Interface for BioModules that use a reference database that is used by the DockerUtil to find the correct database
  * directory to map to the container /db volume.
  */
+@Deprecated 
 public interface DatabaseModule extends BioModule {
 
 	/**
@@ -39,7 +42,8 @@ public interface DatabaseModule extends BioModule {
 		return "Database: " + ( getDB() == null ? "null" : getDB().getAbsolutePath()) + Constants.RETURN;
 	}
 	
-	public default String getSummary() throws ConfigPathException, ConfigNotFoundException, DockerVolCreationException {
+	@Override
+	public default String getSummary() throws Exception {
 		return dbSummary();
 	}
 
