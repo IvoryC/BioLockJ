@@ -479,7 +479,7 @@ public class ModuleUtil {
 		}
 	}
 	
-	public static  void assignInputSources(ModuleIO module, ModuleInput input) throws BioLockJException {
+	public static  void assignInputSources(BioModule module, ModuleInput input) throws BioLockJException {
 		findInputModule(module, input);
 		
 		if (input.getSource() == null) {
