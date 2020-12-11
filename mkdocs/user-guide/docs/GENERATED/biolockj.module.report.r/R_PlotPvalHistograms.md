@@ -49,7 +49,7 @@ Generate p-value histograms for each reportable metadata field and each *report.
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.14
+biolockjdevteam/r_module:v1.3.15
 ```
 This can be modified using the following properties:<br>
 `R_PlotPvalHistograms.imageOwner`<br>
@@ -58,5 +58,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.14
+BioLockJ v1.3.15
 

@@ -33,7 +33,7 @@ Like GenMod, but done for each file in a previous module's output dir.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-This is an extention of the GenMod module.<br>  The given script is run for each file in the previous modules output dir.  If there is no previous module, then the input files are used.The user script is run using a command:<br> `[launcher] <script> <file path> [params]`
+This is an extention of the [GenMod](../GenMod) module.<br>  The given script is run for each file in the previous modules output dir.  If there is no previous module, then the input files are used.The user script is run using a command:<br> `[launcher] <script> <file path> [params]`
 
 ## Adds modules 
 **pre-requisite modules**                    
@@ -52,6 +52,6 @@ This can be modified using the following properties:<br>
 `ForEachFile.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.15-dev                   
+BioLockJ v1.3.15                   
 Module developed by Ivory Blakley
 

@@ -42,7 +42,7 @@ biolockj.module.classifier.r16s.RdpClassifier
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.14
+biolockjdevteam/biolockj_controller:v1.3.15
 ```
 This can be modified using the following properties:<br>
 `RdpHierParser.imageOwner`<br>

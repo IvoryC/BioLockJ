@@ -3,7 +3,7 @@ Add to module run order:
 `#BioModule biolockj.module.diy.ForEachSample`
 
 ## Description 
-Like GenMod, but done for each sample.
+Like GenMod, but done for each sample listed in the metadata.
 
 ## Properties 
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
@@ -35,7 +35,7 @@ Like GenMod, but done for each sample.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-A test: This is an extention of the [GenMod](../GenMod) module.<br>  For the purpose of this module, a sample is defined as a row of the metadata file.The user script is run using a command:<br> `[launcher] <script> <sample> [params]`
+This is an extention of the [GenMod](../GenMod) module.<br>  For the purpose of this module, a sample is defined as a row of the metadata file.The user script is run using a command:<br> `[launcher] <script> <sample> [params]`
 
 ## Adds modules 
 **pre-requisite modules**                    
@@ -54,6 +54,6 @@ This can be modified using the following properties:<br>
 `ForEachSample.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.15-dev                   
+BioLockJ v1.3.15                   
 Module developed by Ivory Blakley
 

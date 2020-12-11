@@ -12,6 +12,10 @@
 [Demultiplexer](biolockj.module.implicit/Demultiplexer.md) - *Demultiplex samples into separate files for each sample.*                   
 [EdgeR](biolockj.module.rnaseq/EdgeR.md) - *Determine statistically significant differences using edgeR.*                   
 [Email](biolockj.module.report/Email.md) - *Send an email containing the pipeline summary when the pipeline either completes or fails.*                   
+[ForEachFile](biolockj.module.diy/ForEachFile.md) - *Like GenMod, but done for each file in a previous module's output dir.*                   
+[ForEachLevel](biolockj.module.diy/ForEachLevel.md) - *Like GenMod, but done for each taxonomic level.*                   
+[ForEachLoop](biolockj.module.diy/ForEachLoop.md) - *Like GenMod, but done for each string in a comma-separated list.*                   
+[ForEachSample](biolockj.module.diy/ForEachSample.md) - *Like GenMod, but done for each sample listed in the metadata.*                   
 [GenMod](biolockj.module.diy/GenMod.md) - *Allows user to add their own scripts into the BioLockJ pipeline.*                   
 [GenomeAssembly](biolockj.module.assembly/GenomeAssembly.md) - *Assemble WGS sequences with MetaSPAdes, bin contigs with Metabat2 and check quality with checkM.*                   
 [Gunzipper](biolockj.module.seq/Gunzipper.md) - *Decompress gzipped files.*                   

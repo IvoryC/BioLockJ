@@ -3,7 +3,7 @@ Add to module run order:
 `#BioModule biolockj.module.diy.ForEachLoop`
 
 ## Description 
-Like GenMod, but done for each string in a comma-separated.
+Like GenMod, but done for each string in a comma-separated list.
 
 ## Properties 
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
@@ -34,7 +34,7 @@ Like GenMod, but done for each string in a comma-separated.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
-This is an extention of the GenMod module.<br>  The given script is run for each element given in the comma-separated list _genMod.loopBy_.The user script is run using a command:<br> `[launcher] <script> <loop-element> [param]`
+This is an extention of the [GenMod](../GenMod) module.<br>  The given script is run for each element given in the comma-separated list _genMod.loopBy_.The user script is run using a command:<br> `[launcher] <script> <loop-element> [param]`
 
 ## Adds modules 
 **pre-requisite modules**                    
@@ -53,6 +53,6 @@ This can be modified using the following properties:<br>
 `ForEachLoop.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.15-dev                   
+BioLockJ v1.3.15                   
 Module developed by Ivory Blakley
 
