@@ -23,12 +23,12 @@ The pipeline outlined 'ForEach.config' demonstrates the collection of GenMod der
 
 To run this pipeline yourself, install biolockj and run:
 ```
-biolockj GenModDemo.config
+biolockj ForEach.config
 ```
 
 To run this pipeline using docker, run:
 ```
-biolockj --docker GenModDemo.config
+biolockj --docker ForEach.config
 ```
 
 ###
