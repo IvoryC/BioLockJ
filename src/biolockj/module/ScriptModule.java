@@ -23,14 +23,23 @@ import biolockj.exception.ConfigFormatException;
 public interface ScriptModule extends BioModule {
 
 	/**
-	 * Method returns a nested list of bash script lines to classify samples containing forward reads only. The inner
-	 * list contains the bash script lines required to classify 1 sample.
+	 * Build the lines that will be returned by getScriptLines.
 	 *
 	 * @param files Files in the input directory that contain only forward reads
 	 * @return Nested list of bash scripts lines
 	 * @throws Exception if unable to generate script lines
 	 */
 	public List<List<String>> buildScript( final List<File> files ) throws Exception;
+	
+	/**
+	 * Method returns a nested list of bash script lines. 
+	 * Each inner list is the lines need to process one unit, such as one sample.
+	 *
+	 * @param files Files in the input directory that contain only forward reads
+	 * @return Nested list of bash scripts lines
+	 * @throws Exception if unable to generate script lines
+	 */
+	public List<List<String>> getScriptLines() throws Exception;
 
 	/**
 	 * Method returns a nested list of bash script lines to classify samples containing paired reads.<br>
