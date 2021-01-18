@@ -40,7 +40,7 @@
 
 ## Links for Developers
 
-[BioLockJ Developers Guide](../DevNotes-main)
+[BioLockJ Developers Guide](DevNotes-main)
 
 Repository of functional tests           
 [https://github.com/BioLockJ-Dev-Team/sheepdog_testing_suite](https://github.com/BioLockJ-Dev-Team/sheepdog_testing_suite)
