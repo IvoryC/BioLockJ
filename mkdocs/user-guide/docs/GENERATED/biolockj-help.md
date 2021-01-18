@@ -6,9 +6,13 @@ biolockj --help
 
 ```bash                   
                    
-BioLockJ v1.3.15 - UNCC Fodor Lab July 2018                   
+BioLockJ v1.3.16 - UNCC Fodor Lab 2021                   
 Usage:                   
-  biolockj [options] <config|pipeline>                   
+(bash)                   
+biolockj [options] <config|pipeline>                   
+                   
+(java)                   
+java -jar /path/to/BioLockJ.jar [options] <config|pipeline>                   
                    
 Options:                   
   -v  --version                 Show version                   
@@ -28,6 +32,7 @@ Options:
       --external-modules <dir>  Directory with compiled java code giving additional modules                   
       --blj                     Map $BLJ folder into the docker container;                   
                                 this replaces BioLockJ packaged in a docker container with the local copy.                   
+      --verbose                 Equivalent to adding `pipeline.logLevel=DEBUG` to the config file.                   
   -e  --env-var <var=val>       Environment variables to be passed to the BioLockJ environment.                   
                                 Can be a comma-sep list. Values take the form: a=foo,b=bar,c=baz                   
       --blj_proj <dir>          Directory that contains BioLockJ pipelines. If not supplied,                    

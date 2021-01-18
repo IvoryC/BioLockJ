@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Ivory Blakley">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Release process - BioLockJ User Guide</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Release process";
+    var mkdocs_page_input_path = "DevNotes-releaseProcess.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> BioLockJ User Guide</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../Getting-Started/">Getting Started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Pipeline Componenets</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../Configuration/">Configuration</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/General-Properties/">General Properties</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/all-modules/">Modules</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/Metadata/">Metadata</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Dependencies/">Dependencies</a>
+                </li>
+                <li class="">
+                    
+    <span class="caption-text">Configuration Details</span>
+    <ul class="subnav">
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Cluster/">cluster</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Docker/">docker</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Input/">input</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Metadata/">metadata</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/R/">r</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Report.md">report</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Script/">script</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Features</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../Commands/">Commands</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Check-Dependencies/">Check Dependencies</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Failure-Recovery/">Failure Recovery</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/Validation/">Validation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Building-Modules/">Building Modules</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/BioLockJ-Api/">BioLockJ API</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/biolockj-help/">BioLockJ help menu</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../Supported-Environments/">Environments</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../Example-Pipeline/">Example Pipeline</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../FAQ/">FAQ & Troubleshooting</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">BioLockJ User Guide</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Release process</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="release-process">Release process<a class="headerlink" href="#release-process" title="Permanent link">#</a></h1>
+<p>The release process must be performed by someone with write permission on the main BioLockJ repository.  Since that repository is owned by a GitHub group, anyone with owner permission in the group can perform the steps.</p>
+<ol>
+<li>Merge any pull requests that should be included in the release.</li>
+<li>Edit the version file to show the release version (ie, remove the <em>"-dev"</em> suffix)</li>
+<li>Render all documentation: <code>cd $BLJ/resources; ant userguide</code></li>
+<li>Commit these changes, often with with message "version++ to vx.y.z; render docs"</li>
+<li>Tag the current master with the tag <em>"v.x.y.z-rc"</em> ("release candidate")</li>
+<li>Run release tests (<a href="#running-release-tests">see details below</a>)</li>
+<li>Tag the current main branch of the BioLockJ repository with the official release tag.</li>
+<li>After saving the results of tests, use the same tag for the sheepdog_testing_suite main branch.</li>
+<li>Push the commits and tags to the central main: <code>git push --tags upstream</code></li>
+<li>Build the distribution tarball (<a href="#building-for-deployment">see details below</a>)</li>
+<li>In GitHub, go to tags, select the new release tag, edit it, and upload the tarball you just created.</li>
+<li>Trigger DockerHub builds by pushing to linked github repository (<a href="#building-for-deployment">see details below</a>)</li>
+<li>Set new dev version <ul>
+<li>Use next <em>patch</em> release (even if the next release is expected to be major).  </li>
+<li>After release v1.3.14, set the version file to say "v1.3.15-dev".</li>
+<li>Commit this with message "Dev continues toward v1.3.15".</li>
+</ul>
+</li>
+<li><strong>Review</strong>: <ul>
+<li>Use the link to the latest release on the <a href="https://biolockj.readthedocs.io/en/latest/Getting-Started/">Getting-Started</a> page, and make sure the release appears correct.</li>
+<li>Make sure the user guide link(s) in the top repo <a href="https://github.com/BioLockJ-Dev-Team/BioLockJ">README</a> both reflect the latest release <ul>
+<li>The view through <a href="https://biolockj-dev-team.github.io/BioLockJ/">github.io</a> is controlled under the Settings for the BioLockJ repository.</li>
+<li>The view through <a href="https://biolockj.readthedocs.io/en/latest/">readthedocs</a> is controlled by the <a href="https://readthedocs.org/dashboard/biolockj">biolockj</a> project which has multiple admins.</li>
+</ul>
+</li>
+<li>Look for <a href="#failed-docker-builds">failed docker builds</a>.   <ul>
+<li>The auto builds are configured through the <a href="https://hub.docker.com/orgs/biolockjdevteam">biolockjdevteam</a> organization on DockerHub, which as of late 2020 is a paid account, and has multiple admins, </li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="running-release-tests">Running release tests<a class="headerlink" href="#running-release-tests" title="Permanent link">#</a></h3>
+<p>Use the tools in the repository: BioLockJ_Dev_Team/sheepdog_testing_suite.</p>
+<p>The tools in this suite will automatically build the BioLockJ program from source, but they will not build the updated docker image.  Many tests run in docker use the <code>--blj</code> arg so that the current BioLockJ folder is mapped in, so there is no need to update the image to test a local copy of BioLockJ.  For individual modules, the corresponding docker image probably hasn't changed since the last version, so you can save a bit of time during testing by simply re-tagging the old images with the new version: </p>
+<pre><code>$BLJ/resources/docker/docker_build_scripts/retagForLocalTests.sh v1.3.15 v1.3.16
+</code></pre>
+
+<p>Any image whose dockerfile was changed should be built.  And the biolockj_controller should be built (since presumably that has changed since the last version).  To build all images, use the buildDockerImages.sh script with no args. With one arg, any image matching that string will be built.</p>
+<pre><code>$BLJ/resources/docker/docker_build_scripts/buildDockerImages.sh controller
+</code></pre>
+
+<p>The sheepdog_testing_suite has further instructions for setting up the tests.</p>
+<ul>
+<li>Use the main branch, and tag it with the same release candidate tag used for the BioLockJ repository.</li>
+<li>Run each of the /test/run_*_testCollection.sh scripts in the corresponding environment.</li>
+<li>Save results file under archived_testCollection_results (see existing examples for which files to save)</li>
+<li>(recommended) Locally save the pipelines for all tests for later reference.  But DO NOT commit these in either repository.</li>
+<li>If tests fail (that previously passed), reconsider the release.  Make and commit quick fixes if that is feasible.</li>
+<li>Assuming tests pass, proceed with release process.</li>
+</ul>
+<h3 id="building-for-deployment">Building for deployment<a class="headerlink" href="#building-for-deployment" title="Permanent link">#</a></h3>
+<p>Best practice for packaging the official release is to download a fresh copy of the official repo, and build within a docker image.  The fresh clone ensures that git-ignored files that are in the local repo copy are incorporated in the official deployment.  Using the docker image promotes consistency, and reduces the chances of invisible dependencies. (Not to mention its downright convenient!)</p>
+<pre><code>git clone https://github.com/BioLockJ-Dev-Team/BioLockJ.git
+cd BioLockJ
+docker run --rm -v $PWD:/biolockj biolockjdevteam/build_and_deploy
+</code></pre>
+
+<p>If needed, the <code>git clone</code> command could be replaced with <code>wget https://github.com/BioLockJ-Dev-Team/BioLockJ/archive/main.zip</code>, or any other download command.</p>
+<h3 id="triggering-docker-builds">Triggering docker builds<a class="headerlink" href="#triggering-docker-builds" title="Permanent link">#</a></h3>
+<p>BioLockJ docker images, most importantly biolockj_controller, are hosted on docker hub under the organization "biolockjdevteam".
+The images for modules in that are packaged with the main program, and the image for the BioLockJ program itself, are set up to build on docker hub infrastructure automatically.  For the modules, this typically creates an identical image, and gives it a new tag matching the current release version.  This automated build is triggered  when a tag matching our version format (ie v1.2.3) is pushed to the linked github repository.  As of this writting, dockerhub and github have a nice integration, but it does not allow for linking to a repository owned by an organization (like our BioLockJ repository is owned by the biolockj_dev_team organization).  So we have a separate fork of the repository that exists solely to trigger builds on dockerhub.  The bot user is "biolockjBuilder".  In order to push to this repo, you will need permission.  Any new user who will do the release process will need to be added as a collaborator to that repository.</p>
+<p>(first time only) Set up the biolockjBuilder fork as a remote for you BioLockJ git repository:</p>
+<pre><code class="bash">git remote add DockerBuilder https://github.com/biolockjBuilder/BioLockJ.git
+</code></pre>
+
+<p>Push the release tag to this repository.</p>
+<pre><code>git push DockerBuilder --tags
+</code></pre>
+
+<p>Within a few minutes there should be builds scheduled on DockerHub for the auto-build repositories.
+They may take some time to actually build.  After a few hours, check the repositories to see that new builds exist and that no builds failed.</p>
+<h3 id="failed-docker-builds">Failed docker builds<a class="headerlink" href="#failed-docker-builds" title="Permanent link">#</a></h3>
+<p>Sometimes there are random failures (maybe a website was down temporarily) and you will need to build the image locally and push it with the desired tag.  If the build fails for the biolockj_controller image, that is a big problem and you need to figure out why.  If the build fails for one of the modules, that usually means that a url in the dockerfile needs to be updated.  In some cases, some dependency is no longer available (no longer hosted). In that case, pull the previous version of the image, retag it with the current tag and push to dockerhub.  Make in issue to resolve the problem before the next release.  If the dockerfile can be updated to create a functional image to run the module, great, do that.  If that is not possible, then the most recent image is <em>the</em> image, and the module's docker tag method should no longer use the current biolockj version, but should instead by hard-coded to the most recent version.  Turn off auto-builds for that image.  This is probably a red-flag that the software is no longer supported, and the module will (eventually) need to be replaced.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Fodor Lab of UNCC</p>
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

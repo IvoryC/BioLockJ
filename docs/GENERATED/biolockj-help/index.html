@@ -72,7 +72,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../Built-in-modules/">Modules</a>
+    <a class="" href="../all-modules/">Modules</a>
                 </li>
                 <li class="">
                     
@@ -217,9 +217,13 @@
 </code></pre>
 
 <pre><code class="bash">
-BioLockJ v1.3.16-dev - UNCC Fodor Lab July 2018                   
+BioLockJ v1.3.16 - UNCC Fodor Lab 2021                   
 Usage:                   
-  biolockj [options] &lt;config|pipeline&gt;                   
+(bash)                   
+biolockj [options] &lt;config|pipeline&gt;                   
+
+(java)                   
+java -jar /path/to/BioLockJ.jar [options] &lt;config|pipeline&gt;                   
 
 Options:                   
   -v  --version                 Show version                   
@@ -239,6 +243,7 @@ Options:
       --external-modules &lt;dir&gt;  Directory with compiled java code giving additional modules                   
       --blj                     Map $BLJ folder into the docker container;                   
                                 this replaces BioLockJ packaged in a docker container with the local copy.                   
+      --verbose                 Equivalent to adding `pipeline.logLevel=DEBUG` to the config file.                   
   -e  --env-var &lt;var=val&gt;       Environment variables to be passed to the BioLockJ environment.                   
                                 Can be a comma-sep list. Values take the form: a=foo,b=bar,c=baz                   
       --blj_proj &lt;dir&gt;          Directory that contains BioLockJ pipelines. If not supplied,                    
@@ -266,7 +271,7 @@ Options:
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>2019 Fodor Lab</p>
+      <p>Fodor Lab of UNCC</p>
     
   </div>
 

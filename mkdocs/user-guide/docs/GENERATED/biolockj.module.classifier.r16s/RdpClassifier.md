@@ -48,7 +48,7 @@ biolockj.module.implicit.parser.r16s.RdpParser
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/rdp_classifier:v1.3.15
+biolockjdevteam/rdp_classifier:v1.3.16
 ```
 This can be modified using the following properties:<br>
 `RdpClassifier.imageOwner`<br>
@@ -57,5 +57,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.15
+BioLockJ v1.3.16
 

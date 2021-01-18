@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Ivory Blakley">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>BioLockJ Developers Guide - BioLockJ User Guide</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "BioLockJ Developers Guide";
+    var mkdocs_page_input_path = "DevNotes-main.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> BioLockJ User Guide</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../Getting-Started/">Getting Started</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Pipeline Componenets</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../Configuration/">Configuration</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/General-Properties/">General Properties</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/all-modules/">Modules</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/Metadata/">Metadata</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Dependencies/">Dependencies</a>
+                </li>
+                <li class="">
+                    
+    <span class="caption-text">Configuration Details</span>
+    <ul class="subnav">
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Cluster/">cluster</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Docker/">docker</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Input/">input</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Metadata/">metadata</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/R/">r</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Report.md">report</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Script/">script</a>
+                </li>
+                <li class="toctree-l3">
+                    
+    <a class="" href="../GENERATED/Validation/">validation</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Features</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../Commands/">Commands</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Check-Dependencies/">Check Dependencies</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Failure-Recovery/">Failure Recovery</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/Validation/">Validation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../Building-Modules/">Building Modules</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/BioLockJ-Api/">BioLockJ API</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../GENERATED/biolockj-help/">BioLockJ help menu</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../Supported-Environments/">Environments</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../Example-Pipeline/">Example Pipeline</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../FAQ/">FAQ & Troubleshooting</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">BioLockJ User Guide</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>BioLockJ Developers Guide</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="biolockj-developers-guide">BioLockJ Developers Guide<a class="headerlink" href="#biolockj-developers-guide" title="Permanent link">#</a></h1>
+<h2 id="release-process">Release process<a class="headerlink" href="#release-process" title="Permanent link">#</a></h2>
+<p><a href="../DevNotes-releaseProcess">Release process</a></p>
+<h2 id="javadocs">Javadocs<a class="headerlink" href="#javadocs" title="Permanent link">#</a></h2>
+<p><a href="https://BioLockJ-Dev-Team.github.io/BioLockJ/javadocs/">https://BioLockJ-Dev-Team.github.io/BioLockJ/javadocs/</a></p>
+<h2 id="guidelines-for-new-modules">Guidelines for new modules<a class="headerlink" href="#guidelines-for-new-modules" title="Permanent link">#</a></h2>
+<p><a href="../Building-Modules/">Building Modules</a></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>Fodor Lab of UNCC</p>
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

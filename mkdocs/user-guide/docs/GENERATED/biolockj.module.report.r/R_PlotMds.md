@@ -56,7 +56,7 @@ Generate sets of multidimensional scaling plots showing 2 axes at a time (up to 
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.15
+biolockjdevteam/r_module:v1.3.16
 ```
 This can be modified using the following properties:<br>
 `R_PlotMds.imageOwner`<br>
@@ -64,6 +64,6 @@ This can be modified using the following properties:<br>
 `R_PlotMds.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.15                   
+BioLockJ v1.3.16                   
 Module created by Mike Sioda and developed by Ivory Blakley
 
