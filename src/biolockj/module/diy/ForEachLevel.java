@@ -9,6 +9,7 @@ import biolockj.Log;
 import biolockj.api.API_Exception;
 import biolockj.util.BioLockJUtil;
 
+@Deprecated
 public class ForEachLevel extends GenMod {
 	
 	public ForEachLevel() {
