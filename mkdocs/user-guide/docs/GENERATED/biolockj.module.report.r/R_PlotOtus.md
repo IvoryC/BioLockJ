@@ -35,8 +35,7 @@ Generate OTU-metadata box-plots and scatter-plots for each reportable metadata f
 | *r.pch* | _integer_ <br>Sets R plot pch parameter for PDF report<br>*default:*  21 |
 | *r.rareOtuThreshold* | _numeric_ <br>If >=1, R will filter OTUs found in fewer than this many samples. If <1, R will interperate the value as a percentage and discard OTUs not found in at least that percentage of samples<br>*default:*  1 |
 | *r.saveRData* | _boolean_ <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br>*default:*  *null* |
-| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to
-	 * timeout. If set to 0, an estimate is used.<br>*default:*  0 |
+| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to timeout. If set to 0, an estimate is used.<br>*default:*  0 |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |

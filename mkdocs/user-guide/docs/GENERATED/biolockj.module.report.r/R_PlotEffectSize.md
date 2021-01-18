@@ -36,8 +36,7 @@ Generate horizontal barplot representing effect size (Cohen's d, r<sup>2</sup>, 
 | *r.colorFile* | _file path_ <br>path to a tab-delimited file giving the color to use for each value of each metadata field plotted.<br>*default:*  *null* |
 | *r.debug* | _boolean_ <br>Options: Y/N. If Y, will generate R Script log files<br>*default:*  Y |
 | *r.saveRData* | _boolean_ <br>If Y, all R script generating BioModules will save R Session data to the module output directory to a file using the extension ".RData"<br>*default:*  *null* |
-| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to
-	 * timeout. If set to 0, an estimate is used.<br>*default:*  0 |
+| *r.timeout* | _integer_ <br>defines the number of minutes before R script fails due to timeout. If set to 0, an estimate is used.<br>*default:*  0 |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |

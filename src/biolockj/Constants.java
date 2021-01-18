@@ -856,8 +856,7 @@ public class Constants {
 	 * {@link biolockj.Config} property {@value #R_TIMEOUT}: {@value #R_TIMEOUT_DESC} 
 	 */
 	public static final String R_TIMEOUT = "r.timeout";
-	private static final String R_TIMEOUT_DESC = "defines the number of minutes before R script fails due to\n" + 
-		"	 * timeout. If set to 0, an estimate is used.";
+	private static final String R_TIMEOUT_DESC = "defines the number of minutes before R script fails due to timeout. If set to 0, an estimate is used.";
 	
 	/**
 	 * {@link biolockj.Config} Boolean property to signal R scripts to build HumanN2 reports
