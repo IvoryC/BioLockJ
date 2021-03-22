@@ -15,7 +15,7 @@ Like GenMod, but done for each sample listed in the metadata.
 | *genMod.param* | _string_ <br>parameters to pass to the user's script<br>*default:*  *null* |
 | *genMod.resources* | _list of file paths_ <br>path to one or more files to be copied to the module resource folder.<br>*default:*  *null* |
 | *genMod.scriptPath* | _file path_ <br>path to user script<br>*default:*  *null* |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> The row names of the metadata are used as the looping mechanism for this module.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> The row names of the metadata are used as the looping mechanism for this module.<br>*default:*  *null* |
 
 ### General properties applicable to this module: 
 | Property| Description |
@@ -27,7 +27,7 @@ Like GenMod, but done for each sample listed in the metadata.
 | *cluster.statusCommand* | _string_ <br>Terminal command used to check the status of jobs on the cluster<br>*default:*  *null* |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> The row names of the metadata are used as the looping mechanism for this module.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> The row names of the metadata are used as the looping mechanism for this module.<br>*default:*  *null* |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |
@@ -46,7 +46,7 @@ This is an extention of the [GenMod](../GenMod) module.<br>  For the purpose of 
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/blj_basic:v1.3.16
+biolockjdevteam/blj_basic:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `ForEachSample.imageOwner`<br>
@@ -54,6 +54,6 @@ This can be modified using the following properties:<br>
 `ForEachSample.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.16                   
+BioLockJ v1.3.17                   
 Module developed by Ivory Blakley
 

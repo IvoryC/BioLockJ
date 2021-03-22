@@ -26,7 +26,7 @@ This module immediatley stops a pipeline. <br>This is useful when troubleshootin
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.16
+biolockjdevteam/biolockj_controller:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `STOP.imageOwner`<br>

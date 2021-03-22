@@ -25,9 +25,9 @@
 ### [docker](Docker.md)                    
 | Property| Description |
 | :--- | :--- |
-| *docker.imageName* | _string_ <br>The name of a docker image to override whatever a module says to use.<br>*default:*  *null* |
-| *docker.imageOwner* | _string_ <br>name of the Docker Hub user that owns the docker containers<br>*default:*  *null* |
-| *docker.imageTag* | _string_ <br>indicate specific version of Docker images<br>*default:*  *null* |
+| *docker.imageName* | _string_ <br>The name of a docker image to override whatever a module says to use. Only use the module-specific-override form of this property.<br>*default:*  *null* |
+| *docker.imageOwner* | _string_ <br>name of the Docker Hub user that owns the docker containers Only use the module-specific-override form of this property.<br>*default:*  *null* |
+| *docker.imageTag* | _string_ <br>indicate specific version of Docker images Only use the module-specific-override form of this property.<br>*default:*  *null* |
 | *docker.mountSock* | _boolean_ <br>should /var/run/docker.sock be mounted for modules.<br>*default:*  N |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
@@ -68,7 +68,7 @@
 | *metadata.columnDelim* | _string_ <br>defines how metadata columns are separated; Typically files are tab or comma separated.<br>*default:*  \t |
 | *metadata.commentChar* | _string_ <br>metadata file comment indicator; Empty string is a valid option indicating no comments in metadata file.<br>*default:*  *null* |
 | *metadata.fileNameColumn* | _list_ <br>name of the metadata column(s) with input file names<br>*default:*  *null* |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
 | *metadata.nullValue* | _string_ <br>metadata cells with this value will be treated as empty<br>*default:*  NA |
 | *metadata.required* | _boolean_ <br>If Y, require metadata row for each sample with sequence data in input dirs; If N, samples without metadata are ignored.<br>*default:*  N |
 | *metadata.useEveryRow* | _boolean_ <br>If Y, require a sequence file for every SampleID (every row) in metadata file; If N, metadata can include extraneous SampleIDs.<br>*default:*  *null* |

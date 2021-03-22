@@ -15,7 +15,7 @@ Add to module run order:
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/qimme_classifier:v1.3.16
+biolockjdevteam/qimme_classifier:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `MergeQiimeOtuTables.imageOwner`<br>

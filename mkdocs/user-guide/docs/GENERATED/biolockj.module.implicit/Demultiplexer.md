@@ -15,7 +15,7 @@ Demultiplex samples into separate files for each sample.
 | *demultiplexer.barcodeRevComp* | _boolean_ <br>Options: Y/N. Use reverse compliment of metadata.barcodeColumn if demultimplexer.strategy = barcode_in_header or barcode_in_seq. -> (DeuxUtil)<br>*default:*  *null* |
 | *demultiplexer.strategy* | _string_ <br>Options: barcode_in_header, barcode_in_seq, id_in_header, do_not_demux.If using barcodes, they must be provided in the metadata file within column defined by _metadata.barcodeColumn_. -> (DeuxUtil)<br>*default:*  *null* |
 | *metadata.barcodeColumn* | _string_ <br>metadata column with identifying barcodes -> Values must be unique.<br>*default:*  BarcodeSequence |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> Used for matching sample id to barcodes.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> Used for matching sample id to barcodes.<br>*default:*  *null* |
 
 ### General properties applicable to this module: 
 | Property| Description |
@@ -31,7 +31,7 @@ Demultiplex samples into separate files for each sample.
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 | *metadata.barcodeColumn* | _string_ <br>metadata column with identifying barcodes -> Values must be unique.<br>*default:*  BarcodeSequence |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> Used for matching sample id to barcodes.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata. -> Used for matching sample id to barcodes.<br>*default:*  *null* |
 | *pipeline.defaultDemultiplexer* | _string_ <br>Java class name for default module used to demultiplex data<br>*default:*  biolockj.module.implicit.Demultiplexer |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
@@ -119,7 +119,7 @@ The metadata file must be prepared by adding a unique sequence barcode in the *m
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.16
+biolockjdevteam/biolockj_controller:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `Demultiplexer.imageOwner`<br>
@@ -128,5 +128,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.16
+BioLockJ v1.3.17
 

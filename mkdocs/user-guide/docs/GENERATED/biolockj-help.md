@@ -6,7 +6,7 @@ biolockj --help
 
 ```bash                   
                    
-BioLockJ v1.3.16 - UNCC Fodor Lab 2021                   
+BioLockJ v1.3.17 - UNCC Fodor Lab 2021                   
 Usage:                   
 (bash)                   
 biolockj [options] <config|pipeline>                   
@@ -37,6 +37,9 @@ Options:
                                 Can be a comma-sep list. Values take the form: a=foo,b=bar,c=baz                   
       --blj_proj <dir>          Directory that contains BioLockJ pipelines. If not supplied,                    
                                 biolockj will use the value of environment variable "BLJ_PROJ".                   
+                   
+Run the test pipeline:                   
+biolockj $BLJ/templates/myFirstPipeline/myFirstPipeline.properties                   
                    
 
 ```                   
