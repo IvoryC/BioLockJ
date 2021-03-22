@@ -28,7 +28,7 @@ SraDownload downloads and compresses short read archive (SRA) files to fastq.gz
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 | *exe.gzip* | _executable_ <br>Path for the "gzip" executable; if not supplied, any script that needs the gzip command will assume it is on the PATH.<br>*default:*  *null* |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |
@@ -50,7 +50,7 @@ Typically, BioLockJ will automatically determine modules to add to the pipeline 
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/sratoolkit:v1.3.16
+biolockjdevteam/sratoolkit:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `SraDownload.imageOwner`<br>
@@ -60,5 +60,5 @@ This can be modified using the following properties:<br>
 ## Citation 
 [sra-tools](https://github.com/ncbi/sra-tools)                   
 Module developed by Philip Badzuh                   
-BioLockJ v1.3.16
+BioLockJ v1.3.17
 

@@ -23,7 +23,7 @@ Map metadata onto taxa tables using sample ID.
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
 | *metadata.columnDelim* | _string_ <br>defines how metadata columns are separated; Typically files are tab or comma separated.<br>*default:*  \t |
 | *metadata.commentChar* | _string_ <br>metadata file comment indicator; Empty string is a valid option indicating no comments in metadata file.<br>*default:*  *null* |
-| *metadata.filePath* | _string_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
+| *metadata.filePath* | _file path_ <br>If absolute file path, use file as metadata.<br>If directory path, must find exactly 1 file within, to use as metadata.<br>*default:*  *null* |
 | *metadata.nullValue* | _string_ <br>metadata cells with this value will be treated as empty<br>*default:*  NA |
 | *report.taxonomyLevels* | _list_ <br>Options: domain,phylum,class,order,family,genus,species. Generate reports for listed taxonomy levels<br>*default:*  phylum,class,order,family,genus |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
@@ -46,7 +46,7 @@ The output of this module will have a row for each sample (just like the metadat
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.16
+biolockjdevteam/biolockj_controller:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `AddMetadataToTaxaTables.imageOwner`<br>
@@ -55,5 +55,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda and Anthony Fodor                   
-BioLockJ v1.3.16
+BioLockJ v1.3.17
 

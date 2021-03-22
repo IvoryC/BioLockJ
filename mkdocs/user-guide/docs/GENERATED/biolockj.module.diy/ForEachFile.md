@@ -44,7 +44,7 @@ This is an extention of the [GenMod](../GenMod) module.<br>  The given script is
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/blj_basic:v1.3.16
+biolockjdevteam/blj_basic:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `ForEachFile.imageOwner`<br>
@@ -52,6 +52,6 @@ This can be modified using the following properties:<br>
 `ForEachFile.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.16                   
+BioLockJ v1.3.17                   
 Module developed by Ivory Blakley
 

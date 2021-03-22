@@ -55,7 +55,7 @@ biolockj.module.report.r.R_CalculateStats
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_module:v1.3.16
+biolockjdevteam/r_module:v1.3.17
 ```
 This can be modified using the following properties:<br>
 `R_PlotEffectSize.imageOwner`<br>
@@ -63,6 +63,6 @@ This can be modified using the following properties:<br>
 `R_PlotEffectSize.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.16                   
+BioLockJ v1.3.17                   
 Module developed by Ivory Blakley.
 

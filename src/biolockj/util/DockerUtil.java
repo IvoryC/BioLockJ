@@ -710,7 +710,7 @@ public class DockerUtil {
 	 */
 	public static final String DOCKER_IMG_VERSION = "docker.imageTag";
 	private static final String DOCKER_IMG_VERSION_DESC = 
-					"indicate specific version of Docker images" + Properties.NO_BROAD_USE;
+					"Image tag, a specific version of Docker images." + Properties.NO_BROAD_USE;
 	
 	/**
 	 * {@link biolockj.Config} Boolean property: {@value #DOCKER_MOUNT_SOCK} {@value #DOCKER_MOUNT_SOCK_DESC}
@@ -747,7 +747,7 @@ public class DockerUtil {
 
 	public static final String DOCKER_HUB_USER = "docker.imageOwner";
 	private static final String DOCKER_HUB_USER_DESC =
-		"name of the Docker Hub user that owns the docker containers" + Properties.NO_BROAD_USE;
+		"Name of the Docker Hub user that owns the docker containers." + Properties.NO_BROAD_USE;
 
 	/**
 	 * {@link biolockj.Config} Boolean property: {@value #VERIFY_IMAGE} {@value #VERIFY_IMAGE_DESC}

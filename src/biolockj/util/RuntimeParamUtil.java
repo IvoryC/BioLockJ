@@ -302,7 +302,7 @@ public class RuntimeParamUtil {
 	private static String getJavaComputeNodeArgs( final JavaModule module ) throws DockerVolCreationException {
 		Log.info( RuntimeParamUtil.class, "Building java args for compute nodes  -->" );
 		return BLJ_PROJ_DIR + " " + get_BLJ_PROJ( false ).getAbsolutePath() + " " 
-						+ DOCKER_FLAG + " " 
+						+ (DockerUtil.inDockerEnv() ? DOCKER_FLAG + " " : "") 
 						+ DIRECT_MODE + " " + Config.pipelineName() + ":" + module.getModuleDir().getName();
 	}
 
