@@ -862,22 +862,22 @@ public class Config {
 	 * @return
 	 * @throws DockerVolCreationException
 	 */
-	public static String convertRelativePath(final String filePath, final String CONFIG_DOT) throws DockerVolCreationException {
-		String path = filePath;
-		if ( path.startsWith(".") ) {
-			final String CONFIG_DOT_DOT=(new File(CONFIG_DOT)).getParent();
-			if ( path.startsWith( ".." + File.separator ) ) path = path.replaceFirst( "..", CONFIG_DOT_DOT);
-			if ( path.equals( ".." ) ) path = CONFIG_DOT_DOT;
-			if ( path.startsWith( "." + File.separator ) ) path = path.replaceFirst( ".", CONFIG_DOT);
-			if ( path.equals( "." ) ) path = CONFIG_DOT;
-			Log.debug(Config.class, "Converted relative path from [" + filePath + "] to [" + path + "].");
-		}else {
-			Log.debug(Config.class, "Path [" + filePath + "] is not a relative file path.");
+	public static String convertRelativePath(final String filePath, final File CONFIG_DOT) throws DockerVolCreationException {
+		String path;
+		final File CONFIG_DOT_DOT = CONFIG_DOT.getParentFile();
+		if ( filePath.startsWith( ".." + FILE_SEPARATOR ) ) path = CONFIG_DOT_DOT.getAbsolutePath() + filePath.substring( 2 );
+		else if ( filePath.equals( ".." ) ) path = CONFIG_DOT_DOT.getAbsolutePath();
+		else if ( filePath.startsWith( "." + FILE_SEPARATOR ) ) path = CONFIG_DOT.getAbsolutePath() + filePath.substring( 1 );
+		else if ( filePath.equals( "." ) ) path = CONFIG_DOT.getAbsolutePath();
+		else {
+			path = filePath;
 		}
+		if (path.equals( filePath )) Log.debug(Config.class, "Path [" + filePath + "] is not a relative file path.");
+		else Log.debug(Config.class, "Converted relative path from [" + filePath + "] to [" + path + "].");
 		return path;
 	}
 	private static String convertRelativePath(final String filePath) throws DockerVolCreationException {
-		final String CONFIG_DOT=DockerUtil.deContainerizePath( configFile.getParent() );
+		final File CONFIG_DOT=DockerUtil.deContainerizePath( configFile.getParentFile() );
 		return convertRelativePath(filePath, CONFIG_DOT);
 	}
 
@@ -1170,6 +1170,14 @@ public class Config {
 	private static final Map<String, String> moduleUsedProps = new HashMap<>();
 	private static final String USED_PROPS_SUFFIX = "_used.properties";
 	private static final String UNUSED_PROPS_FILE = "unused.properties";
+	
+	/**
+	 * Paths in the config file should always use the unix style separator.
+	 * Command line args may still support whatever format the local system uses, 
+	 * but config files should be transferable, and we want to reduce the chance of 
+	 * a config file working on Windows by using '\' and then failing on a unix system.
+	 */
+	private static final String FILE_SEPARATOR = "/";
 	
 }
 
