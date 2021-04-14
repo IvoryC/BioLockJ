@@ -320,6 +320,17 @@ public class DockerUtil {
 		Log.info( DockerUtil.class, volumeMap.toString() );
 	}
 
+	/**
+	 * Save a file with info about the current docker container. If not in docker, or if the file already exists, then do nothing.
+	 */
+	public static void touchDockerInfo() {
+		if( DockerUtil.inDockerEnv() && !getInfoFile().exists() ) try {
+			writeDockerInfo();
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static void writeDockerInfo() throws IOException, InterruptedException, DockerVolCreationException {
 		File infoFile = getInfoFile();
 		Log.info( DockerUtil.class, "Creating " + infoFile.getName() + " file." );
@@ -526,7 +537,7 @@ public class DockerUtil {
 	public static void checkDependencies( BioModule module )
 		throws BioLockJException, InterruptedException, IOException {
 		if( inDockerEnv() ) {
-			if( !getInfoFile().exists() ) writeDockerInfo();
+			touchDockerInfo();
 			String image = getDockerImage( module );
 			Log.info( DockerUtil.class,
 				"The " + module.getClass().getSimpleName() + " module will use this docker image: " + image );

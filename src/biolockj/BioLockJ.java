@@ -219,6 +219,7 @@ public class BioLockJ {
 		MemoryUtil.reportMemoryUsage( "INTIAL MEMORY STATS" );
 		RuntimeParamUtil.registerRuntimeParameters( args );
 		setPipelineRootDir();
+		DockerUtil.touchDockerInfo();
 		Config.initialize();
 		
 		if( BioLockJUtil.isDirectMode() ) Log.initialize( getDirectLogName( RuntimeParamUtil.getDirectModuleDir() ) );
