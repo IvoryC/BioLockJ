@@ -292,7 +292,7 @@ public class DockerUtil {
 		StringBuilder sb = new StringBuilder();
 		String s = null;
 		try {
-			Process p = Runtime.getRuntime().exec( getDockerInforCmd() );
+			Process p = Runtime.getRuntime().exec( getDockerInforCmd(INSPECT) );
 			final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
 			while( ( s = br.readLine() ) != null ) {
 				sb.append( s );
@@ -324,18 +324,24 @@ public class DockerUtil {
 	 * Save a file with info about the current docker container. If not in docker, or if the file already exists, then do nothing.
 	 */
 	public static void touchDockerInfo() {
-		if( DockerUtil.inDockerEnv() && !getInfoFile().exists() ) try {
-			writeDockerInfo();
+		try {
+			if( DockerUtil.inDockerEnv() && !getInfoFile(INSPECT).exists() ) writeDockerInfo(INSPECT);
+			if( DockerUtil.inDockerEnv() && !getInfoFile(VERSION).exists() ) writeDockerInfo(VERSION);
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void writeDockerInfo() throws IOException, InterruptedException, DockerVolCreationException {
-		File infoFile = getInfoFile();
+	/**
+	 * 
+	 * @param infoType one of INSPECT or VERSION
+	 * @return
+	 */
+	private static void writeDockerInfo(final String infoType) throws IOException, InterruptedException, DockerVolCreationException {
+		File infoFile = getInfoFile(infoType);
 		Log.info( DockerUtil.class, "Creating " + infoFile.getName() + " file." );
 		final BufferedWriter writer = new BufferedWriter( new FileWriter( infoFile ) );
-		final Process p = Runtime.getRuntime().exec( getDockerInforCmd() );
+		final Process p = Runtime.getRuntime().exec( getDockerInforCmd(infoType) );
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
 		StringBuilder sb = new StringBuilder();
 		String s = null;
@@ -347,23 +353,42 @@ public class DockerUtil {
 		p.destroy();
 		writer.close();
 		Log.info( DockerUtil.class,
-			"the info file " + ( infoFile.exists() ? "is here:" + infoFile.getAbsolutePath(): "is not here." ) );
+			"the docker " + infoType + " file " + ( infoFile.exists() ? "is here:" + infoFile.getAbsolutePath(): "is not here." ) );
 	}
 
-	private static String getDockerInforCmd() throws IOException, DockerVolCreationException {
-		return "docker inspect " + getContainerId();
+	/**
+	 * 
+	 * @param infoType one of INSPECT or VERSION
+	 * @return
+	 */
+	private static String getDockerInforCmd(String infoType) throws IOException, DockerVolCreationException {
 		// return "curl --unix-socket /var/run/docker.sock http:/v1.38/containers/" + getHostName() + "/json";
+		if (infoType == INSPECT) return "docker inspect " + getContainerId();
+		else return "docker version";
 	}
 
-	private static File getInfoFile() {
+	/**
+	 * 
+	 * @param infoType one of INSPECT or VERSION
+	 * @return
+	 */
+	private static File getInfoFile(String infoType) {
 		File parentDir = BioLockJ.getPipelineDir();
 		if( BioLockJUtil.isDirectMode() )
 			parentDir = new File( ( new File( BioLockJ.getPipelineDir(), RuntimeParamUtil.getDirectModuleDir() ) ),
 				BioModuleImpl.TEMP_DIR );
 		if( parentDir != null && parentDir.exists() ) {
-			Log.debug( DockerUtil.class,
-				"path to info file: " + ( new File( parentDir, DOCKER_INFO_FILE ) ).getAbsolutePath() );
-			return new File( parentDir, DOCKER_INFO_FILE );
+			File file;
+			if (infoType == INSPECT) {
+				file = new File( parentDir, DOCKER_INFO_FILE );
+				Log.debug( DockerUtil.class,
+					"path to info file: " + file.getAbsolutePath() );
+			}else{ //if (infoType == VERSION) 
+				file = new File( parentDir, DOCKER_VERSION_FILE );
+				Log.debug( DockerUtil.class,
+					"path to version file: " + file.getAbsolutePath() );
+			}
+			return file;
 		} else {
 			return null;
 		}
@@ -776,7 +801,10 @@ public class DockerUtil {
 	private static final String SCRIPT_ID_VAR = "SCRIPT_ID";
 	private static final String DOCKER_KEY = "docker";
 	private static final String DOCKER_INFO_FILE = "dockerInfo.json";
+	private static final String DOCKER_VERSION_FILE = "dockerVersion.txt";
 	private static final String ALL_GOOD = "Everything is awesome!";
 	private static final String USE_BASH = "/bin/bash -c";
 	private static final String TEST_SCRIPT = "testDockerImage.sh";
+	private static final String INSPECT = "INSPECT";
+	private static final String VERSION = "VERSION";
 }
