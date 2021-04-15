@@ -523,13 +523,15 @@ public class LaunchProcess {
 		while( ( s = br.readLine() ) != null 
 						&& ( ! hasPipelineStarted() || getFlag( FG_ARG ) ) )
 		{
-			if ( getFlag( FG_ARG ) ) System.out.println(s);
-			grabPipelineLocation(s);
+			scanForKeys(s);
+			if ( getFlag( FG_ARG ) ) {
+				System.out.println(s);
+			}else {
+				showUserUpdates(s);
+			}
 			if ( pipeDir == null && restartDirHasStatusFlag() ) setPipedir( restartDir );
 			if ( pipeDir == null && foundNewPipeline() ) setPipedir( mostRecent );
 		}
-//		p.waitFor();
-//		p.destroy();
 	}
 	
 	private boolean hasPipelineStarted() {
@@ -653,10 +655,26 @@ public class LaunchProcess {
 		return ! initDir.getAbsolutePath().equals( mostRecent.getAbsolutePath() );
 	}
 	
+	/**
+	 * Scan string for specific keys which warrant specific actions.
+	 * @param s
+	 */
+	void scanForKeys(String s) {
+		if ( getPipedir() == null ) grabPipelineLocation(s);
+	}
+	
 	void grabPipelineLocation(String s) {
 		if( s.startsWith( Constants.PIPELINE_LOCATION_KEY ) ){
 			String path = s.replace( Constants.PIPELINE_LOCATION_KEY, "" ).trim();
 			setPipedir( new File(path) );
+		}
+	}
+	
+	void showUserUpdates(String s) {
+		if( s.startsWith( Constants.STATUS_UPDATE_KEY ) ){
+			System.err.print("\r" + s.substring( Constants.STATUS_UPDATE_KEY.length() ));
+		}else if( s.startsWith( Constants.STATUS_PRINT_KEY ) ){
+			System.err.println(s.substring( Constants.STATUS_PRINT_KEY.length() ));
 		}
 	}
 	

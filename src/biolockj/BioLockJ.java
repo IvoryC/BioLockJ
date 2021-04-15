@@ -220,6 +220,7 @@ public class BioLockJ {
 		RuntimeParamUtil.registerRuntimeParameters( args );
 		setPipelineRootDir();
 		DockerUtil.touchDockerInfo();
+		SummaryUtil.touchSystemInfo();
 		Config.initialize();
 		
 		if( BioLockJUtil.isDirectMode() ) Log.initialize( getDirectLogName( RuntimeParamUtil.getDirectModuleDir() ) );

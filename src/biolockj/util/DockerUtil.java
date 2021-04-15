@@ -324,11 +324,14 @@ public class DockerUtil {
 	 * Save a file with info about the current docker container. If not in docker, or if the file already exists, then do nothing.
 	 */
 	public static void touchDockerInfo() {
-		try {
-			if( DockerUtil.inDockerEnv() && !getInfoFile(INSPECT).exists() ) writeDockerInfo(INSPECT);
-			if( DockerUtil.inDockerEnv() && !getInfoFile(VERSION).exists() ) writeDockerInfo(VERSION);
-		} catch( Exception e ) {
-			e.printStackTrace();
+		if( inDockerEnv() ) {
+			try {
+				System.err.println( CONTAINER_ID_KEY + getContainerId() );
+				if( !getInfoFile( INSPECT ).exists() ) writeDockerInfo( INSPECT );
+				if( !getInfoFile( VERSION ).exists() ) writeDockerInfo( VERSION );
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -807,4 +810,5 @@ public class DockerUtil {
 	private static final String TEST_SCRIPT = "testDockerImage.sh";
 	private static final String INSPECT = "INSPECT";
 	private static final String VERSION = "VERSION";
+	public static final String CONTAINER_ID_KEY = "Current container id: ";
 }

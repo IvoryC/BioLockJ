@@ -3,12 +3,14 @@ package biolockj.launch;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import biolockj.Constants;
 import biolockj.api.BioLockJ_API;
 import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.util.DockerUtil;
 import biolockj.util.RuntimeParamUtil;
+import biolockj.util.SummaryUtil;
 
 public class DockerLaunchProcess extends LaunchProcess {
 	
@@ -38,7 +40,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 	String createCmd() throws Exception {
 		StringBuilder command = new StringBuilder();
 		command.append( "docker run --rm" );
-		if ( ! getFlag( FG_ARG )) command.append( " -d" );
+		//if ( ! getFlag( FG_ARG )) command.append( " -d" ); //I think we can drop this completely
 		if (envVars.size() > 0) for (String var : envVars.keySet() ) command.append(" -e " + var + "=" + envVars.get( var ));
 		//command.append( " -e BLJ_OPTIONS=\"" + getOptionVals() + "\"");
 		command.append( " " + getVolumes() );
@@ -134,8 +136,9 @@ public class DockerLaunchProcess extends LaunchProcess {
 			if (getFlag( FG_ARG )) {
 				watchProcess(p);
 			}else {
-				String containerId = catchFirstResponse(p);
-				System.out.println("Docker container id: " + containerId);
+				//String containerId = catchFirstResponse(p); //moved to watchProcess(p)
+				//System.out.println("Docker container id: " + containerId); //moved to watchProcess(p)
+				watchProcess(p);
 				confirmStart(containerId);
 				printInfo();
 			}
@@ -144,6 +147,28 @@ public class DockerLaunchProcess extends LaunchProcess {
 		} catch( final Exception ex ) {
 			System.err.println( "Problem occurred running command: " + cmd);
 			ex.printStackTrace();
+		}
+	}
+	
+	void scanForKeys(String s) {
+		super.scanForKeys(s);
+		if ( getContainerId() == null ) grabContainerId(s);
+	}
+	
+	@Override
+	void grabPipelineLocation(String s) {
+		super.grabPipelineLocation( s );
+		if ( getPipedir() != null ) SummaryUtil.sendHostInfo( getPipedir() );
+	}
+	
+	private String containerId = null;
+	private String getContainerId() {
+		return containerId;
+	}
+	void grabContainerId(String s) {
+		if( s.startsWith( DockerUtil.CONTAINER_ID_KEY ) ){
+			containerId = s.substring( DockerUtil.CONTAINER_ID_KEY.length()).trim();
+			System.out.println("Docker container id: " + containerId);
 		}
 	}
 	
