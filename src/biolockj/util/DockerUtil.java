@@ -578,8 +578,30 @@ public class DockerUtil {
 		}
 	}
 
+	public static boolean isLocalImage(BioModule module, String image) throws SpecialPropertiesException, InterruptedException {
+		String cmd = Config.getExe( module, Constants.EXE_DOCKER ) + " image inspect " + image;
+		int exit = -1;
+		try {
+			final Process p = Runtime.getRuntime().exec( cmd );
+			p.waitFor(60, TimeUnit.SECONDS);
+			p.destroy();
+			exit=p.exitValue();
+		}catch(IOException ex) {
+			if ( ex.getMessage() != null ) {
+				Log.debug(DockerUtil.class, "IOException with message: " + ex.getMessage());
+			}else {
+				Log.debug(DockerUtil.class, "Encountered IOException.");
+			}
+		}
+		return exit == 0;
+	}
+	
 	private static void verifyImage(BioModule module, String image) throws DockerVolCreationException, InterruptedException, DockerImageException, SpecialPropertiesException, ConfigFormatException, IOException {
 		Log.info(DockerUtil.class, "Verifying docker image: " + image);
+		System.out.println(Constants.STATUS_START_KEY + ModuleUtil.displaySignature( module ) + " - verifying docker image " + image );
+		if (!isLocalImage(module, image)) {
+			System.out.println(Constants.STATUS_START_KEY + ModuleUtil.displaySignature( module ) + " - verifying docker image " + image + " (download may take some time)" );
+		}
 		final File script = new File( Config.replaceEnvVar( "${BLJ}/resources/docker/" + TEST_SCRIPT) );
 		final File copy = new File(BioLockJ.getPipelineDir(), TEST_SCRIPT);
 		if ( ! copy.exists() ) FileUtils.copyFileToDirectory( script, BioLockJ.getPipelineDir() );

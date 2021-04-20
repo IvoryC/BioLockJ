@@ -29,6 +29,7 @@ public class Launcher {
 
 			if( LaunchProcess.inTestMode() ) LaunchProcess.showArgs("Launcher", args);
 			
+			ProgressUtil.startSpinner( "Registering options" );
 			LaunchProcess lp = new LaunchProcess( args );
 			
 			if (lp.getFlag( LaunchProcess.AWS_ARG ) ) {
@@ -65,10 +66,12 @@ public class Launcher {
 	}
 	
 	static void handleEndLaunchException(EndLaunch el) throws InterruptedException {
+		ProgressUtil.clear();
 		pauseToRead();
 		System.exit( el.getExitCode() );
 	}
 	static void handleBioLockJException(BioLockJException ex) throws InterruptedException {
+		ProgressUtil.clear();
 		System.err.println( "An error occurred during the initial launch process." );
 		System.err.println( FatalExceptionHandler.ERROR_TYPE + ex.getClass().getSimpleName() );
 		System.err.println( FatalExceptionHandler.ERROR_MSG + ex.getMessage() );
@@ -77,6 +80,7 @@ public class Launcher {
 		System.exit( 1 );
 	}
 	static void handleGeneralException(Exception ex) throws InterruptedException {
+		ProgressUtil.clear();
 		System.err.println( "An unexpected general error occurred during the initial launch process." );
 		ex.printStackTrace();
 		pauseToRead();

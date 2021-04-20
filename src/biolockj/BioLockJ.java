@@ -216,6 +216,8 @@ public class BioLockJ {
 	 */
 	protected static void initBioLockJ( final String[] args ) throws Exception {
 		Log.debug( BioLockJ.class, "APP_START_TIME (millis): " + Constants.APP_START_TIME );
+		//ProgressUtil.startSpinner( " Initializing " );
+		System.out.println(Constants.STATUS_START_KEY + "Initializing BioLockJ ...");
 		MemoryUtil.reportMemoryUsage( "INTIAL MEMORY STATS" );
 		RuntimeParamUtil.registerRuntimeParameters( args );
 		setPipelineRootDir();
@@ -253,14 +255,22 @@ public class BioLockJ {
 		}
 		
 		Pipeline.initializePipeline();
+		
+		System.out.println(Constants.STATUS_MARK_KEY + "Done initializing BioLockJ.");
+		
 	}
 	
 	private static void checkDependencies() throws Exception{
+		//ProgressUtil.startSpinner( " Checking dependencies " );
+		System.out.println(Constants.STATUS_START_KEY + "Checking dependencies ");
+		
 		BioLockJUtil.checkVersion();
 		if( ! BioLockJUtil.isDirectMode() ) MasterConfigUtil.saveMasterConfig();
 		Pipeline.checkModuleDependencies();
 		if( ! BioLockJUtil.isDirectMode() ) MasterConfigUtil.saveMasterConfig();
 		if( ! BioLockJUtil.isDirectMode() ) Config.showUnusedProps();
+		
+		System.out.println(Constants.STATUS_MARK_KEY + "Done checking dependencies.");
 	}
 
 	/**

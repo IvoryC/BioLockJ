@@ -51,18 +51,20 @@ public class JavaLaunchProcess extends LaunchProcess {
 	@Override
 	void runCommand() throws Exception {
 		String cmd = createCmd();
-		if (inTestMode()) {System.out.println( LaunchProcess.BIOLOCKJ_TEST_MODE_VALUE + " " + cmd); throw new EndLaunch( 0 );}
-		if (getFlag( FG_ARG )) {System.out.println( "Running command: [ " + cmd + " ]"); }
+		if (inTestMode()) {
+			ProgressUtil.printStatus( LaunchProcess.BIOLOCKJ_TEST_MODE_VALUE + " " + cmd, true );
+			throw new EndLaunch( 0 );
+			}
+		if (getFlag( FG_ARG )) {ProgressUtil.printStatus( "Running command: [ " + cmd + " ]", false ); }
 		
 		super.runCommand();
 		
-		System.out.print( "Initializing BioLockJ" );
 		try {
 			final File dir = getConfigFile() == null ? null: getConfigFile().getParentFile();
 			final Process p = Runtime.getRuntime().exec( cmd, getEnvP(), dir );
 			confirmStart(p);
 		} catch( final Exception ex ) {
-			System.err.println( "Problem occurred running command: " + cmd);
+			ProgressUtil.printStatus( "Problem occurred running command: " + cmd, true );
 			ex.printStackTrace();
 		}
 		printInfo();
@@ -91,20 +93,12 @@ public class JavaLaunchProcess extends LaunchProcess {
 		long startTime = System.currentTimeMillis();
 		int maxtime = 15; 
 		Timer timer = new Timer(true);
-		if( !getFlag( FG_ARG ) ) {
-			timer.schedule( new TimerTask() {
-				@Override
-				public void run() {
-					System.out.print( "." );
-				}
-			}, 1 );
-		}
 		
 		if ( getFlag( WAIT_ARG ) ) {
 			timer.schedule( new TimerTask() {
 				@Override
 				public void run() {
-					System.out.println( "The normal timeout has been disabled." );
+					ProgressUtil.printStatus( "The normal timeout has been disabled.", false );
 				}
 			}, maxtime );
 		}else {
@@ -114,7 +108,7 @@ public class JavaLaunchProcess extends LaunchProcess {
 			watchProcess(p);
 		} catch (InterruptedException e) {
 			if (System.currentTimeMillis() - startTime >= maxtime - 1 )
-				System.out.println( "Reached max wait time: " + maxtime + " seconds." );
+				ProgressUtil.printStatus( "Reached max wait time: " + maxtime + " seconds.", true );
 			else throw e;
 		}
 		timer.cancel();
