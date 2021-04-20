@@ -245,6 +245,7 @@ public class Pipeline {
 	
 	protected static void checkOneModulesDependencies(BioModule module) throws Exception {
 		setExeModule( module );
+		System.out.println(Constants.STATUS_START_KEY + "Checking module: " + ModuleUtil.displaySignature( module ));
 		if( ModuleUtil.isIncomplete( module ) && ( !BioLockJUtil.isDirectMode() || module instanceof Email ) ) {
 			final String path = module.getModuleDir().getAbsolutePath();
 			Log.info( Pipeline.class, "Reset incomplete module: " + path );
@@ -266,6 +267,7 @@ public class Pipeline {
 		} else {
 			PipelineUtil.markStatus( module, Constants.PRECHECK_COMPLETE );
 		}
+		System.out.println(Constants.STATUS_MARK_KEY + "Done checking module: " + ModuleUtil.displaySignature( module ));
 	}
 
 	/**

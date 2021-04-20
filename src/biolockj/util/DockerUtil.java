@@ -580,6 +580,7 @@ public class DockerUtil {
 
 	private static void verifyImage(BioModule module, String image) throws DockerVolCreationException, InterruptedException, DockerImageException, SpecialPropertiesException, ConfigFormatException, IOException {
 		Log.info(DockerUtil.class, "Verifying docker image: " + image);
+		System.out.println(Constants.STATUS_START_KEY + ModuleUtil.displaySignature( module ) + " - verifying docker image " + image + " (download may take some time)" );
 		final File script = new File( Config.replaceEnvVar( "${BLJ}/resources/docker/" + TEST_SCRIPT) );
 		final File copy = new File(BioLockJ.getPipelineDir(), TEST_SCRIPT);
 		if ( ! copy.exists() ) FileUtils.copyFileToDirectory( script, BioLockJ.getPipelineDir() );

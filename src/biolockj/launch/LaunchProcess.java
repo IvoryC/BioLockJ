@@ -99,22 +99,22 @@ public class LaunchProcess {
 	}
 	
 	static void showArgs(String process, String[] args) {
-		System.out.print( " ---------> Execute CMD [  " + process );
-		for (String arg : args) System.out.print( " " + arg );
-		System.out.println( " ]" );
+		System.err.print( " ---------> Execute CMD [  " + process );
+		for (String arg : args) System.err.print( " " + arg );
+		System.err.println( " ]" );
 	}
 
 	protected void assignMainArg() {
 		if( getFlag( RESTART_ARG ) ) {
 			restartArgVal = mainArg;
-			if( inTestMode() ) System.out.println( "Using " + restartArgVal + " as the pipeline to restart." );
+			if( inTestMode() ) System.err.println( "Using " + restartArgVal + " as the pipeline to restart." );
 			if( parameters.get( CONFIG_ARG ) != null ) {
 				configArgVal = parameters.get( CONFIG_ARG );
-				System.out.println( "Updating pipeline with config file " + configArgVal + "." );
+				System.err.println( "Updating pipeline with config file " + configArgVal + "." );
 			}
 		} else {
 			configArgVal = mainArg;
-			if( inTestMode() ) System.out.println( "Using " + configArgVal + " as the config file." );
+			if( inTestMode() ) System.err.println( "Using " + configArgVal + " as the config file." );
 		}
 	}
 
@@ -363,7 +363,7 @@ public class LaunchProcess {
 		for( String arg: longArgName ) {
 			if( parameters.get( arg ) != null ) {
 				if( takesValue.contains( arg ) || parameters.get( arg ).contentEquals( String.valueOf( true ) ) ) {
-					System.out.println( arg + " = " + parameters.get( arg ) );
+					System.err.println( arg + " = " + parameters.get( arg ) );
 				}
 			}
 		}
@@ -496,24 +496,23 @@ public class LaunchProcess {
 	}
 	
 	protected void printInfo() throws InterruptedException, IOException, EndLaunch {
-		System.out.println("");
 		if (restartDirHasStatusFlag()) {
-			System.out.println("Restarting pipeline: " + pipeDir.getAbsolutePath());
 			printActionOptions();
 			printPipelineStatus(600);
 		}else if( ! initDir.getAbsolutePath().equals( pipeDir.getAbsolutePath() )  && pipeDir.exists() ) {
-			System.out.println("Building pipeline: " + pipeDir.getAbsolutePath());
 			printActionOptions();
 			printPipelineStatus(600);
 		}else {
-			System.out.println("Pipeline may have failed to launch - check " + BLJ_PROJ_DIR.getAbsolutePath() + " for new pipeline");
+			ProgressUtil.printStatus("Pipeline may have failed to launch - check " + BLJ_PROJ_DIR.getAbsolutePath() + " for new pipeline", true);
 		}
 	}
 
 	protected void printActionOptions() {
-		System.out.println( "After an initial status check, all pipeline updates will be in the pipeline folder." );
+		ProgressUtil.printStatus( "", true );
+		ProgressUtil.printStatus( "After an initial status check, all pipeline updates will be in the pipeline folder.", true );
+		if (getPipedir() != null) System.out.println(getPipedir().getAbsolutePath());//This is the only line printed to standard OUT.
 		if( ! DockerUtil.inDockerEnv() ) {
-			System.out.println( "cd-blj       -> Move to pipeline output directory" );
+			System.err.println( "cd-blj       -> Move to pipeline output directory" );
 		}
 	}
 	
@@ -525,9 +524,9 @@ public class LaunchProcess {
 		{
 			scanForKeys(s);
 			if ( getFlag( FG_ARG ) ) {
-				System.out.println(s);
+				System.err.println(s);
 			}else {
-				showUserUpdates(s);
+				ProgressUtil.showUserUpdates(s);
 			}
 			if ( pipeDir == null && restartDirHasStatusFlag() ) setPipedir( restartDir );
 			if ( pipeDir == null && foundNewPipeline() ) setPipedir( mostRecent );
@@ -561,8 +560,8 @@ public class LaunchProcess {
 	 * @throws EndLaunch 
 	 */
 	protected void printPipelineStatus(int maxtime) throws InterruptedException, IOException, EndLaunch {
-		System.out.println();
-		System.out.println("Fetching pipeline status ");
+		ProgressUtil.printStatus("", true);
+		ProgressUtil.printStatus("Fetching pipeline status ", true);
 		int haveWaited = 0;
 		while( haveWaited < maxtime ||
 						getFlag( WAIT_ARG ) ||
@@ -570,7 +569,7 @@ public class LaunchProcess {
 			
 			File unverified = new File(pipeDir, Constants.UNVERIFIED_PROPS_FILE);
 			if (unverified.exists() && ! getFlag( RESTART_ARG )) {
-				System.out.println();
+				System.err.println();
 				showStatus("Warning: see \"unverified.properties\"", unverified, 0);
 			}
 			String flag = "none";
@@ -597,19 +596,19 @@ public class LaunchProcess {
 				throw new EndLaunch( 0 );
 			}
 			else if (haveWaited == maxtime) {
-				if (getFlag( WAIT_ARG ) || getFlag( PRECHECK_ARG ) || getFlag( UNUSED_PROPS_ARG )) System.out.println("(no timeout)");
+				if (getFlag( WAIT_ARG ) || getFlag( PRECHECK_ARG ) || getFlag( UNUSED_PROPS_ARG )) System.err.println("(no timeout)");
 				else {
-					System.out.println("Reached max wait time: " + maxtime + " seconds. ");
+					System.err.println("Reached max wait time: " + maxtime + " seconds. ");
 					throw new EndLaunch( 1 );
 				}
 			}else if (haveWaited > 1) {
-				System.out.print( "." );
+				System.err.print( "." );
 			}
 			Thread.sleep( 1000 );
 		}
-		System.out.println();
-		System.out.println("Could not verify that the pipeline is running.");
-		System.out.println("It may still be checking dependencies.");
+		System.err.println();
+		System.err.println("Could not verify that the pipeline is running.");
+		System.err.println("It may still be checking dependencies.");
 	}
 	
 	protected void showStatus(String msg) throws IOException, EndLaunch {
@@ -619,15 +618,16 @@ public class LaunchProcess {
 		showStatus( msg, file, 2);
 	}
 	protected void showStatus(String msg, File file, int spacerLines) throws IOException, EndLaunch {
-		for (int i=0; i<spacerLines; i++) System.out.println();
-		System.out.println( msg );
+		ProgressUtil.clear();
+		for (int i=0; i<spacerLines; i++) System.err.println();
+		System.err.println( msg );
 		if (file != null) {
-			System.out.println();
+			System.err.println();
 			BufferedReader reader = new BufferedReader( new FileReader(file) );
-			while(reader.ready()) System.out.println( reader.readLine() );
+			while(reader.ready()) System.err.println( reader.readLine() );
 			reader.close();
 		}
-		for (int i=0; i<spacerLines; i++) System.out.println();
+		for (int i=0; i<spacerLines; i++) System.err.println();
 	}
 
 	String createCmd() throws Exception {
@@ -637,7 +637,7 @@ public class LaunchProcess {
 	void runCommand() throws Exception {
 		if( restartDirHasStatusFlag() ) Reset.resetPipeline( restartDir.getAbsolutePath() );
 		if( isReplacementForPrecheck() ) {
-			System.out.println("Discarding pre-existing precheck pipeline: " + mostRecent.getAbsolutePath());
+			ProgressUtil.printStatus("Discarding pre-existing precheck pipeline: " + mostRecent.getAbsolutePath(), false);
 			PipelineUtil.discardPrecheckPipeline( mostRecent );
 			initDir = getMostRecentPipeline();
 			mostRecent = getMostRecentPipeline();
@@ -663,18 +663,15 @@ public class LaunchProcess {
 		if ( getPipedir() == null ) grabPipelineLocation(s);
 	}
 	
-	void grabPipelineLocation(String s) {
-		if( s.startsWith( Constants.PIPELINE_LOCATION_KEY ) ){
+	void grabPipelineLocation( String s ) {
+		if( s.startsWith( Constants.PIPELINE_LOCATION_KEY ) ) {
 			String path = s.replace( Constants.PIPELINE_LOCATION_KEY, "" ).trim();
-			setPipedir( new File(path) );
-		}
-	}
-	
-	void showUserUpdates(String s) {
-		if( s.startsWith( Constants.STATUS_UPDATE_KEY ) ){
-			System.err.print("\r" + s.substring( Constants.STATUS_UPDATE_KEY.length() ));
-		}else if( s.startsWith( Constants.STATUS_PRINT_KEY ) ){
-			System.err.println(s.substring( Constants.STATUS_PRINT_KEY.length() ));
+			setPipedir( new File( path ) );
+			if( restartDirHasStatusFlag() ) {
+				ProgressUtil.printStatus( "Restarting pipeline: " + pipeDir.getAbsolutePath(), false );
+			} else {
+				ProgressUtil.printStatus( "Building pipeline: " + pipeDir.getAbsolutePath(), false );
+			}
 		}
 	}
 	

@@ -1025,6 +1025,25 @@ public class Constants {
 	public static final String STANDARD_CONFIG_PATH = "${BLJ}/resources/config/default/standard.properties";
 
 	/**
+	 * Key used in standard err messages indicating that this line should be shown to the user.
+	 * This should only be used for very minimal messaging to explain long delays.
+	 * Unlike #STATUS_UPDATE_KEY, this is used for overwriting updates, such as short animations, progress bars, etc.
+	 * See {@link biolockj.launch.ProgressUtil}; lines with this key will be used print a line at launch replacing any current spinner.
+	 * This should be used to mark the completion of a potentially lengthy process was used {@link #STATUS_START_KEY} at the start.
+	 * @see STATUS_START_KEY
+	 */
+	public static final String STATUS_MARK_KEY = "STATUS_MARK_KEY";
+	
+	/**
+	 * Key used in standard err messages indicating that this line should be shown to the user.
+	 * This should only be used for very minimal messaging to explain long delays.
+	 * See {@link biolockj.launch.ProgressUtil}; lines with this key will be used to start a spinner, 
+	 * and should be printed at the start of a potentially lengthy process.
+	 * @see STATUS_MARK_KEY
+	 */
+	public static final String STATUS_START_KEY = "STATUS_START_KEY";
+	
+	/**
 	 * BioLockJ tab character: {@value #TAB_DELIM}
 	 */
 	public static final String TAB_DELIM = "\t";

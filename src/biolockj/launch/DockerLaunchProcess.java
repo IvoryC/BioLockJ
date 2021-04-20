@@ -172,8 +172,8 @@ public class DockerLaunchProcess extends LaunchProcess {
 		}
 	}
 	
+	//confirm start doesn't need to print progress messages since the watchProcess method handles that now.
 	private void confirmStart(String container) throws InterruptedException, IOException{
-		System.out.print( "Initializing BioLockJ" );
 		int i=0;
 		int maxtime=25;
 		if (DockerUtil.inDockerEnv()) maxtime=120; //launch from docker can be sluggish
@@ -182,7 +182,6 @@ public class DockerLaunchProcess extends LaunchProcess {
 						! foundNewPipeline() &&
 						isContainerRunning(container) &&
 						! restartDirHasStatusFlag() ) {
-			System.out.print( "." );
 			i++;
 			mostRecent = getMostRecentPipeline();
 			if (i==10) System.out.print( "waiting for program to start" );
@@ -192,10 +191,6 @@ public class DockerLaunchProcess extends LaunchProcess {
 			}
 			Thread.sleep( 1000 );
 		}
-		Thread.sleep( 1000 );
-		System.out.print( "." );
-		Thread.sleep( 1000 );
-		System.out.print( "." );
 		mostRecent = getMostRecentPipeline();// could lag slightly after program start			
 		setPipedir( mostRecent );
 	}
