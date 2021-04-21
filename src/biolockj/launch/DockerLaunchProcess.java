@@ -40,9 +40,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 	String createCmd() throws Exception {
 		StringBuilder command = new StringBuilder();
 		command.append( "docker run --rm" );
-		//if ( ! getFlag( FG_ARG )) command.append( " -d" ); //I think we can drop this completely
 		if (envVars.size() > 0) for (String var : envVars.keySet() ) command.append(" -e " + var + "=" + envVars.get( var ));
-		//command.append( " -e BLJ_OPTIONS=\"" + getOptionVals() + "\"");
 		command.append( " " + getVolumes() );
 		if (getFlag( GUI_ARG ) ) command.append( "-p " + GUI_PORT + ":3000 --expose " + GUI_PORT + " -w /app/biolockj/web_app" );
 		command.append( " " + getDockerImg() );
@@ -129,15 +127,16 @@ public class DockerLaunchProcess extends LaunchProcess {
 		
 		super.runCommand();
 		
-		if (getFlag( FG_ARG )) System.out.println( " ---------> Docker CMD [ " + cmd + " ]" );
+		if (!DockerUtil.isLocalImage( null, getDockerImg() )) {
+			ProgressUtil.startSpinner( "Initializing (downloading image " + getDockerImg() + " may take some time)" );
+		}
+		if (getFlag( FG_ARG )) ProgressUtil.printStatus( " ---------> Docker CMD [ " + cmd + " ]", false );
 		
 		try {
 			final Process p = Runtime.getRuntime().exec( cmd ); 
 			if (getFlag( FG_ARG )) {
 				watchProcess(p);
 			}else {
-				//String containerId = catchFirstResponse(p); //moved to watchProcess(p)
-				//System.out.println("Docker container id: " + containerId); //moved to watchProcess(p)
 				watchProcess(p);
 				confirmStart(containerId);
 				printInfo();

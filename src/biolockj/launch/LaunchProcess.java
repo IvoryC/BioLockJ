@@ -635,6 +635,7 @@ public class LaunchProcess {
 	}
 
 	void runCommand() throws Exception {
+		ProgressUtil.startSpinner( "Initializing" );
 		if( restartDirHasStatusFlag() ) Reset.resetPipeline( restartDir.getAbsolutePath() );
 		if( isReplacementForPrecheck() ) {
 			ProgressUtil.printStatus("Discarding pre-existing precheck pipeline: " + mostRecent.getAbsolutePath(), false);

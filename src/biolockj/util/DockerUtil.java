@@ -578,7 +578,7 @@ public class DockerUtil {
 		}
 	}
 
-	private static boolean isLocalImage(BioModule module, String image) throws SpecialPropertiesException, InterruptedException {
+	public static boolean isLocalImage(BioModule module, String image) throws SpecialPropertiesException, InterruptedException {
 		String cmd = Config.getExe( module, Constants.EXE_DOCKER ) + " image inspect " + image;
 		int exit = -1;
 		try {
