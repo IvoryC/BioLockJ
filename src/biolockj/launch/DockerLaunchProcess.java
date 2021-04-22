@@ -61,6 +61,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 		if (getFlag( UNUSED_PROPS_ARG )) options.append( " " + RuntimeParamUtil.UNUSED_PROPS_FLAG );
 		if (getFlag( DOCKER_ARG )) options.append( " " + RuntimeParamUtil.DOCKER_FLAG );
 		if (getFlag( DEBUG_ARG )) options.append( " " + RuntimeParamUtil.DEBUG_FLAG );
+		if (getFlag( DOCKER_MAPPER_ARG )) options.append( " " + RuntimeParamUtil.DOCKER_MAPPER + " " + getParameter( DOCKER_MAPPER_ARG ) );
 		if ( DockerUtil.inDockerEnv() ) {
 			options.append( " " + RuntimeParamUtil.BLJ_PROJ_DIR + " " + DockerUtil.deContainerizePath(BLJ_PROJ_DIR.getAbsolutePath()) );
 			if (getFlag( RESTART_ARG )) {
@@ -147,6 +148,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 			ProgressUtil.printStatus( "Problem occurred running command: " + cmd, true );
 			ex.printStackTrace();
 		}
+		ProgressUtil.clear();
 	}
 	
 	void scanForKeys(String s) {

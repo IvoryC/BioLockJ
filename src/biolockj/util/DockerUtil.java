@@ -29,6 +29,8 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.exception.*;
 import biolockj.module.*;
+import biolockj.util.paths.BasicDockerMapper;
+import biolockj.util.paths.DockerMountMapper;
 
 /**
  * DockerUtil for Docker integration.
@@ -122,6 +124,7 @@ public class DockerUtil {
 	
 	private static List<String> getDockerVolumes( final BioModule module )
 		throws ConfigPathException, ConfigNotFoundException, DockerVolCreationException, ConfigFormatException {
+		TreeMap <String, String> volumeMap = getMapper().getMap();
 		Log.debug( DockerUtil.class, "Assign Docker volumes for module: " + module.getClass().getSimpleName() );
 		final List<String> dockerVolumes = new ArrayList<>();
 		if (Config.getBoolean( module, DOCKER_MOUNT_SOCK ) || module instanceof JavaModule) {
@@ -147,7 +150,7 @@ public class DockerUtil {
 		if( module instanceof OutsidePipelineWriter ) {
 			OutsidePipelineWriter wopMod = (OutsidePipelineWriter) module;
 			Set<String> wopDirs = wopMod.getWriteDirs();
-			if( wopDirs.contains( volumeMap.get( key ) ) ) {
+			if( wopDirs.contains( getMapper().getMap().get( key ) ) ) {
 				Log.info( DockerUtil.class, "The module [" + ModuleUtil.displaySignature( module ) +
 					"] is granted write access to the folder [" + key + "]" );
 				return true;
@@ -267,63 +270,11 @@ public class DockerUtil {
 		return RuntimeParamUtil.isInDocker();
 	}
 
-	private static TreeMap<String, String> volumeMap;
-
-	/**
-	 * This map is a link between file paths inside the container (the containerized path) and paths outside the
-	 * container (the decontainerized path). This program and all scripts are (presumably) running inside the docker
-	 * container, and need to use the containerized path. The user, and thus the logs and the config file(s), are
-	 * outside of the docker container, and need to use the decontainerized path.
-	 * 
-	 * In this map is built using the Mounts map from docker.
-	 * 
-	 * Each value in this map is the containerized path; which is the destination (or "target") in the docker mounts
-	 * map.
-	 * 
-	 * Each key in this map is a representation of the original host file path; however the form of this path varies on
-	 * different host systems (mac vs windows) and different versions of docker. The representation of a unix-like path
-	 * is exactly the format that is produce by unix commands such as pwd. The path begins with "/" and uses "/"
-	 * separators. The representation of windows file paths varies between docker versions. The representation in this
-	 * map is:<br> <lower case drive>/<path using '\' separators>
-	 * 
-	 * @throws DockerVolCreationException
-	 */
-	private static void makeVolMap() throws DockerVolCreationException {
-		StringBuilder sb = new StringBuilder();
-		String s = null;
-		try {
-			Process p = Runtime.getRuntime().exec( getDockerInforCmd(INSPECT) );
-			final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
-			while( ( s = br.readLine() ) != null ) {
-				sb.append( s );
-			}
-			p.waitFor();
-			p.destroy();
-		} catch( IOException | InterruptedException e ) {
-			e.printStackTrace();
-			throw new DockerVolCreationException( e );
-		}
-		String json = sb.toString();
-		JSONArray fullArr = new JSONArray( json );
-		JSONObject obj = fullArr.getJSONObject( 0 );
-		if( !obj.has( "Mounts" ) ) throw new DockerVolCreationException();
-		JSONArray arr = obj.getJSONArray( "Mounts" );
-		volumeMap = new TreeMap<>();
-		for( int i = 0; i < arr.length(); i++ ) {
-			JSONObject mount = arr.getJSONObject( i );
-			String source = formatHostPath(mount.get( "Source" ).toString());
-			String destination = mount.get( "Destination" ).toString();
-			volumeMap.put( source, destination );
-			Log.info( DockerUtil.class, "Host directory: " + source );
-			Log.info( DockerUtil.class, "is mapped to container directory: " + destination );
-		}
-		Log.info( DockerUtil.class, volumeMap.toString() );
-	}
-
 	/**
 	 * Save a file with info about the current docker container. If not in docker, or if the file already exists, then do nothing.
+	 * @throws DockerVolCreationException 
 	 */
-	public static void touchDockerInfo() {
+	public static void touchDockerInfo() throws DockerVolCreationException {
 		if( inDockerEnv() ) {
 			try {
 				System.err.println( CONTAINER_ID_KEY + getContainerId() );
@@ -397,62 +348,44 @@ public class DockerUtil {
 		}
 	}
 
+	/**
+	 * If running in docker mode, convert this path to the form that can be used inside the docker container.
+	 * If not in docker, return the input path unchanged.
+	 * @param path
+	 * @return
+	 * @throws DockerVolCreationException
+	 */
 	public static String containerizePath( final String path ) throws DockerVolCreationException {
-		Log.debug( DockerUtil.class, "Containerizing path: " + path );
-		if( !DockerUtil.inDockerEnv() ) return path;
-		if( path == null || path.isEmpty() ) return null;
-		
-		String hostPath = path;
-		if (isWindowsHostPath(path)) hostPath = convertWindowsPath(path);
-		
-		String pipelineKey = null;
-		TreeMap<String, String> vmap = getVolumeMap();
-		for( String key: volumeMap.keySet() ) {
-			if( volumeMap.get( key ).equals( DOCKER_PIPELINE_DIR ) ) pipelineKey = key;
-			if( DockerUtil.inAwsEnv() && volumeMap.get( key ).equals( DOCKER_BLJ_MOUNT_DIR ) ) pipelineKey = key;
-			// if the config file is null; we must not be running a pipeline; this is the API calling, and all mounts are under the workspace getting set up.
-			if( RuntimeParamUtil.getConfigFile(false) == null && volumeMap.get( key ).equals( PURE_DOCKER_PIPELINE_DIR ) ) pipelineKey = key;
-		}
-		if( pipelineKey == null && BioLockJ.getPipelineDir() != null ) {
-			throw new DockerVolCreationException( "no pipeline dir !" );
-		}
-		if( pipelineKey != null && isParentDir(pipelineKey, hostPath) )
-			return hostPath.replaceFirst( pipelineKey, vmap.get( pipelineKey ) );
-		
-		String innerPath = path;
-		String bestMatch = null;
-		int bestMatchLen = 0;
-		for( String s: vmap.keySet() ) {
-			if( isParentDir(s, hostPath) && s.length() > bestMatchLen ) {
-				bestMatch = String.valueOf( s );
-				bestMatchLen = s.length();
-			}
-		}
-		if( bestMatch != null ) {
-			innerPath = hostPath.replaceFirst( bestMatch, vmap.get( bestMatch ) );
-		}
-		Log.debug( DockerUtil.class, "Containerized path to: " + innerPath );
-		return innerPath;
+		if( DockerUtil.inDockerEnv() ) return getMapper().asInnerPath(path);
+		else return path;
 	}
+	/**
+	 * {@link #containerizePath(String)}
+	 * @param file
+	 * @return
+	 * @throws DockerVolCreationException
+	 */
 	public static File containerizePath(final File file) throws DockerVolCreationException {
 		return new File(containerizePath(file.getAbsolutePath()));
 	}
 
+	/**
+	 * If running in docker mode, convert this path to the form that can be used on the host machine.
+	 * If not in docker, return the input path unchanged.
+	 * @param innerPath
+	 * @return
+	 * @throws DockerVolCreationException
+	 */
 	public static String deContainerizePath( final String innerPath ) throws DockerVolCreationException {
-		String hostPath = innerPath;
-		if( DockerUtil.inDockerEnv() ) {
-			TreeMap<String, String> vmap;
-			vmap = getVolumeMap();
-			for( String s: vmap.keySet() ) {
-				if (isParentDir(vmap.get( s ), innerPath)) {
-					hostPath = hostPath.replaceFirst( vmap.get( s ), s );
-					break;
-				}
-			}
-
-		}
-		return hostPath;
+		if( DockerUtil.inDockerEnv() ) return getMapper().asOuterPath(innerPath);
+		else return innerPath;
 	}
+	/**
+	 * {@link #deContainerizePath(String)}
+	 * @param innerFile
+	 * @return
+	 * @throws DockerVolCreationException
+	 */
 	public static File deContainerizePath( final File innerFile ) throws DockerVolCreationException {
 		return new File( deContainerizePath(innerFile.getAbsolutePath()) );
 	}
@@ -463,64 +396,10 @@ public class DockerUtil {
 	 * @param args
 	 * @throws DockerVolCreationException
 	 */
-	public static void main(String[] args) throws DockerVolCreationException {
+	public static void main(String[] args) throws DockerVolumeException {
 		if (args.length > 1 && args[1].equals("target") ) System.out.println( containerizePath( args[0] ) );
 		else if (args.length > 1 && args[1].equals("source") ) System.out.println( deContainerizePath( args[0] ) );
 		else System.out.println( deContainerizePath( args[0] ) );
-	}
-	
-	private static boolean isParentDir(String parent, String child){
-		if( child.equals( parent ) ) {
-			return true;
-		}
-		if( child.startsWith( parent ) 
-						&& child.length() > parent.length() 
-						&& child.charAt( parent.length() )==File.separatorChar) {
-			return true;
-		}
-		return false;
-	}
-	
-	private static boolean isWindowsHostPath(final String path) {
-		return (path.contains( ":" ) 
-						&& path.indexOf( ":" ) == path.lastIndexOf( ":" )
-						&& FilenameUtils.separatorsToWindows(path).equals(path));
-	}
-	
-	/**
-	 * In the docker json file, the host path is sometimes represented as the exact path that the user might see on
-	 * their host machine, and sometimes it is pre-prended with /host_mnt/, and other other differences. Presumably the
-	 * version of docker is what dictates the difference in path appearance.
-	 * 
-	 * @param path
-	 * @return
-	 */
-	private static String formatHostPath(final String path) {
-		final String HOST_MNT = "/host_mnt/";
-		String hostPath;
-		if (path.startsWith( HOST_MNT )) {
-			if ( path.contains( ":" )) { // windows case
-				hostPath = path.replaceFirst( HOST_MNT, "" );
-			}else { // mac case
-				hostPath = path.replaceFirst( HOST_MNT, "/" );
-			}
-		}
-		else hostPath = path ;
-		if ( path.contains( ":" ) ) {
-			// added conversion for compatibility with older docker map format
-			hostPath = convertWindowsPath(hostPath);
-		}
-		Log.info(DockerUtil.class, "Host path from docker mounts: " + path);
-		Log.info(DockerUtil.class, "Is represented in the form:   " + hostPath);
-		return hostPath;
-	}
-	
-	private static String convertWindowsPath(final String path) {
-		String drive = path.substring( 0, path.indexOf( ":" ) ).toLowerCase();
-		String dirPath = path.substring( path.indexOf( ":" ) + 1 );
-		String mountPath = File.separator + drive + FilenameUtils.separatorsToSystem( dirPath );
-		Log.debug( DockerUtil.class, "Converted Windows path [" + path + "] to docker mount form: " + mountPath );
-		return mountPath ;
 	}
 
 	public static String getContainerId() throws IOException, DockerVolCreationException {
@@ -540,22 +419,6 @@ public class DockerUtil {
 
 	public static String getHostName() {
 		return Config.replaceEnvVar( "${HOSTNAME}" );
-	}
-
-	public static TreeMap<String, String> getVolumeMap() throws DockerVolCreationException {
-		if( volumeMap == null ) {
-			makeVolMap();
-		}
-		return volumeMap;
-	}
-
-	/**
-	 * Method for diagnosing exceptions; only used by DockerVolumeException
-	 * 
-	 * @return
-	 */
-	public static TreeMap<String, String> backdoorGetVolumeMap() {
-		return volumeMap;
 	}
 
 	private static final String rmFlag( final BioModule module ) throws ConfigFormatException {
@@ -833,4 +696,46 @@ public class DockerUtil {
 	private static final String INSPECT = "INSPECT";
 	private static final String VERSION = "VERSION";
 	public static final String CONTAINER_ID_KEY = "Current container id: ";
+	
+	private static DockerMountMapper getMapper() throws DockerVolCreationException {
+		return getMapper(true);
+	}
+	/**
+	 * Intended for diagnostic purposes only.
+	 * @param initAsNeeded
+	 * @return
+	 * @throws DockerVolCreationException
+	 */
+	public static DockerMountMapper getMapper(boolean initAsNeeded) throws DockerVolCreationException {
+		//if (mapper == null && initAsNeeded) makeMapper();
+		return mapper;
+	}
+	
+	/**
+	 * As version v1.3.18, the logic to do this mapping is not part of the DockerUtil class. The logic was moved to new
+	 * classes that implement the DockerMountMapper interface, allowing for more agility if future docker versions
+	 * do not use the same Mount notation.
+	 * 
+	 * @throws RuntimeParamException
+	 */
+	public static void makeMapper() throws RuntimeParamException {
+		if( inDockerEnv() ) {
+			String className = RuntimeParamUtil.getDockerMapper();
+			Log.debug( DockerUtil.class, "Using docker mapper class [" + className + "]" );
+			try {
+				mapper = (DockerMountMapper) Class.forName( className ).newInstance();
+			} catch( InstantiationException | IllegalAccessException | ClassNotFoundException e ) {
+				Log.error(DockerUtil.class, "Failed to create an instance of the class: " + className);
+				e.printStackTrace();
+				throw new RuntimeParamException( RuntimeParamUtil.DOCKER_MAPPER, className,
+					"Failed to create an instance of this class. This value must be a full class path." );
+			}
+			//Because this class may be supplied from outside the BioLockJ jar file, it must be versioned separately.
+			Log.info(DockerUtil.class, "Created docker mapper from class [" + className + "] version: " + mapper.version());
+		}
+	}
+	
+	public static String DEFAULT_DOCKER_MAPPER = "biolockj.util.paths.CommonDockerMapper";
+	
+	private static DockerMountMapper mapper = null;
 }

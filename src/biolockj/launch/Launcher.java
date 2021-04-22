@@ -59,6 +59,7 @@ public class Launcher {
 		} catch( Exception ex ) {
 			handleGeneralException(ex);
 		}
+		ProgressUtil.clear();
 	}
 
 	static void pauseToRead() throws InterruptedException {
