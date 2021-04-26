@@ -535,7 +535,7 @@ public class LaunchProcess {
 		{
 			scanForKeys(s);
 			if ( getFlag( FG_ARG ) ) {
-				System.err.println(s);
+				System.out.println(s);
 			}else {
 				ProgressUtil.showUserUpdates(s);
 			}
