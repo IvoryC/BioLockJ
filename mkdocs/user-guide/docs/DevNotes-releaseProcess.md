@@ -56,7 +56,7 @@ Best practice for packaging the official release is to download a fresh copy of 
 ```
 git clone https://github.com/BioLockJ-Dev-Team/BioLockJ.git
 cd BioLockJ
-docker run --rm -v $PWD:/biolockj biolockjdevteam/build_and_deploy
+docker run --rm -v ${PWD}:/biolockj biolockjdevteam/build_and_deploy
 ```
 
 If needed, the `git clone` command could be replaced with `wget https://github.com/BioLockJ-Dev-Team/BioLockJ/archive/main.zip`, or any other download command.
