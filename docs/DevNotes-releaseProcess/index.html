@@ -263,7 +263,7 @@
 <p>Best practice for packaging the official release is to download a fresh copy of the official repo, and build within a docker image.  The fresh clone ensures that git-ignored files that are in the local repo copy are incorporated in the official deployment.  Using the docker image promotes consistency, and reduces the chances of invisible dependencies. (Not to mention its downright convenient!)</p>
 <pre><code>git clone https://github.com/BioLockJ-Dev-Team/BioLockJ.git
 cd BioLockJ
-docker run --rm -v $PWD:/biolockj biolockjdevteam/build_and_deploy
+docker run --rm -v ${PWD}:/biolockj biolockjdevteam/build_and_deploy
 </code></pre>
 
 <p>If needed, the <code>git clone</code> command could be replaced with <code>wget https://github.com/BioLockJ-Dev-Team/BioLockJ/archive/main.zip</code>, or any other download command.</p>

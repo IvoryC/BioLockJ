@@ -6,7 +6,7 @@ biolockj --help
 
 ```bash                   
                    
-BioLockJ v1.3.17 - UNCC Fodor Lab 2021                   
+BioLockJ v1.3.18 - UNCC Fodor Lab 2021                   
 Usage:                   
 (bash)                   
 biolockj [options] <config|pipeline>                   
@@ -33,6 +33,7 @@ Options:
       --blj                     Map $BLJ folder into the docker container;                   
                                 this replaces BioLockJ packaged in a docker container with the local copy.                   
       --verbose                 Equivalent to adding `pipeline.logLevel=DEBUG` to the config file.                   
+      --docker-mapper <class>   Rarely used. See user guide. Ignored when not using docker.                   
   -e  --env-var <var=val>       Environment variables to be passed to the BioLockJ environment.                   
                                 Can be a comma-sep list. Values take the form: a=foo,b=bar,c=baz                   
       --blj_proj <dir>          Directory that contains BioLockJ pipelines. If not supplied,                    

@@ -207,7 +207,7 @@
               
                 <h2 id="biolockj-on-windows">BioLockJ on Windows<a class="headerlink" href="#biolockj-on-windows" title="Permanent link">#</a></h2>
 <p><em>Currently, windows is not officially supported as a system to run BioLockJ</em></p>
-<p>There are a few avenues for running BioLockJ on a Widows machine.  The WSL2 avenue is the most likely to be supported into the future.</p>
+<p>There are a few avenues for running BioLockJ on a Windows machine.  The WSL2 avenue is the most likely to be supported into the future.  The other two should be considered experimental.</p>
 <h3 id="windows-subsystem-for-linux-wsl2">Windows Subsystem for Linux (WSL2)<a class="headerlink" href="#windows-subsystem-for-linux-wsl2" title="Permanent link">#</a></h3>
 <p><strong>This option has been shown to work, but it is not rigorously tested in our current release testing process, and so is <em>not officially</em> supported.</strong></p>
 <h4 id="1-install-wsl2">1. Install WSL2<a class="headerlink" href="#1-install-wsl2" title="Permanent link">#</a></h4>
@@ -233,8 +233,13 @@ sudo apt install default-jre
 <p>Follow the standard instructions to for <a href="../Getting-Started/">Getting Started</a> with BioLockJ, operating within the linux subsystem.  </p>
 <p><em>In theory, operating within this system will be identical to working with BioLockJ in a unix-like operating system.  However we recommend (and run tests) using docker, as this removes the added troubleshooting of adapting to subtle differences across environments, which could be compounded by the system stacking, not to mention the often tedious task of installing all dependencies for all pipelines.</em></p>
 <hr />
-<h3 id="alternative-docker-with-a-native-launch">Alternative: Docker with a native launch<a class="headerlink" href="#alternative-docker-with-a-native-launch" title="Permanent link">#</a></h3>
-<p>In this case, java running on the host machine is required to launch the program; but the manager process and the required environment to run each module is all handled by Docker containers.  </p>
+<h3 id="alternative-pure-docker">Alternative: Pure-Docker<a class="headerlink" href="#alternative-pure-docker" title="Permanent link">#</a></h3>
+<p>In the pure-docker case, a handful of power-shell commands are used to launch a Docker container.  The Docker container includes all the required software and environment, including java to run the launch process and manager process, and the required environment to run each module.</p>
+<p><strong>This feature exists, but is still experimental.  It has been shown to work anecdotally, but is not guaranteed to work.</strong></p>
+<p>See <a href="../Pure-Docker/">Working in Pure Docker</a>.</p>
+<hr />
+<h3 id="alternative-docker-with-a-powershell-launch">Alternative: Docker with a Powershell launch<a class="headerlink" href="#alternative-docker-with-a-powershell-launch" title="Permanent link">#</a></h3>
+<p>In this case, java running on the host machine is required to launch the program; but the manager process and the required environment to run each module is all handled by Docker containers.  As of BioLockJ v1.3.18 (and earlier) this method is known to have some problems with absolute file paths when using some versions of docker; works when tested with docker version 20.10.0.</p>
 <p><strong>This feature exists, but is still experimental.  It is not guaranteed to work.</strong></p>
 <p>All code chunks in this section assume you are running PowerShell <strong>as administrator</strong>.</p>
 <h4 id="1-download-the-latest-release-unpack-the-tarball">1. Download the <a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/releases/latest">latest release</a> &amp; unpack the tarball.<a class="headerlink" href="#1-download-the-latest-release-unpack-the-tarball" title="Permanent link">#</a></h4>
@@ -248,7 +253,9 @@ Add-Content $profile &quot;Set-Variable -Name BLJ -Value $BLJ&quot;
 </code></pre>
 
 <p>cd into a folder of your choice, such as C:Users\Documents\biolockj_pipelines, and run</p>
-<pre><code>Set-Variable -Name BLJ_PROJ -Value $PWD
+<pre><code>mkdir C:Users\Documents\biolockj_pipelines
+cd C:Users\Documents\biolockj_pipelines
+Set-Variable -Name BLJ_PROJ -Value $PWD
 Add-Content $profile &quot;Set-Variable -Name BLJ_PROJ -Value $BLJ_PROJ&quot;
 </code></pre>
 
@@ -313,11 +320,7 @@ If that does not appear, see <a href="../FAQ/#question-why-doesnt-my-pipeline-ru
 # Pipeline is complete.
 </code></pre>
 
-<hr />
-<h3 id="alternative-pure-docker">Alternative: Pure-Docker<a class="headerlink" href="#alternative-pure-docker" title="Permanent link">#</a></h3>
-<p>In the pure-docker case, a handful of power-shell commands are used to launch a Docker container.  The Docker container includes all the required software and environment, including java to run the launch process and manager process, and the required environment to run each module.</p>
-<p><strong>This feature exists, but is still experimental.  It has been shown to work anecdotally, but is not guaranteed to work.</strong></p>
-<p>See <a href="../Pure-Docker/">Working in Pure Docker</a>.</p>
+<p><em>In theory, operating within this system will be very much like working with BioLockJ in a unix-like operating system.  The commands will mostly be the same.  However, most pipelines will require using docker, because nearly all modules are launch scripts that assume a bash shell.</em></p>
               
             </div>
           </div>
