@@ -14,12 +14,19 @@ package biolockj.util;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.*;
-import biolockj.*;
+import biolockj.BioLockJ;
+import biolockj.Config;
+import biolockj.Constants;
+import biolockj.Log;
+import biolockj.Pipeline;
+import biolockj.Processor;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.module.BioModule;
+import biolockj.module.BioModuleImpl;
 import biolockj.module.ScriptModule;
 
 /**
@@ -27,6 +34,78 @@ import biolockj.module.ScriptModule;
  * if the Email module is configured.
  */
 public class SummaryUtil {
+	
+	/**
+	 * Save information about the system, such as OS name and version.
+	 */
+	public static void touchSystemInfo() {
+		File infoFile = getSystemInfoFile();
+		try {
+			if( !infoFile.exists() ) {
+				Log.info( SummaryUtil.class, "Creating " + infoFile.getName() + " file." );
+				writeSystemInfo(infoFile);
+			}
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Write the system host info.
+	 * This is used when an instance of 
+	 * BioLockJ running outside of a container creates the system info record.  
+	 * The instance inside the container will see the container info, not the host.
+	 * @param pipelineDir
+	 */
+	public static boolean sendHostInfo(File pipelineDir) {
+		boolean created = false;
+		File file = new File( pipelineDir, HOST_INFO_FILE );
+		if (file.exists()) created = false;
+		else {
+			try {
+				writeSystemInfo(file);
+				created = true;
+			} catch( Exception e ) {
+				e.printStackTrace();
+				created = false;
+			}
+		}
+		return created;
+	}
+	
+	private static File getSystemInfoFile() {
+		File parentDir = BioLockJ.getPipelineDir();
+		if( BioLockJUtil.isDirectMode() )
+			parentDir = new File( ( new File( BioLockJ.getPipelineDir(), RuntimeParamUtil.getDirectModuleDir() ) ),
+				BioModuleImpl.TEMP_DIR );
+		if( parentDir != null && parentDir.exists() ) {
+			File file;
+			file = new File( parentDir, SYSTEM_INFO_FILE );
+			Log.debug( SummaryUtil.class,
+				"path to info file: " + file.getAbsolutePath() );
+			return file;
+		} else {
+			return null;
+		}
+	}
+	private static final String SYSTEM_INFO_FILE = "systemInfo.txt";
+	private static final String HOST_INFO_FILE = "systemInfo-host.txt";
+	
+	private static void writeSystemInfo(File infoFile) throws IOException {
+		final BufferedWriter writer = new BufferedWriter( new FileWriter( infoFile ) );
+		Properties props = System.getProperties();
+		List<String> keys = new ArrayList<>();
+		props.keySet().forEach( (obj) -> { keys.add( obj.toString() ); } ); 
+		Collections.sort( keys );
+		for( String key: keys ) {
+			if( key.contains( "java" ) || key.contains( "os." ) || key.contains( "version" ) ) {
+				String msg = key + ": " + props.getProperty( key ) + System.lineSeparator();
+				Log.debug( SummaryUtil.class, msg );
+				writer.write( msg );
+			}
+		}
+		writer.close();
+	}
 
 	/**
 	 * Called when pipeline fails to add summary details to summary file, if possible.

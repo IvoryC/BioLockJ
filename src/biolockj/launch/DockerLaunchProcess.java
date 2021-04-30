@@ -9,6 +9,7 @@ import biolockj.exception.ConfigPathException;
 import biolockj.exception.DockerVolCreationException;
 import biolockj.util.DockerUtil;
 import biolockj.util.RuntimeParamUtil;
+import biolockj.util.SummaryUtil;
 
 public class DockerLaunchProcess extends LaunchProcess {
 	
@@ -38,9 +39,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 	String createCmd() throws Exception {
 		StringBuilder command = new StringBuilder();
 		command.append( "docker run --rm" );
-		if ( ! getFlag( FG_ARG )) command.append( " -d" );
 		if (envVars.size() > 0) for (String var : envVars.keySet() ) command.append(" -e " + var + "=" + envVars.get( var ));
-		//command.append( " -e BLJ_OPTIONS=\"" + getOptionVals() + "\"");
 		command.append( " " + getVolumes() );
 		if (getFlag( GUI_ARG ) ) command.append( "-p " + GUI_PORT + ":3000 --expose " + GUI_PORT + " -w /app/biolockj/web_app" );
 		command.append( " " + getDockerImg() );
@@ -62,6 +61,7 @@ public class DockerLaunchProcess extends LaunchProcess {
 		if (getFlag( UNUSED_PROPS_ARG )) options.append( " " + RuntimeParamUtil.UNUSED_PROPS_FLAG );
 		if (getFlag( DOCKER_ARG )) options.append( " " + RuntimeParamUtil.DOCKER_FLAG );
 		if (getFlag( DEBUG_ARG )) options.append( " " + RuntimeParamUtil.DEBUG_FLAG );
+		if (getFlag( DOCKER_MAPPER_ARG )) options.append( " " + RuntimeParamUtil.DOCKER_MAPPER + " " + getParameter( DOCKER_MAPPER_ARG ) );
 		if ( DockerUtil.inDockerEnv() ) {
 			options.append( " " + RuntimeParamUtil.BLJ_PROJ_DIR + " " + DockerUtil.deContainerizePath(BLJ_PROJ_DIR.getAbsolutePath()) );
 			if (getFlag( RESTART_ARG )) {
@@ -123,56 +123,86 @@ public class DockerLaunchProcess extends LaunchProcess {
 	@Override
 	void runCommand() throws Exception {
 		String cmd = createCmd();
-		if (inTestMode()) {System.out.println( LaunchProcess.BIOLOCKJ_TEST_MODE_VALUE + " " + cmd); throw new EndLaunch( 0 );}
+		if (inTestMode()) {
+			ProgressUtil.printStatus( LaunchProcess.BIOLOCKJ_TEST_MODE_VALUE + " " + cmd, true );
+			throw new EndLaunch( 0 );
+		}
 		
 		super.runCommand();
 		
-		if (getFlag( FG_ARG )) System.out.println( " ---------> Docker CMD [ " + cmd + " ]" );
+		if (!DockerUtil.isLocalImage( null, getDockerImg() )) {
+			ProgressUtil.startSpinner( "Initializing (downloading image " + getDockerImg() + " may take some time)" );
+		}
+		if (getFlag( FG_ARG )) ProgressUtil.printStatus( " ---------> Docker CMD [ " + cmd + " ]", false );
 		
 		try {
-			final Process p = Runtime.getRuntime().exec( cmd ); 
-			if (getFlag( FG_ARG )) {
-				watchProcess(p);
-			}else {
-				String containerId = catchFirstResponse(p);
-				System.out.println("Docker container id: " + containerId);
-				confirmStart(containerId);
-				printInfo();
-			}
+			final Process p = Runtime.getRuntime().exec( cmd ); 	
+			watchProcess(p);
+			if (! getFlag( FG_ARG )) confirmStart(containerId);
+			printInfo();
 		} catch(EndLaunch el) {
+			ProgressUtil.clear();
 			throw el;
 		} catch( final Exception ex ) {
-			System.err.println( "Problem occurred running command: " + cmd);
+			ProgressUtil.clear();
+			ProgressUtil.printStatus( "Problem occurred running command: " + cmd, true );
 			ex.printStackTrace();
+		}
+		ProgressUtil.clear();
+	}
+	
+	void scanForKeys(String s) {
+		super.scanForKeys(s);
+		if ( getContainerId() == null ) grabContainerId(s);
+	}
+	
+	@Override
+	void grabPipelineLocation(String s) {
+		super.grabPipelineLocation( s );
+		if ( getPipedir() != null ) SummaryUtil.sendHostInfo( getPipedir() );
+	}
+	
+	private String containerId = null;
+	private String getContainerId() {
+		return containerId;
+	}
+	void grabContainerId(String s) {
+		if( s.startsWith( DockerUtil.CONTAINER_ID_KEY ) ){
+			containerId = s.substring( DockerUtil.CONTAINER_ID_KEY.length()).trim();
+			ProgressUtil.printStatus( "Docker container id: " + containerId, false );
 		}
 	}
 	
+	/**
+	 * This method valuable if the container must run "detached" and this launch instance 
+	 * cannot follow the main instance through standard out/err streams.
+	 * @param container
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
 	private void confirmStart(String container) throws InterruptedException, IOException{
-		System.out.print( "Initializing BioLockJ" );
 		int i=0;
 		int maxtime=25;
 		if (DockerUtil.inDockerEnv()) maxtime=120; //launch from docker can be sluggish
+		
+		ProgressUtil.startSpinner( "Monitoring container" );
 		
 		while( (i < maxtime || getFlag( WAIT_ARG )) && 
 						! foundNewPipeline() &&
 						isContainerRunning(container) &&
 						! restartDirHasStatusFlag() ) {
-			System.out.print( "." );
 			i++;
 			mostRecent = getMostRecentPipeline();
-			if (i==10) System.out.print( "waiting for program to start" );
+			if (i==10) ProgressUtil.printStatus( "waiting for program to start", false);
 			if (i==maxtime) {
-				if (getFlag( WAIT_ARG )) System.out.print("The normal timeout has been disabled.");
-				else System.out.print("Reached max wait time: " + maxtime + " seconds.");
+				if (getFlag( WAIT_ARG )) ProgressUtil.printStatus( "The normal timeout has been disabled.", false);
+				else ProgressUtil.printStatus( "Reached max wait time: " + maxtime + " seconds.", true);
 			}
 			Thread.sleep( 1000 );
 		}
-		Thread.sleep( 1000 );
-		System.out.print( "." );
-		Thread.sleep( 1000 );
-		System.out.print( "." );
 		mostRecent = getMostRecentPipeline();// could lag slightly after program start			
 		setPipedir( mostRecent );
+		ProgressUtil.clear();
 	}
 	
 	private boolean isContainerRunning(String container) throws IOException {

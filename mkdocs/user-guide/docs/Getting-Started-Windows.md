@@ -3,7 +3,7 @@
 
 _Currently, windows is not officially supported as a system to run BioLockJ_
 
-There are a few avenues for running BioLockJ on a Widows machine.  The WSL2 avenue is the most likely to be supported into the future.
+There are a few avenues for running BioLockJ on a Windows machine.  The WSL2 avenue is the most likely to be supported into the future.  The other two should be considered experimental.
 
 ### Windows Subsystem for Linux (WSL2)
 
@@ -44,11 +44,25 @@ Follow the standard instructions to for [Getting Started](Getting-Started.md) wi
 _In theory, operating within this system will be identical to working with BioLockJ in a unix-like operating system.  However we recommend (and run tests) using docker, as this removes the added troubleshooting of adapting to subtle differences across environments, which could be compounded by the system stacking, not to mention the often tedious task of installing all dependencies for all pipelines._
 
 
+
+
 ---
 
-### Alternative: Docker with a native launch
 
-In this case, java running on the host machine is required to launch the program; but the manager process and the required environment to run each module is all handled by Docker containers.  
+### Alternative: Pure-Docker
+
+In the pure-docker case, a handful of power-shell commands are used to launch a Docker container.  The Docker container includes all the required software and environment, including java to run the launch process and manager process, and the required environment to run each module.
+
+**This feature exists, but is still experimental.  It has been shown to work anecdotally, but is not guaranteed to work.**
+
+See [Working in Pure Docker](Pure-Docker.md).
+
+
+---
+
+### Alternative: Docker with a Powershell launch
+
+In this case, java running on the host machine is required to launch the program; but the manager process and the required environment to run each module is all handled by Docker containers.  As of BioLockJ v1.3.18 (and earlier) this method is known to have some problems with absolute file paths when using some versions of docker; works when tested with docker version 20.10.0.
 
 **This feature exists, but is still experimental.  It is not guaranteed to work.**
 
@@ -71,6 +85,8 @@ Add-Content $profile "Set-Variable -Name BLJ -Value $BLJ"
 
 cd into a folder of your choice, such as C:Users\Documents\biolockj_pipelines, and run
 ```
+mkdir C:Users\Documents\biolockj_pipelines
+cd C:Users\Documents\biolockj_pipelines
 Set-Variable -Name BLJ_PROJ -Value $PWD
 Add-Content $profile "Set-Variable -Name BLJ_PROJ -Value $BLJ_PROJ"
 ```
@@ -152,14 +168,5 @@ biolockj -d $BLJ\templates\myFirstPipeline\myFirstPipeline.properties
 # Pipeline is complete.
 ```
 
----
-
-
-### Alternative: Pure-Docker
-
-In the pure-docker case, a handful of power-shell commands are used to launch a Docker container.  The Docker container includes all the required software and environment, including java to run the launch process and manager process, and the required environment to run each module.
-
-**This feature exists, but is still experimental.  It has been shown to work anecdotally, but is not guaranteed to work.**
-
-See [Working in Pure Docker](Pure-Docker.md).
+_In theory, operating within this system will be very much like working with BioLockJ in a unix-like operating system.  The commands will mostly be the same.  However, most pipelines will require using docker, because nearly all modules are launch scripts that assume a bash shell._
 

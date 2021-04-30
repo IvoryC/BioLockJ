@@ -232,12 +232,8 @@ public class RuntimeParamUtil {
 	public static void registerRuntimeParameters( final String[] args ) throws RuntimeParamException, DockerVolCreationException {
 		printRuntimeArgs( args );
 		parseParams( args );
-		verify_BLJ_PROJ();
-
-		if( getDirectModuleDir() != null ) assignMasterConfig( DIRECT_MODE, assignDirectPipelineDir() );
-		else if( doRestart() && getConfigFile() == null ) assignMasterConfig( RESTART_DIR, getRestartDir() );
-
-		validateParams();
+		
+		//validateParams();
 	}
 
 	/**
@@ -323,7 +319,12 @@ public class RuntimeParamUtil {
 			throw new RuntimeParamException( "Unexpected runtime parameters found:  { " + extraParams + " }" );
 	}
 
-	private static void validateParams() throws RuntimeParamException, DockerVolCreationException {
+	public static void validateParams() throws RuntimeParamException, DockerVolCreationException {
+		verify_BLJ_PROJ();
+
+		if( getDirectModuleDir() != null ) assignMasterConfig( DIRECT_MODE, assignDirectPipelineDir() );
+		else if( doRestart() && getConfigFile() == null ) assignMasterConfig( RESTART_DIR, getRestartDir() );
+
 		if( getConfigFile() == null )
 			throw new RuntimeParamException( CONFIG_FILE, "", "Config file required, but not found" );
 		if( !getConfigFile().isFile() ) throw new RuntimeParamException( CONFIG_FILE, getConfigFile().getAbsolutePath(),
@@ -336,6 +337,12 @@ public class RuntimeParamUtil {
 		if( !get_BLJ_PROJ().isDirectory() ) throw new RuntimeParamException( BLJ_PROJ_DIR,
 			get_BLJ_PROJ().getAbsolutePath(), "System directory-path not found" );
 	}
+	
+	public static String getDockerMapper() {
+		String classname = params.get( DOCKER_MAPPER );
+		if (classname == null) return DockerUtil.DEFAULT_DOCKER_MAPPER;
+		return classname;
+	}
 
 	/**
 	 * {@link biolockj.Config} AWS end parameter switch: {@value #AWS_FLAG}
@@ -346,6 +353,11 @@ public class RuntimeParamUtil {
 	 * Automatically added $BLJ_PROJ by biolockj script: {@value #BLJ_PROJ_DIR}
 	 */
 	public static final String BLJ_PROJ_DIR = "-projectDir";
+	
+	/**
+	 * Argument giving the name of the class to use for the DockerMountMapper: {@value #DOCKER_MAPPER}
+	 */
+	public static final String DOCKER_MAPPER = "-docker-mapper";
 
 	/**
 	 * {@link biolockj.Config} file path runtime parameter switch: {@value #CONFIG_FILE}
@@ -410,7 +422,7 @@ public class RuntimeParamUtil {
 	private static final List<String> ARG_FLAGS = Arrays.asList( AWS_FLAG, SYSTEM_OUT_FLAG, PRECHECK_FLAG, UNUSED_PROPS_FLAG, DEBUG_FLAG, DOCKER_FLAG );
 	private static final List<String> DIR_ARGS = Arrays.asList( BLJ_PROJ_DIR, RESTART_DIR );
 	private static final List<String> extraParams = new ArrayList<>();
-	private static final List<String> NAMED_ARGS = Arrays.asList( CONFIG_FILE, DIRECT_MODE, PASSWORD );
+	private static final List<String> NAMED_ARGS = Arrays.asList( CONFIG_FILE, DIRECT_MODE, PASSWORD, DOCKER_MAPPER );
 	private static final List<String> REQUIRED_ARGS = Arrays.asList(CONFIG_FILE, RESTART_DIR, DIRECT_MODE);
 	private static final Map<String, String> params = new HashMap<>();
 	private static String runtimeArgs = "";
