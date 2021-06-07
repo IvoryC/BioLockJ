@@ -274,7 +274,8 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>Represent each count value in the table as: counts / (total counts in sample / 1 million)                 <br />
+<p><em>version: 1.0.0</em> 
+Represent each count value in the table as: counts / (total counts in sample / 1 million)                 <br />
 If report log base is not null, <em>LogTransformTaxaTables</em> is added as a post-requisite to do the log transformation and <em>AddPseudoCount</em> is added as a pre-requisite before normalization to avoid taking the log of 0.                 <br />
 <em>If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.</em></p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
@@ -284,7 +285,7 @@ If report log base is not null, <em>LogTransformTaxaTables</em> is added as a po
 biolockj.module.report.taxa.LogTransformTaxaTables                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/biolockj_controller:v1.3.18
+<pre><code>biolockjdevteam/biolockj_controller:v1.4.0
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -292,8 +293,7 @@ biolockj.module.report.taxa.LogTransformTaxaTables                   </p>
 <code>NormalizeByReadsPerMillion.imageName</code><br>
 <code>NormalizeByReadsPerMillion.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
-<p>Module developed by Ivory Blakley                 <br />
-BioLockj v1.3.18</p>
+<p>Module developed by Ivory Blakley.</p>
               
             </div>
           </div>

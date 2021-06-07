@@ -31,6 +31,7 @@ Create taxa tables from the _hierarchicalCount.tsv files output by RDP.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 This module **requires** that _rdp.hierCounts_=Y for the RdpClassifier module to make the required output type.  As long as _rdp.hierCounts_ is set, this module will automatically be added to the module run order by the RdpClassifier module.<br>If this module is in the module run order, it adds `biolockj.module.classifier.r16s.RdpClassifier` as a pre-quisite module. <br>To use this module without the RDP module, include ModuleOutput[RdpClassifier] in the list of input types:<br>`pipeline.inputTypes=ModuleOutput[RdpClassifier]`<br>When using input from a directory, this module takes **exactly** one input directory.<br><br>This module is an alternative to the default parser, RdpParser.  The two parsers produce nearly identical output. The RdpParser module parses the output for each sequence and determines counts for each taxanomic unit. It fills in missing levels so all sequences are counted for all taxanomic levels; this means reads that are unclassified are reported as an OTU with "unclassified" in the name.By contrast, the RdpHierParser module relies on RDP to determine these totals.When using RdpParser the confidence threshold is applied by the parser, when using RdpHierParser the coinfidence threshold is applied by RDP during classification.
 
 ## Adds modules 
@@ -42,7 +43,7 @@ biolockj.module.classifier.r16s.RdpClassifier
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `RdpHierParser.imageOwner`<br>
@@ -50,5 +51,5 @@ This can be modified using the following properties:<br>
 `RdpHierParser.imageTag`<br>
 
 ## Citation 
-Module created by Ivory Blakley
+Module created by Ivory Blakley.
 

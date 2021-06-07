@@ -44,6 +44,7 @@ Generate sets of multidimensional scaling plots showing 2 axes at a time (up to 
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 *none*
 
 ## Adds modules 
@@ -63,6 +64,5 @@ This can be modified using the following properties:<br>
 `R_PlotMds.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.18                   
-Module created by Mike Sioda and developed by Ivory Blakley
+Module created by Mike Sioda and developed by Ivory Blakley.
 

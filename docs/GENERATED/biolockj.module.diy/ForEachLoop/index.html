@@ -222,6 +222,10 @@
 </thead>
 <tbody>
 <tr>
+<td align="left"><em>genMod.codeLine</em></td>
+<td align="left"><em>string</em> <br>A line of code to create a one-line script.  This is mutually exclusive with <em>genMod.scriptPath</em>. This is the preferred option for particularly simple scripts.  This code will be executed using whatever system is specified by <em>genMod.launcher</em>.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
 <td align="left"><em>genMod.launcher</em></td>
 <td align="left"><em>string</em> <br>Define executable language command if it is not included in your $PATH<br><em>default:</em>  <em>null</em></td>
 </tr>
@@ -303,7 +307,8 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>This is an extention of the <a href="../GenMod">GenMod</a> module.<br>  The given script is run for each element given in the comma-separated list <em>genMod.loopBy</em>.The user script is run using a command:<br> <code>[launcher] &lt;script&gt; &lt;loop-element&gt; [param]</code></p>
+<p><em>version: 1.0.0</em> 
+This is an extention of the <a href="../GenMod">GenMod</a> module.<br>  The given script is run for each element given in the comma-separated list <em>genMod.loopBy</em>.The user script is run using a command:<br> <code>[launcher] &lt;script&gt; &lt;loop-element&gt; [param]</code></p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
 <em>none found</em>                 <br />
@@ -319,8 +324,7 @@
 <code>ForEachLoop.imageName</code><br>
 <code>ForEachLoop.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
-<p>BioLockJ v1.3.18                 <br />
-Module developed by Ivory Blakley</p>
+<p>Module developed by Ivory Blakley</p>
               
             </div>
           </div>

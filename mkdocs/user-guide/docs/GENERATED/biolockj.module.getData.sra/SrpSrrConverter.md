@@ -33,6 +33,7 @@ Create an SraAccList.txt file from an SRA project identifier.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 Typcially, this module is only added to the pipeline when SraDownload needs it.<br>
 This sets the value of *sra.sraAccList* to the SraAccList.txt file in this modules output directory
 
@@ -54,5 +55,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Malcolm Zapatas and Ivory Blakley                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

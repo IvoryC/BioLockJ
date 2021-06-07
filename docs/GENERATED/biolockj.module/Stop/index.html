@@ -217,7 +217,8 @@
 <h3 id="general-properties-applicable-to-this-module">General properties applicable to this module:<a class="headerlink" href="#general-properties-applicable-to-this-module" title="Permanent link">#</a></h3>
 <p><em>none</em></p>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>This module immediatley stops a pipeline. <br>This is useful when troubleshooting a pipeline, or while a pipeline is a work-in-progress.  Any downstream modules will be checked in the checkDependencies phase, but will not be reached during the module execution phase.<br>This module and the current pipeline will be flagged as <code>biolockjFailed</code>.<br>To progress a pipeline past this module, remove this module from the BioModule run order, and restart the pipeline.</p>
+<p><em>version: 1.0.0</em> 
+This module immediatley stops a pipeline. <br>This is useful when troubleshooting a pipeline, or while a pipeline is a work-in-progress.  Any downstream modules will be checked in the checkDependencies phase, but will not be reached during the module execution phase.<br>This module and the current pipeline will be flagged as <code>biolockjFailed</code>.<br>To progress a pipeline past this module, remove this module from the BioModule run order, and restart the pipeline.</p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
 <em>none found</em>                 <br />
@@ -225,7 +226,7 @@
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/biolockj_controller:v1.3.18
+<pre><code>biolockjdevteam/biolockj_controller:latest
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -233,7 +234,7 @@
 <code>STOP.imageName</code><br>
 <code>STOP.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
-<p>Module created by Ivory Blakley</p>
+<p>Module created by Ivory Blakley.</p>
               
             </div>
           </div>

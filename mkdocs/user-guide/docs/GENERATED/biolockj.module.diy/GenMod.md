@@ -11,6 +11,7 @@ Allows user to add their own scripts into the BioLockJ pipeline.
 ### GenMod properties: 
 | Property| Description |
 | :--- | :--- |
+| *genMod.codeLine* | _string_ <br>A line of code to create a one-line script.  This is mutually exclusive with _genMod.scriptPath_. This is the preferred option for particularly simple scripts.  This code will be executed using whatever system is specified by _genMod.launcher_.<br>*default:*  *null* |
 | *genMod.launcher* | _string_ <br>Define executable language command if it is not included in your $PATH<br>*default:*  *null* |
 | *genMod.param* | _string_ <br>parameters to pass to the user's script<br>*default:*  *null* |
 | *genMod.resources* | _list of file paths_ <br>path to one or more files to be copied to the module resource folder.<br>*default:*  *null* |
@@ -33,6 +34,7 @@ Allows user to add their own scripts into the BioLockJ pipeline.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.1.0_ 
                    
 The specified script is executed using the modules script directory as the current working directory. A _scriptPath_ is required.  If specified, the _launcher_ program (ie R, Python) will be used.  If specified, any _param_ will be listed as arguments to the script.  If running in docker, _dockerContainerName_ is required.                   
                    
@@ -83,5 +85,5 @@ This can be modified using the following properties:<br>
 `GenMod.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.18
+Module by Ivory Blakley.
 

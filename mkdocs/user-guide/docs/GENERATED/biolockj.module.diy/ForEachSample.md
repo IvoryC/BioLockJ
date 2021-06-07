@@ -11,6 +11,7 @@ Like GenMod, but done for each sample listed in the metadata.
 ### ForEachSample properties: 
 | Property| Description |
 | :--- | :--- |
+| *genMod.codeLine* | _string_ <br>A line of code to create a one-line script.  This is mutually exclusive with _genMod.scriptPath_. This is the preferred option for particularly simple scripts.  This code will be executed using whatever system is specified by _genMod.launcher_.<br>*default:*  *null* |
 | *genMod.launcher* | _string_ <br>Define executable language command if it is not included in your $PATH<br>*default:*  *null* |
 | *genMod.param* | _string_ <br>parameters to pass to the user's script<br>*default:*  *null* |
 | *genMod.resources* | _list of file paths_ <br>path to one or more files to be copied to the module resource folder.<br>*default:*  *null* |
@@ -35,6 +36,7 @@ Like GenMod, but done for each sample listed in the metadata.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 This is an extention of the [GenMod](../GenMod) module.<br>  For the purpose of this module, a sample is defined as a row of the metadata file.The user script is run using a command:<br> `[launcher] <script> <sample> [params]`
 
 ## Adds modules 
@@ -54,6 +56,5 @@ This can be modified using the following properties:<br>
 `ForEachSample.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.18                   
 Module developed by Ivory Blakley
 

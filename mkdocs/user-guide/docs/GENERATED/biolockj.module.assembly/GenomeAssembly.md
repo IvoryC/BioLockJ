@@ -28,6 +28,7 @@ Assemble WGS sequences with MetaSPAdes, bin contigs with Metabat2 and check qual
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 
@@ -63,5 +64,5 @@ PRODIGAL
 https://github.com/hyattpd/Prodigal/releases/download/v2.6.3/prodigal.linux                   
                    
 Module developed by Shan Sun                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

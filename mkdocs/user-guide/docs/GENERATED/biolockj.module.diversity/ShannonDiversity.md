@@ -28,6 +28,7 @@ Calculate shannon diversity as sum p(logp)
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 *If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.*
 
 
@@ -40,7 +41,7 @@ Calculate shannon diversity as sum p(logp)
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `ShannonDiversity.imageOwner`<br>
@@ -48,6 +49,5 @@ This can be modified using the following properties:<br>
 `ShannonDiversity.imageTag`<br>
 
 ## Citation 
-Module developed by Anthony Fodor                   
-BioLockJ v1.3.18
+Module developed by Anthony Fodor.
 

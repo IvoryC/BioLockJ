@@ -19,6 +19,7 @@ Read existing metadata file, or create a default one.
 | *metadata.useEveryRow* | _boolean_ <br>If Y, require a sequence file for every SampleID (every row) in metadata file; If N, metadata can include extraneous SampleIDs.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *This module is automatically added to the beginning of every pipeline.*
 This module ensures that every pipeline has a metadata file, which is requried for modules that add columns to the metadata.  If the configuration file does not specify a metadata file, this module will create an empty table with a row for each file in the input directory.  This also ensures that any pre-existing metadata file has a suitable format.
 
@@ -31,7 +32,7 @@ This module ensures that every pipeline has a metadata file, which is requried f
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:latest
 ```
 This can be modified using the following properties:<br>
 `ImportMetadata.imageOwner`<br>
@@ -40,5 +41,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

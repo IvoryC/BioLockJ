@@ -23,6 +23,7 @@ Send an email containing the pipeline summary when the pipeline either completes
 *none*
 
 ## Details 
+_version: 1.0.0_ 
 *none*
 
 ## Adds modules 
@@ -34,7 +35,7 @@ Send an email containing the pipeline summary when the pipeline either completes
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:latest
 ```
 This can be modified using the following properties:<br>
 `Email.imageOwner`<br>
@@ -43,5 +44,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda.                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

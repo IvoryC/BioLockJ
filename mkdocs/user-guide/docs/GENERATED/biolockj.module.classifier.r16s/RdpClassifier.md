@@ -37,6 +37,7 @@ Classify 16s samples with [RDP](http://rdp.cme.msu.edu/classifier/classifier.jsp
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 *none*
 
 ## Adds modules 
@@ -56,6 +57,5 @@ This can be modified using the following properties:<br>
 `RdpClassifier.imageTag`<br>
 
 ## Citation 
-Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+Module developed by Mike Sioda.
 

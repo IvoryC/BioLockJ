@@ -30,6 +30,7 @@ Convert fastq files into fasta format.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 This module was first introduced because it was required for [QIIME](http://qiime.org).
 
 ## Adds modules 
@@ -49,6 +50,6 @@ This can be modified using the following properties:<br>
 `AwkFastaConverter.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.18                   
+BioLockJ v1.4.0                   
 Module developed by Mike Sioda
 

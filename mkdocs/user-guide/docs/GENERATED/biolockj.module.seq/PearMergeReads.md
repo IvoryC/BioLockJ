@@ -31,6 +31,7 @@ Run pear, the Paired-End reAd mergeR
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 
@@ -42,7 +43,7 @@ Run pear, the Paired-End reAd mergeR
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/pear:v1.3.18
+biolockjdevteam/pear:v1.2.9
 ```
 This can be modified using the following properties:<br>
 `PearMergeReads.imageOwner`<br>

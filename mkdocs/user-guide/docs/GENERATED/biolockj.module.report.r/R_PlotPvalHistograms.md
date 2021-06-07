@@ -37,6 +37,7 @@ Generate p-value histograms for each reportable metadata field and each *report.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 *none*
 
 ## Adds modules 
@@ -56,6 +57,5 @@ This can be modified using the following properties:<br>
 `R_PlotPvalHistograms.imageTag`<br>
 
 ## Citation 
-Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+Module developed by Mike Sioda.
 

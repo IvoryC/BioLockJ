@@ -36,6 +36,7 @@ SraDownload downloads and compresses short read archive (SRA) files to fastq.gz
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 Downloading and compressing files requires fasterq-dump and gzip.The accessions to download can be specified using any ONE of the following:<br> 1. A metadata file (given by *metadata.filePath* that has column *sra.accessionIdColumn*.<br> 2. *sra.sraProjectId*, OR <br> 3. *sra.sraAccList*<br>
 *sra.destinationDir* gives an external directory that can be shared across pipelines. This is recommended. If it is not specified, the files will be downlaoded to this modules output directory. <br>
 Suggested: input.dirPaths = ${sra.destinationDir}<br>
@@ -59,6 +60,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 [sra-tools](https://github.com/ncbi/sra-tools)                   
-Module developed by Philip Badzuh                   
-BioLockJ v1.3.18
+Module developed by Philip Badzuh.
 

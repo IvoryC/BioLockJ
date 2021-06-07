@@ -32,6 +32,7 @@ Randomly sub-sample sequences to reduce all samples to the configured maximum.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 Randomly sub-sample sequences to reduce all samples to the configured maximum `rarefySeqs.max`.  Samples with less than the minimum number of reads `rarefySeqs.min` are discarded.<br>This module will add **biolockj.module.implicit.RegisterNumReads** if there is not already a module to count starting reads per sample.<br>If the input data are paired reads, this module will add a sequence merger, based on property `pipeline.defaultSeqMerger` (currently: biolockj.module.seq.PearMergeReads).
 
 ## Adds modules 
@@ -43,7 +44,7 @@ Randomly sub-sample sequences to reduce all samples to the configured maximum `r
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `RarefySeqs.imageOwner`<br>
@@ -52,5 +53,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

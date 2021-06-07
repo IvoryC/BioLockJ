@@ -35,6 +35,7 @@ Profile the presence/absence and abundance of microbial pathways in a community 
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 

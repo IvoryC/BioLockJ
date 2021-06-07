@@ -295,7 +295,8 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>Randomly sub-sample sequences to reduce all samples to the configured maximum <code>rarefySeqs.max</code>.  Samples with less than the minimum number of reads <code>rarefySeqs.min</code> are discarded.<br>This module will add <strong>biolockj.module.implicit.RegisterNumReads</strong> if there is not already a module to count starting reads per sample.<br>If the input data are paired reads, this module will add a sequence merger, based on property <code>pipeline.defaultSeqMerger</code> (currently: biolockj.module.seq.PearMergeReads).</p>
+<p><em>version: 0.0.0</em> 
+Randomly sub-sample sequences to reduce all samples to the configured maximum <code>rarefySeqs.max</code>.  Samples with less than the minimum number of reads <code>rarefySeqs.min</code> are discarded.<br>This module will add <strong>biolockj.module.implicit.RegisterNumReads</strong> if there is not already a module to count starting reads per sample.<br>If the input data are paired reads, this module will add a sequence merger, based on property <code>pipeline.defaultSeqMerger</code> (currently: biolockj.module.seq.PearMergeReads).</p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
 <em>pipeline-dependent</em>                 <br />
@@ -303,7 +304,7 @@
 <em>none found</em>                   </p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">#</a></h2>
 <p>If running in docker, this module will run in a docker container from this image:<br></p>
-<pre><code>biolockjdevteam/biolockj_controller:v1.3.18
+<pre><code>biolockjdevteam/biolockj_controller:v1.4.0
 </code></pre>
 
 <p>This can be modified using the following properties:<br>
@@ -312,7 +313,7 @@
 <code>RarefySeqs.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
 <p>Module developed by Mike Sioda                 <br />
-BioLockJ v1.3.18</p>
+BioLockJ v1.4.0</p>
               
             </div>
           </div>

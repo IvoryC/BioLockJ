@@ -323,7 +323,8 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>This module picks OTUs using a closed reference database and constructs an OTU table via the QIIME script <a href="http://qiime.org/scripts/pick_closed_reference_otus.html">pick_closed_reference_otus.py</a>.  Taxonomy is assigned using a pre-defined taxonomy map of reference sequence OTU to taxonomy.  This is the fastest OTU picking method since samples can be processed in parallel batches.  Before the QIIME script is run, batches are prepared in the temp directory, with each batch directory containing a fasta directory with <em>script.batchSize</em> fasta files and a QIIME mapping file, created with awk, called batchMapping.tsv for the batch of samples.   Inherits from <a href="../../../module.implicit.qiime#QiimeClassifier">QiimeClassifier</a>.</p>
+<p><em>version: 0.0.0</em> 
+This module picks OTUs using a closed reference database and constructs an OTU table via the QIIME script <a href="http://qiime.org/scripts/pick_closed_reference_otus.html">pick_closed_reference_otus.py</a>.  Taxonomy is assigned using a pre-defined taxonomy map of reference sequence OTU to taxonomy.  This is the fastest OTU picking method since samples can be processed in parallel batches.  Before the QIIME script is run, batches are prepared in the temp directory, with each batch directory containing a fasta directory with <em>script.batchSize</em> fasta files and a QIIME mapping file, created with awk, called batchMapping.tsv for the batch of samples.   Inherits from <a href="../../../module.implicit.qiime#QiimeClassifier">QiimeClassifier</a>.</p>
 <h2 id="adds-modules">Adds modules<a class="headerlink" href="#adds-modules" title="Permanent link">#</a></h2>
 <p><strong>pre-requisite modules</strong>                  <br />
 <em>pipeline-dependent</em>                 <br />

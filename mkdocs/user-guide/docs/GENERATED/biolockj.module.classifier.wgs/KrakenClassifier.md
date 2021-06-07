@@ -32,6 +32,7 @@ Classify WGS samples with KRAKEN.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 Classify WGS samples with [KRAKEN](http://ccb.jhu.edu/software/kraken/). 
 If running in docker, the default docker container contains a kmer database which will be used if no database is supplied through the `kraken.db` property.
 

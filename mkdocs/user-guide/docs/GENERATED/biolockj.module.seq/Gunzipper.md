@@ -29,6 +29,7 @@ Decompress gzipped files.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 
@@ -48,6 +49,6 @@ This can be modified using the following properties:<br>
 `Gunzipper.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.18                   
+BioLockJ v1.4.0                   
 Module developed by Mike Sioda
 

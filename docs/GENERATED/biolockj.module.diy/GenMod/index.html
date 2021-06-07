@@ -222,6 +222,10 @@
 </thead>
 <tbody>
 <tr>
+<td align="left"><em>genMod.codeLine</em></td>
+<td align="left"><em>string</em> <br>A line of code to create a one-line script.  This is mutually exclusive with <em>genMod.scriptPath</em>. This is the preferred option for particularly simple scripts.  This code will be executed using whatever system is specified by <em>genMod.launcher</em>.<br><em>default:</em>  <em>null</em></td>
+</tr>
+<tr>
 <td align="left"><em>genMod.launcher</em></td>
 <td align="left"><em>string</em> <br>Define executable language command if it is not included in your $PATH<br><em>default:</em>  <em>null</em></td>
 </tr>
@@ -299,6 +303,7 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
+<p><em>version: 1.1.0</em> </p>
 <p>The specified script is executed using the modules script directory as the current working directory. A <em>scriptPath</em> is required.  If specified, the <em>launcher</em> program (ie R, Python) will be used.  If specified, any <em>param</em> will be listed as arguments to the script.  If running in docker, <em>dockerContainerName</em> is required.                   </p>
 <p>This is ideal for:                   </p>
 <ul>
@@ -341,7 +346,7 @@ Part2.script=path/to/bash/script/doLast.sh
 <code>GenMod.imageName</code><br>
 <code>GenMod.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
-<p>BioLockJ v1.3.18</p>
+<p>Module by Ivory Blakley.</p>
               
             </div>
           </div>

@@ -32,6 +32,7 @@ Classify WGS samples with [KRAKEN 2](https://ccb.jhu.edu/software/kraken2/).
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 

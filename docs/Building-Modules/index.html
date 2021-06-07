@@ -152,32 +152,19 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#beginners">Beginners</a></li>
+            <li><a class="toctree-l4" href="#getting-started">Getting started</a></li>
+        
+            <li><a class="toctree-l4" href="#set-up-your-development-environment">Set up your development environment</a></li>
+        
+            <li><a class="toctree-l4" href="#document-your-module">Document your module</a></li>
         
             <li><a class="toctree-l4" href="#coding-your-module">Coding your module</a></li>
         
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#document-your-module">Document your module</a></li>
-    
-        <ul>
+            <li><a class="toctree-l4" href="#using-external-modules">Using External Modules</a></li>
         
-            <li><a class="toctree-l4" href="#api-generated-html-documentation">API-generated html documentation</a></li>
-        
-            <li><a class="toctree-l4" href="#built-in-descriptions">Built-in descriptions</a></li>
-        
-            <li><a class="toctree-l4" href="#documenting-properties">Documenting Properties</a></li>
-        
-            <li><a class="toctree-l4" href="#generate-user-guide-pages">Generate user guide pages</a></li>
+            <li><a class="toctree-l4" href="#finding-and-sharing-modules">Finding and Sharing Modules</a></li>
         
         </ul>
-    
-
-    <li class="toctree-l3"><a href="#using-external-modules">Using External Modules</a></li>
-    
-
-    <li class="toctree-l3"><a href="#finding-and-sharing-modules">Finding and Sharing Modules</a></li>
     
 
     </ul>
@@ -245,298 +232,67 @@
             <div class="section">
               
                 <h1 id="building-new-modules">Building New Modules<a class="headerlink" href="#building-new-modules" title="Permanent link">#</a></h1>
-<p><strong>Any Java class that implements the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/BioModule.html">BioModule</a> interface can be added to a BioLockJ pipeline.</strong></p>
-<p>The BioLockJ v1.0 implementation is currently focused on metagenomics analysis, but the generalized application framework is not limited to this domain.  Users can implement new BioModules to automate a wide variety of bioinformatics and report analytics.  The <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/BioModule.html">BioModule</a> interface was designed so that users can develop new modules on their own.  </p>
-<h2 id="beginners">Beginners<a class="headerlink" href="#beginners" title="Permanent link">#</a></h2>
-<p>See the BioModule hello world tutorial.</p>
-<h2 id="coding-your-module">Coding your module<a class="headerlink" href="#coding-your-module" title="Permanent link">#</a></h2>
-<p>To create a new <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/BioModule.html">BioModule</a>, simply extend one of the abstract Java superclasses, code it's abstract methods, and add it to your pipeline with #BioModule tag your Config file: </p>
-<h3 id="_1"><a class="headerlink" href="#_1" title="Permanent link">#</a></h3>
-<ol>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/BioModuleImpl.html">BioModuleImpl</a>: Extend if a more specific interface does not apply</li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/ScriptModuleImpl.html">ScriptModuleImpl</a>: Extend if your module generates and executes bash scripts</li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/JavaModuleImpl.html">JavaModuleImpl</a>: Extend if your module only runs Java code </li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/classifier/ClassifierModuleImpl.html">ClassifierModuleImpl</a>: Extend to support a new classifier program</li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/implicit/parser/ParserModuleImpl.html">ParserModuleImpl</a>: Extend to parse output of a new classifier program</li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/report/r/R_Module.html">R_Module</a>: Extend if your module generates and executes R scripts</li>
-</ol>
-<h4 id="to-support-a-new-classifier-create-3-modules-that-implement-the-following-interfaces">To support a new classifier, create 3 modules that implement the following interfaces:<a class="headerlink" href="#to-support-a-new-classifier-create-3-modules-that-implement-the-following-interfaces" title="Permanent link">#</a></h4>
-<ol>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/classifier/ClassifierModule.html">ClassifierModule</a>: Implement to generate bash scripts needed to call classifier program</li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/implicit/parser/ParserModule.html">ParserModule</a>: Implement to parse classifier output, configure as classifier post-requisite </li>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNode.html">OtuNode</a>: Classifier specific implementation holds OTU information for 1 sequence</li>
-</ol>
-<h4 id="biomoduleimpl-is-the-top-level-superclass-for-all-modules"><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/BioModuleImpl.html">BioModuleImpl</a> is the top-level superclass for all modules.<a class="headerlink" href="#biomoduleimpl-is-the-top-level-superclass-for-all-modules" title="Permanent link">#</a></h4>
-<table>
-<thead>
-<tr>
-<th align="left">Method</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><strong>checkDependencies()</strong></td>
-<td align="left"><strong>Must override.</strong>  Called before executeTask() to identify Configuration errors and perform runtime validations.</td>
-</tr>
-<tr>
-<td align="left"><strong>executeTask()</strong></td>
-<td align="left"><strong>Must override.</strong>  Executes core module logic.</td>
-</tr>
-<tr>
-<td align="left">cleanUp()</td>
-<td align="left">Called after executeTask() to run cleanup operations, update Config properties, etc.</td>
-</tr>
-<tr>
-<td align="left">getInputFiles()</td>
-<td align="left">Return previous module output.</td>
-</tr>
-<tr>
-<td align="left">getModuleDir()</td>
-<td align="left">Return module root directory.</td>
-</tr>
-<tr>
-<td align="left">getOutputDir()</td>
-<td align="left">Return module output directory.</td>
-</tr>
-<tr>
-<td align="left">getPostRequisiteModules()</td>
-<td align="left">Returns a list of BioModules to run after the current module.</td>
-</tr>
-<tr>
-<td align="left">getPreRequisiteModules()</td>
-<td align="left">Returns a list of BioModules to run before the current module.</td>
-</tr>
-<tr>
-<td align="left">getSummary()</td>
-<td align="left">Return output directory summary.  Most modules override this method by adding module specific summary details to super.getSummary().</td>
-</tr>
-<tr>
-<td align="left">getTempDir()</td>
-<td align="left">Return module temp directory.</td>
-</tr>
-<tr>
-<td align="left">setModuleDir(path)</td>
-<td align="left">Set module directory.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="scriptmoduleimpl-extends-biomoduleimpl-superclass-for-script-generating-modules"><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/ScriptModuleImpl.html">ScriptModuleImpl</a> extends <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/BioModuleImpl.html">BioModuleImpl</a>:  superclass for script-generating modules.<a class="headerlink" href="#scriptmoduleimpl-extends-biomoduleimpl-superclass-for-script-generating-modules" title="Permanent link">#</a></h4>
-<table>
-<thead>
-<tr>
-<th align="left">Method</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><strong>buildScript(files)</strong></td>
-<td align="left"><strong>Must override.</strong>  Called by executeTask() for datasets with forward reads only.  The return type is a list of lists.  Each nested list contains the bash script lines required to process 1 sample.  Obtains sequence files from getInputFiles().</td>
-</tr>
-<tr>
-<td align="left">buildScriptForPairedReads(files)</td>
-<td align="left">Calls back to buildScript(files) by default.  Subclasses override this method to generate unique scripts for datasets containing paired reads.</td>
-</tr>
-<tr>
-<td align="left">checkDependencies()</td>
-<td align="left">Called before executeTask() to validate <em>script.batchSize</em>, <em>script.exitOnError</em>, <em>script.numThreads</em>, <em>script.permissions</em>, <em>script.timeout</em></td>
-</tr>
-<tr>
-<td align="left">getJobParams()</td>
-<td align="left">Return shell command to execute the MAIN script.</td>
-</tr>
-<tr>
-<td align="left">getScriptDir()</td>
-<td align="left">Return module script directory.</td>
-</tr>
-<tr>
-<td align="left">getSummary()</td>
-<td align="left">Adds the script directory summary to super.getSummary().  Most modules override this method by adding module specific summary details to super.getSummary().</td>
-</tr>
-<tr>
-<td align="left">getTimeout()</td>
-<td align="left">Return <em>script.timeout</em>.</td>
-</tr>
-<tr>
-<td align="left">getWorkerScriptFunctions()</td>
-<td align="left">Return bash script lines for any functions needed in the worker scripts.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="javamoduleimpl-extends-scriptmoduleimpl-superclass-for-pure-java-modules"><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/JavaModuleImpl.html">JavaModuleImpl</a> extends <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/ScriptModuleImpl.html">ScriptModuleImpl</a>: superclass for pure Java modules.<a class="headerlink" href="#javamoduleimpl-extends-scriptmoduleimpl-superclass-for-pure-java-modules" title="Permanent link">#</a></h4>
-<p>To avoid running code on the cluster head node, a temporary instance of BioLockJ is spawned on a cluster node which is launched by the sole worker script from the job queue. </p>
-<table>
-<thead>
-<tr>
-<th align="left">Method</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><strong>runModule()</strong></td>
-<td align="left"><strong>Must override.</strong>  Executes core module logic.</td>
-</tr>
-<tr>
-<td align="left">buildScript(files)</td>
-<td align="left">This method returns a single line calling java on the BioLockJ source code, passing -d parameter to run in direct mode and the full class name of the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/JavaModule.html">JavaModule</a> to indicate the module to run.</td>
-</tr>
-<tr>
-<td align="left">getSource()</td>
-<td align="left">Determines if running code from Jar or source code in order to write valid bash script lines.</td>
-</tr>
-<tr>
-<td align="left">getTimeout()</td>
-<td align="left">Return <em>java.timeout</em>.</td>
-</tr>
-<tr>
-<td align="left">moduleComplete()</td>
-<td align="left">Create the script success indicator file.</td>
-</tr>
-<tr>
-<td align="left">moduleFailed()</td>
-<td align="left">Create the script failures indicator file.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="classifiermoduleimpl-extends-scriptmoduleimpl-biolockjmoduleclassifier-superclass"><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/classifier/ClassifierModuleImpl.html">ClassifierModuleImpl</a> extends <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/ScriptModuleImpl.html">ScriptModuleImpl</a>: biolockj.module.classifier superclass.<a class="headerlink" href="#classifiermoduleimpl-extends-scriptmoduleimpl-biolockjmoduleclassifier-superclass" title="Permanent link">#</a></h4>
-<table>
-<thead>
-<tr>
-<th align="left">Method</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">buildScriptForPairedReads(files)</td>
-<td align="left">Called by executeTask() for datasets with paired reads.  The return type is a list of lists, where each nested list contains the bash script lines required to process 1 sample.  Obtains sequence files from <a href="https://msioda.github.io/BioLockJ/docs/biolockj/util/SeqUtil.html">SeqUtil</a>.getPairedReads(getInputFiles()).</td>
-</tr>
-<tr>
-<td align="left">checkDependencies()</td>
-<td align="left">Validate Configuration properties <em>exe.classifier</em> and <em>exe.classifierParams</em>, verify sequence file format, log classifier version info, and verify no biolockj.module.seq modules are configured run after the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/classifier/ClassifierModule.html">ClassifierModule</a>. Subclasses should call super.checkDependencies() if overriding this method to retain these verifications.</td>
-</tr>
-<tr>
-<td align="left">executeTask()</td>
-<td align="left">Call buildScript(files) or buildScriptForPairedReads(files) based input sequence format and calls <a href="https://msioda.github.io/BioLockJ/docs/biolockj/util/BashScriptBuilder.html">BashScriptBuilder</a> to generate the main script + 1 worker script for every <em>script.batchSize</em> samples.  To change the batch scheme, override this method to call the alternate <a href="https://msioda.github.io/BioLockJ/docs/biolockj/util/BashScriptBuilder.html">BashScriptBuilder</a>.buildScripts() method signiture and hard code the batch size.  All biolockj.module.classifier modules override this method.</td>
-</tr>
-<tr>
-<td align="left">getClassifierExe()</td>
-<td align="left">Return Configuration property <em>exe.classifier</em> to call the classifier program in the bash scripts.  If the classifier is not included in <em>cluster.modules</em>, validate that value is a valid file path.  If <em>exe.classifier</em> is undefined, replace the property prefix <em>exe</em> with the lowercase prefix of the module class name (less the standard module suffix <em>classifier</em>).  For example, use <em>rdp.classifier</em> for <a href="../module/classifier/module.classifier.r16s#rdpclassifier">RdpClassifier</a> and <em>kraken.classifier</em> for <a href="../module/classifier/module.classifier.wgs#krakenclassifier">KrakenClassifier</a>.  This allows users to define all classifier programs in a default Configuration file rather than setting <em>exe.clssifier</em> in each project Configuration file.</td>
-</tr>
-<tr>
-<td align="left">getClassifierParams()</td>
-<td align="left">Return Configuration property <em>exe.classifierParams</em> which may contain a list of parameters (without hyphens) to pass to the classifier program in the bash scripts.  If <em>exe.classifierParams</em> is undefined, replace the property prefix <em>exe</em> with the lowercase prefix of the module class name as described for <em>exe.classifier</em>.</td>
-</tr>
-<tr>
-<td align="left">getSummary()</td>
-<td align="left">Adds input directory summary to super.getSummary().  Most modules override this method to add module specific summary details to super.getSummary().</td>
-</tr>
-<tr>
-<td align="left">logVersion()</td>
-<td align="left">Run <em>exe.classifier</em> --version to log version info.  <a href="../module/classifier/module.classifier.r16s#rdpclassifier">RDP</a> overrides this method to return null since the version switch is not supported.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="parsermoduleimpl-extends-javamoduleimpl-biolockjmoduleimplicitparser-superclass"><a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/implicit/parser/ParserModuleImpl.html">ParserModuleImpl</a> extends <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/JavaModuleImpl.html">JavaModuleImpl</a>: biolockj.module.implicit.parser superclass.<a class="headerlink" href="#parsermoduleimpl-extends-javamoduleimpl-biolockjmoduleimplicitparser-superclass" title="Permanent link">#</a></h4>
-<table>
-<thead>
-<tr>
-<th align="left">Method</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left"><strong>parseSamples()</strong></td>
-<td align="left"><strong>Must override.</strong>  Called by executeTask() to populate the Set returned by getParsedSamples().  Each classifier requires a unique parser module to decode its output.  This method should iterate through the classifier reports to build <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNode.html">OtuNode</a>s for each sample-OTU found in the report.  The <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNode.html">OtuNode</a>s are stored in a <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/ParsedSample.html">ParsedSample</a> and cached via addParsedSample(<a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/ParsedSample.html">ParsedSample</a>).</td>
-</tr>
-<tr>
-<td align="left">addParsedSample( sample )</td>
-<td align="left">Add the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/ParsedSample.html">ParsedSample</a> to the Set returned by getParsedSamples().</td>
-</tr>
-<tr>
-<td align="left">buildOtuTables()</td>
-<td align="left">Generate OTU abundance tables from <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/classifier/ClassifierModule.html">ClassifierModule</a> output.</td>
-</tr>
-<tr>
-<td align="left">checkDependencies()</td>
-<td align="left">Validate Configuration properties (<em>report.minOtuCount</em>, <em>report.minOtuThreshold</em>, <em>report.logBase</em>) and  verify no biolockj.module.classifier modules are configured to run after the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/module/implicit/parser/ParserModule.html">ParserModule</a>.</td>
-</tr>
-<tr>
-<td align="left">executeTask()</td>
-<td align="left">If <em>report.numHits</em>=Y, add "Num_Hits" column to metadata containing the number of reads that map to any OTU for each sample.  Calls buildOtuTables() to generate module output.</td>
-</tr>
-<tr>
-<td align="left">getParsedSample(id)</td>
-<td align="left">Return the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/ParsedSample.html">ParsedSample</a> from the the Set returned by getParsedSamples() for a given id.</td>
-</tr>
-<tr>
-<td align="left">getParsedSamples()</td>
-<td align="left">Return 1 <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/ParsedSample.html">ParsedSample</a> for each classified sample in the dataset.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="otunodeimpl-is-the-superclass-for-the-biolockjnode-package"><a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNodeImpl.html">OtuNodeImpl</a> is the superclass for the <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/package-summary.html">biolockj.node</a> package.<a class="headerlink" href="#otunodeimpl-is-the-superclass-for-the-biolockjnode-package" title="Permanent link">#</a></h4>
-<table>
-<thead>
-<tr>
-<th align="left">Method</th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">addOtu(level, otu)</td>
-<td align="left">A node represents a single OTU, each level in the taxonomic hierarchy is populated with this method.</td>
-</tr>
-<tr>
-<td align="left">getCount()</td>
-<td align="left">Get the OTU count.</td>
-</tr>
-<tr>
-<td align="left">getLine()</td>
-<td align="left">Get the classifier report line used to create the node.</td>
-</tr>
-<tr>
-<td align="left">getOtuMap()</td>
-<td align="left">This map may contain 1 element for each of the <em>report.taxonomyLevels</em> and is populated by addOtu(level, otu).</td>
-</tr>
-<tr>
-<td align="left">getSampleId()</td>
-<td align="left">Get the sample ID to which the OTU belongs.</td>
-</tr>
-<tr>
-<td align="left">report()</td>
-<td align="left">Print node info to log file as DEBUG line - not visible unless <em>pipeline.logLevel=DEBUG</em>.</td>
-</tr>
-<tr>
-<td align="left">setCount(num)</td>
-<td align="left">Set the OTU count.</td>
-</tr>
-<tr>
-<td align="left">setLine(line)</td>
-<td align="left">Set the classifier report line used to create the node.</td>
-</tr>
-<tr>
-<td align="left">setSampleId(id)</td>
-<td align="left">set the sample ID to which the OTU belongs.</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNodeImpl.html">OtuNodeImpl</a> methods do not need to be overridden.  </li>
-<li>New <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNode.html">OtuNode</a> implementations should call existing methods from their constructor.</li>
-</ul>
+<p><strong>Any Java class that implements the <a href="https://BioLockJ-Dev-Team.github.io/BioLockJ/javadocs/biolockj/module/BioModule.html">BioModule</a> interface can be added to a BioLockJ pipeline.</strong></p>
+<p><em>In java, an interface is essentially a list of methods, often described as being similar to a contract.  When a class "implements an interface" that means has methods matching the method signatures specified in the interface.  The code in BioLockJ is structured to handle a module based on the methods in the BioModule interface.</em></p>
+<p>Your module will almost certainly implement the BioModule interface extensions <strong><a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/api/ApiModule.html">ApiModule interface</a></strong> and <strong><a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/ScriptModule.html">ScriptModule interface</a></strong> as well.  Most of the methods required by these interfaces are provided by the BioModuleImple class. That parent class covers the common module mechanics, leaving you with a pretty short list of methods that you have to write.</p>
+<p>The BioLockJ v1.0 implementation is currently focused on metagenomics analysis, but the generalized application framework is not limited to this domain.  Users can implement new BioModules to automate a wide variety of bioinformatics and report analytics.  The BioModule interface was designed so that users can develop new modules on their own.  </p>
+<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">#</a></h2>
+<p>See the BioModule hello world tutorial for a basic example:   <a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/tree/main/src/biolockj/module/hello_world">https://github.com/BioLockJ-Dev-Team/BioLockJ/tree/main/src/biolockj/module/hello_world</a>
+You can download the project and browse these source files in your IDE (recommended), or just look at them through your web browser for quick reference.
+A series of class called Step1, Step2 etc, loosely line up with the steps below, with more details in the sections that follow.</p>
+<h4 id="step-1">Step 1<a class="headerlink" href="#step-1" title="Permanent link">#</a></h4>
+<p>When you first start creating modules, you'll need to set up a development environment that allows your code to access the BioLockJ main code base. If you are already develop with java, this is very straight forward.  Beginners can expect to spend a little time in trail and error on day one.</p>
+<h4 id="step-2">Step 2<a class="headerlink" href="#step-2" title="Permanent link">#</a></h4>
+<p>When you sit down to create a module, start with the basic documentation.  Create a new class implementing ApiModule and fill in the methods that will tell users the general aim of the module, who made it. and what properties it can take.</p>
+<h4 id="step-3">Step 3<a class="headerlink" href="#step-3" title="Permanent link">#</a></h4>
+<p>Properties allow the user to specify behaviors for your module.  You'll need to document those too.  BioLockJ has a structured system for documenting properties.  It's best to follow an example.  Using this structure helps BioLockJ catch user input that might cause problems, and provide users helpful information about how to make corrections. It also makes it possible for you, or any other user who has your jar file, to use your module(s) with the shiny_biolockj GUI or to render standardized documentation.</p>
+<h4 id="step-4">Step 4<a class="headerlink" href="#step-4" title="Permanent link">#</a></h4>
+<p>Explain what your module needs as input and what it makes as output.  At a minimum, this should be included in your documentation.  If this module works in conjunction with another specific module, then link to that module via pre/post requisite modules.</p>
+<h4 id="step-5">Step 5<a class="headerlink" href="#step-5" title="Permanent link">#</a></h4>
+<p>Now we'll actually make the module do something.  Since we've already said what the properties are, and what the module is supposed to do, this is usually follows pretty swiftly.   Most modules will extend ScriptModuleImpl and their "main method" is buildScript().  In the buildScript() method, you assemble one or more bash commands that accomplish your module's task.  In a ScriptModule, the default executeTask() method (the "main method" of BioModules) is written to create and run scripts.  Many script modules also do something outside of their scripts, such as adding values to the metadata, these additional tasks are usually just added to the buildScript() method.</p>
+<h4 id="test"><strong>Test</strong><a class="headerlink" href="#test" title="Permanent link">#</a></h4>
+<p>Use a simple print statement in place of the main action so you can compile and test your module.</p>
+<p><em>Recommended: render the documentation (see details below) to see how the information is displayed for a user.</em></p>
+<p>Try a test pipeline:</p>
+<p>Save this text as: step3_test.config</p>
+<pre><code>#BioModule biolockj.module.hello_world.Step5
+#BioModule biolockj.module.diy.GenMod
+
+hello.myName = Jean-Luc
+hello.exceitmentLevel = 3
+
+genMod.codeLine = grep Hello ../../*.log
+pipeline.inputTypes = none
+</code></pre>
+
+<p>Run:</p>
+<pre><code>EXT_MODS= &lt;folder where your jar file is&gt;
+biolockj --external-modules ${EXT_MODS} step5.config
+</code></pre>
+
+<p>The test doesn't require specifying external modules, because it is the built-in example. It could run with <code>biolockj step3_test.config</code>.  But your own module is not built-in, so you will need to tell BioLockJ where to find your jar file.</p>
+<p>The key points we want to test is the points we've covered so far:
+Did the code compline?
+Did BioLockJ run the pipeline?
+Did the pipeline complete?</p>
+<h4 id="create-a-test-case">Create a test case<a class="headerlink" href="#create-a-test-case" title="Permanent link">#</a></h4>
+<p>Create a minimal test case for your module.  Its often best to establish your test case before you dig into coding your module.  Your test case will help you develop your module, and later demonstrate that it works, and (in the long term) test if the module is still working. Make this the most minimalist example possible to demonstrate that each of the major components of your module are working.</p>
+<h4 id="set-docker-image">Set docker image<a class="headerlink" href="#set-docker-image" title="Permanent link">#</a></h4>
+<p>When not running in docker mode, the docker image isn't used and doesn't matter, but a module needs to specify a docker container that it can run in just to be a valid module.  For initially testing that the project could build we used some light-weight default, such as library/ubuntu:latest.  Printing a "Hello World" will work fine in that container, but most modules will need more than that.  You can choose to create and host your own image to that has all the software your module needs (and as little as possible beyond that!) or you can find an existing image already hosted on the docker hub, preferably by a reliable organization.  Your module might use the "latest" in its getDockerImageTag() method and leave it to the user to specify a specific tag in the config file.  The image specified by your module is its default.  The user can always choose to override that through the config file; which is also convenient for the developer when testing images. The auto-generated documentation will state which image is set as your modules default.</p>
+<h4 id="apply-a-version-number">Apply a version number<a class="headerlink" href="#apply-a-version-number" title="Permanent link">#</a></h4>
+<p>Once you are ready to use and/or share your module, give it a version number.  By default, your module is version "0.0.0", indicating you are in early development and have not yet applied a version number.  The version is a String, so the format is pretty open, but we recommend following the three-part major.minor.patch semantic versioning system.  Each time to you publish changes to the code, you should increment your version accordingly.</p>
+<h2 id="set-up-your-development-environment">Set up your development environment<a class="headerlink" href="#set-up-your-development-environment" title="Permanent link">#</a></h2>
+<p>Eclipse is the official IDE of choice for BioLockJ, but you are free to use any java IDE, such as Eclipse, Net Beans, Intellij IDEA, etc.
+Your project will need to have the BioLockJ jar file as a dependency.  The simple approach is to download the current jar and add it to your dependencies list.
+Alternatively, you can download the BioLockJ git repository and set that project as a dependency, which allows you navigate the BioLockJ code base, and update to the latest master without waiting for a release.</p>
 <h2 id="document-your-module">Document your module<a class="headerlink" href="#document-your-module" title="Permanent link">#</a></h2>
 <p>The BioLockJ API allows outside resources to get information about the BioLockJ program and any available modules.  </p>
-<p>To interface with the API, your module will need to implement the <strong>ApiModule interface</strong>.</p>
+<p>To interface with the API, your module will need to implement the <strong><a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/api/ApiModule.html">ApiModule interface</a></strong>.</p>
 <h3 id="api-generated-html-documentation">API-generated html documentation<a class="headerlink" href="#api-generated-html-documentation" title="Permanent link">#</a></h3>
 <p>The BioLockJ documentation is stored in markdown files and rendered into html using mkdocs.  The BioLockJ API is designed to generate a markdown document, which is ready to be rendered into an html file using mkdocs.  </p>
 <h3 id="built-in-descriptions">Built-in descriptions<a class="headerlink" href="#built-in-descriptions" title="Permanent link">#</a></h3>
 <p>Override the <code>getCitationString()</code> method.  This should include citation information for any tool that your module wraps and a credit to yourself for creating the wrapper.</p>
-<p>Override the <code>getDescription()</code> method to return a short description of what your module does, this should be one to two sentences.  For a more extensive description, including details about properties, expected inputs, assumptions, etc; override the <code>getDetails()</code> method (optional).  If your module has any pre-requisit modules or post-requisit modules, the modules Details should include the names of these modules and information about when and why these modules are added.</p>
+<p>Override the <code>getDescription()</code> method to return a short description of what your module does, this should be one to two sentences.  For a more extensive description, including details about properties, expected inputs, assumptions, etc; override the <code>getDetails()</code> method (optional).  If your module has any prerequisite modules or post-requisite modules, the modules Details should include the names of these modules and information about when and why these modules are added.</p>
 <h3 id="documenting-properties">Documenting Properties<a class="headerlink" href="#documenting-properties" title="Permanent link">#</a></h3>
 <p>If your module introduces any NEW configuration properties, those properties should registered to the module so the API can retrieve them.  Register properties using the <code>addNewProperty()</code> method in the modules constructor.  For example, the GenMod module defines three properties:</p>
 <pre><code class="java">public GenMod() {
@@ -557,7 +313,7 @@ protected static final String LAUNCHER = &quot;genMod.launcher&quot;;
 private static final String LAUNCHER_DESC = &quot;Define executable language command if it is not included in your $PATH&quot;;
 </code></pre>
 
-<p>In this example, the descriptions for <code>PARAM</code> and <code>SCRIPT</code> are written in the <code>addNewProperty()</code> method.  The description for <code>LAUNCHER</code> is stored as its own string (<code>LAUNCHER_DESC</code>), and that string is referenced in the <code>addNewProperty</code> method and in the javadoc description for <code>LAUNCHER</code>. This rather verbose option IS NOT necissary, but it allows the description to be viewed through the api AND through javadocs, and IDE's; this is appropriate if you expect other classes to use the properties defined in your module.  </p>
+<p>In this example, the descriptions for <code>PARAM</code> and <code>SCRIPT</code> are written in the <code>addNewProperty()</code> method.  The description for <code>LAUNCHER</code> is stored as its own string (<code>LAUNCHER_DESC</code>), and that string is referenced in the <code>addNewProperty</code> method and in the javadoc description for <code>LAUNCHER</code>. This rather verbose option IS NOT necessary, but it allows the description to be viewed through the api AND through javadocs, and IDE's; this is appropriate if you expect other classes to use the properties defined in your module.  </p>
 <p>The descriptions for properties should be brief.  Additional details such as interactions between properties or the effects of different values should be part of the <code>getDetails()</code> method.  It should always be clear to a user what will happen if the value is "null".</p>
 <p>If there is a logical default for the property, that can passed as an additional argument to <code>addNewProperty()</code>.  This value will only be used if there is no value given for the property in the config file (including any defaultProps layers and standard.properties).</p>
 <p>If your module uses any general properties (beyond any uses by the the super class), then you should register it in the module's constructor using the <code>addGeneralProperty()</code> method.</p>
@@ -589,7 +345,7 @@ public Boolean isValidProp( String property ) throws Exception {
 }
 </code></pre>
 
-<p>In the example above, the Humann2Parser module uses two properties that are not used by any super class. The call to <code>super.isValidProp( property )</code> tests the property if it is used by a super class.  This class only adds checks for its newly defined properties.  Any property that is not tested, but is registered in the modules constructor will return true. This method is called through the API, and should be used to test one property at a time as if that is the only property in the config file. Tests to make sure that multiple properties are compatiable with each other should go in the <code>checkDependencies()</code> method.</p>
+<p>In the example above, the Humann2Parser module uses two properties that are not used by any super class. The call to <code>super.isValidProp( property )</code> tests the property if it is used by a super class.  This class only adds checks for its newly defined properties.  Any property that is not tested, but is registered in the modules constructor will return true. This method is called through the API, and should be used to test one property at a time as if that is the only property in the config file. Tests to make sure that multiple properties are compatible with each other should go in the <code>checkDependencies()</code> method.</p>
 <h3 id="generate-user-guide-pages">Generate user guide pages<a class="headerlink" href="#generate-user-guide-pages" title="Permanent link">#</a></h3>
 <p>For modules in the main BioLockJ project, the user guide pages are generated using the ApiModule methods as part of the deploy process.
 Third party developers can use the same utilities to create matching documentation.</p>
@@ -620,11 +376,19 @@ echo &quot;[view module list](GENERATED/all-modules.md)&quot; &gt;&gt; docs/inde
 <pre><code class="bash">mkdocs serve
 </code></pre>
 
-<p>Open up <code>http://127.0.0.1:8000/</code> in your browser, and you'll see the default home page being displayed, with a link at the bottom to <code>view module list</code>, which links to a page listing all of the modules in the <code>joes.modules</code> pacakge. </p>
-<p>You can build this documentation locally using <code>mkdocs build</code> and then push to your prefered hosting site, or set up a service such as <a href="https://readthedocs.org/">ReadTheDocs</a> to render and host your documentation from your <code>docs</code> folder.</p>
-<p>Even if you choose not to build user guide pages for your module, you should still implement the ApiModule interface.  Anyone who uses your module can generate the user guide pages if they want them, and even incorporate them into a custom copy of the main BioLockJ user guide.  Any other support program, such as a GUI, could make use the the ApiModule methods as well.</p>
+<p>Open up <code>http://127.0.0.1:8000/</code> in your browser, and you'll see the default home page being displayed, with a link at the bottom to <code>view module list</code>, which links to a page listing all of the modules in the <code>joes.modules</code> package. </p>
+<p>You can build this documentation locally using <code>mkdocs build</code> and then push to your preferred hosting site, or set up a service such as <a href="https://readthedocs.org/">ReadTheDocs</a> to render and host your documentation from your <code>docs</code> folder.</p>
+<p>Even if you choose not to build user guide pages for your module, you should still implement the ApiModule interface.  Anyone who uses your module can generate the user guide pages if they want them, and even incorporate them into a custom copy of the main BioLockJ user guide.  Any other support program, such as a GUI, could use the the ApiModule methods as well.</p>
+<h2 id="coding-your-module">Coding your module<a class="headerlink" href="#coding-your-module" title="Permanent link">#</a></h2>
+<p>All BioLockJ modules extend <a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/BioModuleImpl.html">BioModuleImpl</a>, but few extend it directly.                        <br />
+Nearly all modules extend its child class <a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/ScriptModuleImpl.html">ScriptModuleImpl</a>.                        </p>
+<p>Additional child classes are designed for particular types of modules:</p>
+<p>Modules that perform a very basic function that is coded in java and takes advantage of BioLockJ methods should extend <a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/JavaModuleImpl.html">JavaModuleImpl</a>.</p>
+<p>Modules that use BioLockJ methods to find/create resources/parameters to pass to an R script should implement <a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/report/r/R_Module.html">R_Module</a>.</p>
+<p>Modules that wrap a classifier (a program that applies taxonomic classification to biological sequences) should extend <a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/classifier/ClassifierModuleImpl.html">ClassifierModuleImpl</a>.  These have a wide variety of output formats.  The Classifier module just runs the classifier, and the task of parsing that output into a standard table format is handled by a separate parser module, which extends <a href="https://biolockj-dev-team.github.io/BioLockJ/javadocs/biolockj/module/implicit/parser/ParserModuleImpl.html">ParserModuleImpl</a>.  Typically the classifier and parser module reference each other as pre/post-requisite modules, so a config might only specify the "FooBarClassifier" module, and the "FooBarParser" module is added to pipeline immediately after it automatically.  This relationship is a convenient way to handle processes that are related to each other, but have different needs in terms of memory, time, parallization strategy, etc.</p>
+<p>Many of the methods in ParserModuleImpl are designed to be coupled with an appropriate <a href="https://msioda.github.io/BioLockJ/docs/biolockj/node/OtuNode.html">OtuNode</a> class, which is a classifier-specific implementation that holds OTU information for 1 sequence.  Following this model is not required, but many classifiers this general pattern will prove convenient.</p>
 <h2 id="using-external-modules">Using External Modules<a class="headerlink" href="#using-external-modules" title="Permanent link">#</a></h2>
-<p>To use a module that you have created yourself or aquired from a third party, you need to:</p>
+<p>To use a module that you have created yourself or acquired from a third party, you need to:</p>
 <ol>
 <li>Save the compiled code in a folder on your machine, for example: <code>/Users/joe/biolockjModules/JoesMods.jar</code> </li>
 <li>Include your module in the module run order in your config file, for example:<br>
@@ -633,9 +397,9 @@ echo &quot;[view module list](GENERATED/all-modules.md)&quot; &gt;&gt; docs/inde
 <li>Use the <code>--external-modules &lt;dir&gt;</code> option  when you call biolockj:<br>
 <code>biolockj --external-modules /Users/joe/biolockjModules myPipeline.properties</code></li>
 </ol>
-<p>Any other modules you have made or aquired can also be in the <code>/Users/joe/biolockjModules</code> folder.</p>
+<p>Any other modules you have made or acquired can also be in the <code>/Users/joe/biolockjModules</code> folder.</p>
 <h2 id="finding-and-sharing-modules">Finding and Sharing Modules<a class="headerlink" href="#finding-and-sharing-modules" title="Permanent link">#</a></h2>
-<p>The official repository for external BioLockJ modules is <a href="https://github.com/IvoryC/blj_ext_modules">blj_ext_modules</a>.  Each module has a folder at the top level of the repository and should include the java code as well a config file to test the module alone, a test file to run a multi-module pipeline that includes the module, and (where applicable) a dockerfile.  This is work in progress.</p>
+<p>The official repository for external BioLockJ modules is <a href="https://github.com/BioLockJ-Dev-Team/blj_ext_modules">blj_ext_modules</a>.  Each module has a folder at the top level of the repository and should include the java code as well a config file to test the module alone, a test file to run a multi-module pipeline that includes the module, and (where applicable) a dockerfile.  This is work in progress.</p>
               
             </div>
           </div>

@@ -33,6 +33,7 @@ Classify WGS samples with [MetaPhlAn2](http://bitbucket.org/biobakery/metaphlan2
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 

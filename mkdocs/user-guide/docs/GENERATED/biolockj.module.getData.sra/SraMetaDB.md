@@ -33,6 +33,7 @@ Makes sure that the SRAmetadb exists, downloads if it does not already exist.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 If *sra.forceDbUpdate* is set to Y, then the zipped form of the database is downloaded, and kept and used to compare the local version to the server version; and the server version is downloaded if it is newer.
 
 Server version location: https://starbuck1.s3.amazonaws.com/sradb/SRAmetadb.sqlite.gz
@@ -61,5 +62,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Malcolm Zapatas and Ivory Blakley                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

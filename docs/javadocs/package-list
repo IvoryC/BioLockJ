@@ -11,6 +11,7 @@ biolockj.module.diversity
 biolockj.module.diy
 biolockj.module.getData
 biolockj.module.getData.sra
+biolockj.module.hello_world
 biolockj.module.implicit
 biolockj.module.implicit.parser
 biolockj.module.implicit.parser.r16s
@@ -26,5 +27,6 @@ biolockj.module.seq
 biolockj.node
 biolockj.node.r16s
 biolockj.node.wgs
+biolockj.pipelines
 biolockj.util
 biolockj.util.paths

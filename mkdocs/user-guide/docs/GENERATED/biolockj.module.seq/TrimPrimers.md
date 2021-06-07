@@ -31,6 +31,7 @@ Remove primers from reads, option to discard reads unless primers are attached t
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 
@@ -42,7 +43,7 @@ Remove primers from reads, option to discard reads unless primers are attached t
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `TrimPrimers.imageOwner`<br>
@@ -51,5 +52,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

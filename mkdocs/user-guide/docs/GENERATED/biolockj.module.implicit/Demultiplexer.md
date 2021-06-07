@@ -40,6 +40,7 @@ Demultiplex samples into separate files for each sample.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
                    
                    
 When BioLockJ detects that the input is multiplexed data, BioLockJ automatically adds a Demultiplexer as the 2nd module, using the class path supplied via the `pipeline.defaultDemultiplexer` property. ([ImportMetadata](../biolockj.module.implicit/ImportMetadata) is added as the first module.)                   
@@ -119,7 +120,7 @@ The metadata file must be prepared by adding a unique sequence barcode in the *m
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `Demultiplexer.imageOwner`<br>
@@ -128,5 +129,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

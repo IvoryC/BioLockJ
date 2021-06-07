@@ -20,6 +20,8 @@
 [GenomeAssembly](biolockj.module.assembly/GenomeAssembly.md) - *Assemble WGS sequences with MetaSPAdes, bin contigs with Metabat2 and check quality with checkM.*                   
 [Gunzipper](biolockj.module.seq/Gunzipper.md) - *Decompress gzipped files.*                   
 [HUMAnN2](biolockj.module.classifier.wgs/Humann2Classifier.md) - *Profile the presence/absence and abundance of microbial pathways in a community from metagenomic or metatranscriptomic sequencing data.*                   
+[Hello_Friends](biolockj.module.hello_world/Hello_Friends.md) - *Print the classic phrase: hello world. With some variation.*                   
+[Hello_World](biolockj.module.hello_world/Hello_World.md) - *Print the classic phrase: Hello World!*                   
 [Humann2Parser](biolockj.module.implicit.parser.wgs/Humann2Parser.md) - *Build OTU tables from HumanN2 classifier module output.*                   
 [ImportMetadata](biolockj.module.implicit/ImportMetadata.md) - *Read existing metadata file, or create a default one.*                   
 [JsonReport](biolockj.module.report/JsonReport.md)                   
@@ -63,5 +65,6 @@
 [SraMetaDB](biolockj.module.getData.sra/SraMetaDB.md) - *Makes sure that the SRAmetadb exists, downloads if it does not already exist.*                   
 [SraMetaData](biolockj.module.getData.sra/SraMetaData.md) - *Extract metadata via pysradb from local copy of SRAmetadb.sqlite.*                   
 [SrpSrrConverter](biolockj.module.getData.sra/SrpSrrConverter.md) - *Create an SraAccList.txt file from an SRA project identifier.*                   
+[Step5](biolockj.module.hello_world/Step5.md) - *Print the classic phrase: hello world.*                   
 [Stop](biolockj.module/Stop.md) - *Stop a pipeline.*                   
 [TrimPrimers](biolockj.module.seq/TrimPrimers.md) - *Remove primers from reads, option to discard reads unless primers are attached to both forward and reverse reads.*                   

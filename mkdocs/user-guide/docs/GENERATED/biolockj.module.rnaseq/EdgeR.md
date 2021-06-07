@@ -33,6 +33,7 @@ Determine statistically significant differences using edgeR.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 The two methods of expresison the design are mutually exclusive.<br>*edgeR.designFormula* is used as an exact string to pass as the design argument to model.matrix(); example:  ~ Location:SoilType. *edgeR.designFactors* is a list (such as "fist,second") of one or more metadata columns to use in a formula. Using this method, the formula will take the form:  ~ first + second  <br>The following two lines are equivilent:<br>`edgeR.designFormula = ~ treatment + batch`<br>`edgeR.designFactors = treatment,batch `
 
 Advanced users may want to make more advanced modifications to the call to the edgeR functions.  The easiest way to do this is to run the module with the default script, and treat that as a working template (ie, see how input/outputs are passed to/from the R script).  Modify the script in that first pipeline, and save the modified script to a stable location.  Then run the pipeline with *edgeR.scriptPath* giving the path to the modified script.
@@ -46,7 +47,7 @@ Advanced users may want to make more advanced modifications to the call to the e
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/r_edger:v1.3.18
+biolockjdevteam/r_edger:v1.3.19
 ```
 This can be modified using the following properties:<br>
 `EdgeR.imageOwner`<br>
@@ -58,5 +59,5 @@ R Core Team (2019). R: A language and environment for statistical computing. R F
 Mark D. Robinson, Davis J. McCarthy, Gordon K. Smyth, edgeR: a Bioconductor package for differential expression analysis of digital gene expression data, Bioinformatics, Volume 26, Issue 1, 1 January 2010, Pages 139–140, https://doi.org/10.1093/bioinformatics/btp616                   
                    
 Module developed by Ivory, Ke and Rosh                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

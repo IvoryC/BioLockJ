@@ -38,6 +38,7 @@ Run the QIIME pick_open_reference_otus.py script on all fasta sequence files
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 This module runs the QIIME [pick_open_reference_otus.py](http://qiime.org/scripts/pick_open_reference_otus.html) script on all fasta sequence files in a single script since clusters not identified in the reference database are assigned by a clustering algorithm.  Additional parameters for this script are set using *exe.classifierParams*.  If *qiime.removeChimeras* = "Y", vsearch is used to find chimeric sequences in the output and the QIIME script [filter_otus_from_otu_table.py](http://qiime.org/scripts/filter_otus_from_otu_table.html) is run to remove them from ./output/otu_table.biom.  Inherits from [QiimeClassifier](../../../module.implicit.qiime#QiimeClassifier).
 
 ## Adds modules 

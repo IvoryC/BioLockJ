@@ -311,7 +311,8 @@
 </tbody>
 </table>
 <h2 id="details">Details<a class="headerlink" href="#details" title="Permanent link">#</a></h2>
-<p>Downloading and compressing files requires fasterq-dump and gzip.The accessions to download can be specified using any ONE of the following:<br> 1. A metadata file (given by <em>metadata.filePath</em> that has column <em>sra.accessionIdColumn</em>.<br> 2. <em>sra.sraProjectId</em>, OR <br> 3. <em>sra.sraAccList</em><br>
+<p><em>version: 1.0.0</em> 
+Downloading and compressing files requires fasterq-dump and gzip.The accessions to download can be specified using any ONE of the following:<br> 1. A metadata file (given by <em>metadata.filePath</em> that has column <em>sra.accessionIdColumn</em>.<br> 2. <em>sra.sraProjectId</em>, OR <br> 3. <em>sra.sraAccList</em><br>
 <em>sra.destinationDir</em> gives an external directory that can be shared across pipelines. This is recommended. If it is not specified, the files will be downlaoded to this modules output directory. <br>
 Suggested: input.dirPaths = ${sra.destinationDir}<br>
 Typically, BioLockJ will automatically determine modules to add to the pipeline to process sequence data. If the files are not present on the system when the pipeline starts, then it is up to the user to configure any and all sequence processing modules.</p>
@@ -331,8 +332,7 @@ Typically, BioLockJ will automatically determine modules to add to the pipeline 
 <code>SraDownload.imageTag</code><br></p>
 <h2 id="citation">Citation<a class="headerlink" href="#citation" title="Permanent link">#</a></h2>
 <p><a href="https://github.com/ncbi/sra-tools">sra-tools</a>                 <br />
-Module developed by Philip Badzuh                 <br />
-BioLockJ v1.3.18</p>
+Module developed by Philip Badzuh.</p>
               
             </div>
           </div>

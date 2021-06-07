@@ -32,6 +32,7 @@ Run the Biobakery [KneadData](https://bitbucket.org/biobakery/kneaddata/wiki/Hom
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *none*
 
 ## Adds modules 

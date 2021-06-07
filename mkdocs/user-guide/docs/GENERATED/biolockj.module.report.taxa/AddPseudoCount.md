@@ -28,6 +28,7 @@ Add a pseudocount (+1) to each value in each taxa table.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 *If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.*
 
 
@@ -40,7 +41,7 @@ Add a pseudocount (+1) to each value in each taxa table.
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `AddPseudoCount.imageOwner`<br>
@@ -48,5 +49,5 @@ This can be modified using the following properties:<br>
 `AddPseudoCount.imageTag`<br>
 
 ## Citation 
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

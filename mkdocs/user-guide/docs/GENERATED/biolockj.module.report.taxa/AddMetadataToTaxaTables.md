@@ -33,6 +33,7 @@ Map metadata onto taxa tables using sample ID.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 The output of this module will have a row for each sample (just like the metadata and the taxa tables) and columns for data AND metadata.                   
 *If the pipeline input does not include at least one taxa table, then the BuildTaxaTables class is added by this module as a pre-requisite.*
 
@@ -46,7 +47,7 @@ The output of this module will have a row for each sample (just like the metadat
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `AddMetadataToTaxaTables.imageOwner`<br>
@@ -55,5 +56,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda and Anthony Fodor                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 

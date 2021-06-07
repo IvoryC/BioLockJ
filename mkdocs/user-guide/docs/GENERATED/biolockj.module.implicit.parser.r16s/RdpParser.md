@@ -32,6 +32,7 @@ Build OTU tables from [RDP](http://rdp.cme.msu.edu/classifier/classifier.jsp) re
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 1.0.0_ 
 *none*
 
 ## Adds modules 
@@ -43,7 +44,7 @@ Build OTU tables from [RDP](http://rdp.cme.msu.edu/classifier/classifier.jsp) re
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `RdpParser.imageOwner`<br>
@@ -51,6 +52,5 @@ This can be modified using the following properties:<br>
 `RdpParser.imageTag`<br>
 
 ## Citation 
-Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+Module developed by Mike Sioda.
 

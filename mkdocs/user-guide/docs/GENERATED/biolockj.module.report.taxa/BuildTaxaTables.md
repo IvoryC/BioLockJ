@@ -28,6 +28,7 @@ Convert OTU-tables split by sample into taxa tables split by level.
 | *script.timeout* | _integer_ <br>Sets # of minutes before worker scripts times out.<br>*default:*  *null* |
 
 ## Details 
+_version: 0.0.0_ 
 Each classifier module has a parser module that converts the classifier-specific output format into a common OTU table format. This module merges those tables from all samples, and splits the tables by taxonomic level.
 
 ## Adds modules 
@@ -39,7 +40,7 @@ Each classifier module has a parser module that converts the classifier-specific
 ## Docker 
 If running in docker, this module will run in a docker container from this image:<br>
 ```
-biolockjdevteam/biolockj_controller:v1.3.18
+biolockjdevteam/biolockj_controller:v1.4.0
 ```
 This can be modified using the following properties:<br>
 `BuildTaxaTables.imageOwner`<br>
@@ -48,5 +49,5 @@ This can be modified using the following properties:<br>
 
 ## Citation 
 Module developed by Mike Sioda                   
-BioLockJ v1.3.18
+BioLockJ v1.4.0
 
