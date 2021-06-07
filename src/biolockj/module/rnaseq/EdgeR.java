@@ -61,7 +61,7 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 		String scriptName = copyEdgeRScript();
 		for( final File file: files ) {
 			List<String> inner = new ArrayList<>();
-			String line = Config.getExe( this, Constants.EXE_RSCRIPT ) + " ../" + scriptName + " "
+			String line = Config.getExe( this, Constants.EXE_RSCRIPT ) + " ../" + getResourceDir().getName() + "/" + scriptName + " "
 							+ file.getAbsolutePath() + " " 
 							+ MetaUtil.getMetadata().getAbsolutePath() + " "
 							+ TaxaUtil.getTaxonomyTableLevel(file) + "_";
@@ -152,7 +152,7 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 	
 	@Override
 	public String getDockerImageTag() {
-		return "v1.3.18";
+		return "v1.3.19";
 	}
 
 	public String copyEdgeRScript() throws IOException, ConfigPathException, DockerVolCreationException {
@@ -161,11 +161,11 @@ public class EdgeR extends ScriptModuleImpl implements ApiModule {
 		if ( script != null) {
 			name = script.getName();
 			Log.info(this.getClass(), "Using user-supplied R script [" + name + "] for edgeR module.");
-			FileUtils.copyFileToDirectory( script, getModuleDir() );
+			FileUtils.copyFileToDirectory( script, getResourceDir() );
 		}else {
 			name = SCRIPT_NAME;
 			Log.info(this.getClass(), "Using standard R script [" + name + "] for edgeR module.");
-			File scriptDest = new File( getModuleDir(), name );
+			File scriptDest = new File( getResourceDir(), name );
 			Files.copy( this.getClass().getResourceAsStream( name ), scriptDest.toPath() );
 		}
 		return name;

@@ -7,7 +7,7 @@
 # browseVignettes("DESeq2")
 library(DESeq2)
 
-source("../BioLockJ_Lib.R")
+source("../resources/BioLockJ_Lib.R")
 
 ## optional
 #library("BiocParallel")

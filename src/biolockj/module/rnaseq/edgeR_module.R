@@ -7,7 +7,7 @@
 # browseVignettes("edgeR")
 library(edgeR)
 
-source("../BioLockJ_Lib.R")
+source("../resources/BioLockJ_Lib.R")
 
 ## optional
 #library("BiocParallel")

@@ -82,7 +82,9 @@ public class Reset {
 			for (File modDir : pipeDir.listFiles()) {
 				if (PipelineUtil.isModuleDir(modDir)) {
 					int currentNum = getModuleNumber(modDir);
-					String flag = PipelineUtil.getPipelineStatusFlag( modDir ).getName();
+					File flagFile = PipelineUtil.getPipelineStatusFlag( modDir );
+					String flag = Constants.BLJ_FAILED;
+					if (flagFile != null ) flag = flagFile.getName();
 					if (currentNum > lastCompleted && 
 									flag.equals( Constants.BLJ_COMPLETE )) {
 						lastCompleted = currentNum;

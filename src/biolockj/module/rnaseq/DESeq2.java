@@ -62,7 +62,7 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		String scriptName = copyDEseqScript();
 		for( final File file: files ) {
 			List<String> inner = new ArrayList<>();
-			String line = Config.getExe( this, Constants.EXE_RSCRIPT ) + " ../" + scriptName + " "
+			String line = Config.getExe( this, Constants.EXE_RSCRIPT ) + " ../" + getResourceDir().getName() + "/" +  scriptName + " "
 							+ file.getAbsolutePath() + " " 
 							+ MetaUtil.getMetadata().getAbsolutePath() + " "
 							+ TaxaUtil.getTaxonomyTableLevel(file) + "_";
@@ -162,11 +162,11 @@ public class DESeq2 extends ScriptModuleImpl implements ApiModule {
 		if ( script != null) {
 			name = script.getName();
 			Log.info(this.getClass(), "Using user-supplied R script [" + name + "] for DESeq2 module.");
-			FileUtils.copyFileToDirectory( script, getModuleDir() );
+			FileUtils.copyFileToDirectory( script, getResourceDir() );
 		}else {
 			name = SCRIPT_NAME;
 			Log.info(this.getClass(), "Using standard R script [" + name + "] for DESeq2 module.");
-			File scriptDest = new File( getModuleDir(), name );
+			File scriptDest = new File( getResourceDir(), name );
 			Files.copy( this.getClass().getResourceAsStream( name ), scriptDest.toPath() );
 		}
 		return name;
