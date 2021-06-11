@@ -141,13 +141,11 @@ public Boolean isValidProp( String property ) throws Exception {
 	Boolean isValid = super.isValidProp( property );
 	switch(property) {
 		case HN2_KEEP_UNINTEGRATED:
-			try {Config.getBoolean( this, HN2_KEEP_UNINTEGRATED );}
-			catch(Exception e) { isValid = false; }
+			Config.getBoolean( this, HN2_KEEP_UNINTEGRATED );
 			isValid = true;
 			break;
 		case HN2_KEEP_UNMAPPED:
-			try {Config.getBoolean( this, HN2_KEEP_UNMAPPED );}
-			catch(Exception e) { isValid = false; }
+			Config.getBoolean( this, HN2_KEEP_UNMAPPED );
 			isValid = true;
 			break;
 	}
