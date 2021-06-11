@@ -32,7 +32,7 @@ public abstract class Step2 extends Step1 implements ApiModule {
 
 	@Override
 	public String getCitationString() {
-		// TODO who are you? and if you are wrapping a pre-existing tool, who made that?
+		// TODO Say who you are. If you are wrapping a pre-existing tool, include the citation for that, too.
 		return "Module developed by Ivory Blakley.";
 	}
 

@@ -12,7 +12,7 @@ import biolockj.Properties;
  * generate uniformly formated documentation for all modules, and allows users and GUIs to interact with your module via
  * the command line.
  * 
- * There are many properties that your module uses that you have nothing to do with. They are are used in methods that
+ * There are many properties that your module uses that you have nothing to do with. They are used in methods that
  * are inherited from the parent classes that handle most of the baseline module mechanics. You cover those when you
  * reference super().
  * 
@@ -23,7 +23,7 @@ public abstract class Step3 extends Step2 {
 
 	// Property names always start with a lower case letter.
 	// Typically, the property name has two parts. The first part is the lower-case name of the module or utility class
-	// that uses it, and the last part is descriptive of the property.
+	// that uses it, and the last part describes the property.
 	/**
 	 * {@value #NAME_PROP_DESC}; defaults to: {@value #NAME_PROP_DEFAULT}
 	 */
@@ -57,25 +57,28 @@ public abstract class Step3 extends Step2 {
 		isValidProp( EXCITE_PROP );
 	}
 
+	// DO READ the javadocs description of isValidProp.
+	//
+	// In particular, note that it never actually returns false.  It returns true, an Exception, or null.
+	// This method is called during checkDependencies to invite an informative failure.
+	// All other use cases should wrap it in a try-catch to convert an exception to a "false".
 	@Override
 	public Boolean isValidProp( String property ) throws Exception {
 		Boolean isValid = super.isValidProp( property );
 		switch( property ) {
-			case NAME_PROP:
-				// there's no value that would make this module fail.
+			case EXCITE_PROP:
+				// The Config.get* methods have built-in checks for type.
+				// As long as its a positive integer its good.
+				// If the value is not a positive integer, ( if its "apple" or "-1") then the getPositiveInteger
+				// method will throw an exception.
+				Config.getPositiveInteger( this, EXCITE_PROP );
 				isValid = true;
 				break;
-			case EXCITE_PROP:
-				try {
-					// The Config.get* methods have built-in checks for type.
-					// As long as its a positive integer its good.
-					// If the value is not a positive integer, ( if its "apple" or "-1") then the getPositiveInteger
-					// method will throw an exception.
-					Config.getPositiveInteger( this, EXCITE_PROP );
-					isValid = true;
-				} catch( Exception e ) {
-					isValid = false;
-				}
+			case NAME_PROP:
+				// there's no value that would make this module fail.
+				Config.getString( this, NAME_PROP );
+				isValid = true;
+				break;
 		}
 		return isValid;
 	}

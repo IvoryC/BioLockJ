@@ -13,11 +13,15 @@ public class Step5 extends Step4 {
 	 * Test anything that might cause your module to fail; especially user input.
 	 * In this case, the only problem we foresee is the integer format for one of the properties, which we already
 	 * check, via super.checkDependencies(); in {@link Step3#checkDependencies()}
+	 * 
+	 * Many modules just check properties for unacceptable values.
+	 * Some modules may also check than an environment variable is set, or that an executable is reachable, or that some file exists...
+	 * This check must be reliable and speedy; otherwise it is very open-ended.
 	 */
 	@Override
 	public void checkDependencies() throws Exception {
 		super.checkDependencies();
-		Log.info( this.getClass(), "Use this many exclamation points: " + Config.getPositiveInteger( this, EXCITE_PROP ) );
+		Log.debug( this.getClass(), "Use this many exclamation points: " + Config.getPositiveInteger( this, EXCITE_PROP ) );
 	}
 
 	@Override
@@ -56,10 +60,12 @@ public class Step5 extends Step4 {
 		return new String(new char[val]).replace("\0", "!");
 	}
 	
-	// temporary value
+	// The ubuntu docker image is lightweight and can handle the script we are making.
+	// If you are developing a module to use some particular software, you'll need find / make an image that includes that software.
+	// Even then; starting with the ubuntu image is a good way to get some initial components in place.
 	@Override
 	public String getDockerImageName() {
 		return "ubuntu";
 	}
-
+	
 }

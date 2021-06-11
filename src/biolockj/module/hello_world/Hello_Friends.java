@@ -47,15 +47,12 @@ public class Hello_Friends extends ScriptModuleImpl implements ApiModule {
 		Boolean isValid = super.isValidProp( property );
 		switch( property ) {
 			case NAME_PROP:
+				Config.getString( this, NAME_PROP );
 				isValid = true;
 				break;
 			case EXCITE_PROP:
-				try {
-					Config.getPositiveInteger( this, EXCITE_PROP );
-					isValid = true;
-				} catch( Exception e ) {
-					isValid = false;
-				}
+				Config.getPositiveInteger( this, EXCITE_PROP );
+				isValid = true;
 		}
 		return isValid;
 	}
@@ -64,10 +61,19 @@ public class Hello_Friends extends ScriptModuleImpl implements ApiModule {
 	public List<List<String>> buildScript( List<File> files ) throws Exception {
 		List<List<String>> list = new ArrayList<>();
 		List<String> lines = new ArrayList<>();
-		lines.add( "echo 'The message is: " + makeMessage() + "'" ); //captured by log file
-		lines.add( "echo '" + makeMessage() + "' > ../output/hello.txt"); //captured by output file
+		lines.add( FUNCTION_NAME );
 		list.add( lines );
 		return list;
+	}
+	
+	@Override
+	public List<String> getWorkerScriptFunctions() throws Exception {
+		List<String> lines = new ArrayList<>();
+		lines.add( "function " + FUNCTION_NAME + "(){" );
+		lines.add( "echo 'The message is: " + makeMessage() + "'" ); //captured by log file
+		lines.add( "echo '" + makeMessage() + "' > ../output/hello.txt"); //captured by output file
+		lines.add( "}" );
+		return lines;
 	}
 	
 	/**
@@ -117,5 +123,7 @@ public class Hello_Friends extends ScriptModuleImpl implements ApiModule {
 	public String getCitationString() {
 		return "Module developed by Ivory Blakley.";
 	}
+	
+	private final String FUNCTION_NAME = "sayHello";
 
 }

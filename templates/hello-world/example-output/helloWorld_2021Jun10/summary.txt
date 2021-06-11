@@ -1,0 +1,68 @@
+Pipeline Name:    helloWorld_2021Jun10
+Pipeline Config:  /Users/ieclabau/git/BioLockJ/templates/hello-world/helloWorld.config
+Pipeline Metadata:  N/A
+BioLockJ version:  v1.4.0
+Runtime Env:         Localhost
+Pipeline Input:      null
+# Modules:        5
+# Attempts:       1
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Module:  00_BasicSteps
+Module class:  biolockj.module.hello_world.Step5
+Module version:  in development
+Runtime:  00 hours : 00 minutes : 01 seconds
+--------------------------------------------------
+# Files Output:  0
+Main Script:  /Users/ieclabau/git/sheepdog_testing_suite/MockMain/pipelines/helloWorld_2021Jun10/00_BasicSteps/script/MAIN_00_BasicSteps.sh
+Executed 1/1 worker scripts [1 successful]
+Average worker script runtime: <1 minute
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Module:  01_Hello_World
+Module class:  biolockj.module.hello_world.Hello_World
+Module version:  in development
+Runtime:  00 hours : 00 minutes : 01 seconds
+--------------------------------------------------
+# Files Output:  1
+Mean Output File Size:  13 bytes
+Main Script:  /Users/ieclabau/git/sheepdog_testing_suite/MockMain/pipelines/helloWorld_2021Jun10/01_Hello_World/script/MAIN_01_Hello_World.sh
+Executed 1/1 worker scripts [1 successful]
+Average worker script runtime: <1 minute
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Module:  02_Hello_Friends
+Module class:  biolockj.module.hello_world.Hello_Friends
+Module version:  in development
+Runtime:  00 hours : 00 minutes : 01 seconds
+--------------------------------------------------
+# Files Output:  1
+Mean Output File Size:  19 bytes
+Main Script:  /Users/ieclabau/git/sheepdog_testing_suite/MockMain/pipelines/helloWorld_2021Jun10/02_Hello_Friends/script/MAIN_02_Hello_Friends.sh
+Executed 1/1 worker scripts [1 successful]
+Average worker script runtime: <1 minute
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Module:  03_OneLine
+Module class:  biolockj.module.diy.GenMod
+Module version:  1.1.0
+Runtime:  00 hours : 00 minutes : 02 seconds
+--------------------------------------------------
+# Files Output:  1
+Mean Output File Size:  13 bytes
+Main Script:  /Users/ieclabau/git/sheepdog_testing_suite/MockMain/pipelines/helloWorld_2021Jun10/03_OneLine/script/MAIN_03_OneLine.sh
+Executed 1/1 worker scripts [1 successful]
+Average worker script runtime: <1 minute
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Module:  04_UseScript
+Module class:  biolockj.module.diy.GenMod
+Module version:  1.1.0
+Runtime:  00 hours : 00 minutes : 01 seconds
+--------------------------------------------------
+# Files Output:  1
+Mean Output File Size:  13 bytes
+Main Script:  /Users/ieclabau/git/sheepdog_testing_suite/MockMain/pipelines/helloWorld_2021Jun10/04_UseScript/script/MAIN_04_UseScript.sh
+Executed 1/1 worker scripts [1 successful]
+Average worker script runtime: <1 minute
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+Pipeline Status:     SUCCESS
+Pipeline Runtime:    00 hours : 00 minutes : 06 seconds
+Master Config:       /Users/ieclabau/git/sheepdog_testing_suite/MockMain/pipelines/helloWorld_2021Jun10/MASTER_helloWorld_2021Jun10.properties
+Final Metadata:      N/A
