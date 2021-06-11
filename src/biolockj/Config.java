@@ -146,17 +146,10 @@ public class Config {
 		// property name after trimming "exe." prefix, for example if exe.Rscript is undefined, return "Rscript"
 		else {returnVal = property.replaceFirst( Constants.EXE_PREFIX, "" ); }
 		
-		//TODO: make checkExe public, and other utilities and modules should call it in check deps; no need to do it ALL the time
-		try {
-			checkExe(module, returnVal, property);
-		} catch( ConfigFormatException e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return returnVal;
 	}
 	
-	private static void checkExe(final BioModule module, final String exe, final String property) throws ConfigFormatException, NonExecutable {
+	public static void checkExe(final BioModule module, final String exe, final String property) throws ConfigFormatException, NonExecutable, DockerVolCreationException {
 		String propVal = "[" + property + "=" + exe + "]";
 		if ( !Config.getBoolean( module, Constants.DISABLE_EXE_CHECK ) ) {
 			// example cmd: "[ -f exe ] && [ -x exe ] && return 0; [ -f exe ] && [ ! -x exe ] && return 127; [ ! -f exe ] && exe"
