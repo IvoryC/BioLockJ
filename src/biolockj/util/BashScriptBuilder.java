@@ -373,6 +373,14 @@ public class BashScriptBuilder {
 			if( writer != null ) writer.close();
 		}
 	}
+	
+	/**
+	 * Use this string to split a line in a script across multiple lines to make it more readable.
+	 * @return
+	 */
+	public static String continueLine() {
+		return " \\";
+	}
 
 	private static void buildWorkerScripts( final ScriptModule module, final List<List<String>> data )
 		throws Exception {
@@ -534,7 +542,7 @@ public class BashScriptBuilder {
 	 * {@link biolockj.Config} List property: {@value #CLUSTER_MODULES}<br>
 	 * {@value #CLUSTER_MODULES_DESC}
 	 */
-	protected static final String CLUSTER_MODULES = "cluster.modules";
+	public static final String CLUSTER_MODULES = "cluster.modules";
 	private static final String CLUSTER_MODULES_DESC = "List of cluster modules to load at start of worker scripts";
 
 	/**
