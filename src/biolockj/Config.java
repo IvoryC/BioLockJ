@@ -356,7 +356,10 @@ public class Config {
 	public static String getString( final BioModule module, final String property, final String defaultVal ) {
 		if( props == null ) return null;
 		String prop = getModulePropName( module, property );
-		String val = props.getProperty( prop, defaultVal );
+		if( props.getProperty( prop ) == null && props.getProperty( property ) == null && defaultVal != null ) {
+			Config.setConfigProperty( property, defaultVal );
+		}
+		String val = props.getProperty( prop );
 		if ( val == null && module != null) {
 			val=module.getPropDefault( prop );
 			if (val != null) {
