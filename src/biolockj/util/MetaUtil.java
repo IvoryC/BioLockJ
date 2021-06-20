@@ -41,7 +41,7 @@ public class MetaUtil {
 	 * @param map Map relates Sample ID to a field value
 	 * @param fileDir File representing output directory for new metadata file
 	 * @param removeMissingIds if TRUE, sampleIds not include in the map arg will be removed from the metadata
-	 * @throws MetadataException if errors occur attemptingto get/put metadata into cache
+	 * @throws MetadataException if errors occur attempting to get/put metadata into cache
 	 * @throws IOException if errors occur attempting to read metadata file
 	 * @throws DockerVolCreationException 
 	 * @throws FileNotFoundException if metadata file not found
@@ -511,10 +511,10 @@ public class MetaUtil {
 	 */
 	public static boolean setSampleId(String filename, String sampleId) throws ConfigViolationException, ConfigFormatException, MetadataException, IOException {
 		//TODO add mechanism to permit adding samples to metadata.
-		if (!getSampleIds().contains( sampleId )) {
-			Log.debug(MetaUtil.class, "No such sample [" + sampleId + "] in metadata.");
-			return false; 
-		}
+//		if (!getSampleIds().contains( sampleId )) {
+//			Log.debug(MetaUtil.class, "No such sample [" + sampleId + "] in metadata.");
+//			return false; 
+//		}
 		String assignedId = getSampleIdFromFileName(filename);
 		if (assignedId == null) {
 			addToFileSampleMap( getNameToSampleMap(), sampleId, filename );

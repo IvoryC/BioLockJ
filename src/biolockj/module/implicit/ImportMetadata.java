@@ -204,6 +204,7 @@ public class ImportMetadata extends BioModuleImpl implements ApiModule {
 			if( ids.contains( id ) ) throw new SequnceFormatException(
 				"Duplicate Sample ID [ " + id + " ] returned for file: " + file.getAbsolutePath() );
 			ids.add( id );
+			MetaUtil.setSampleId( file, id );
 		}
 
 		return ids;
