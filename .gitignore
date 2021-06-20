@@ -17,4 +17,4 @@ BioLockJ.jar
 /javadocs/*
 /templates/**/seq/*
 /templates/local.properties
-
+/templates/metaphlan/tutorial_input/fasta/*
