@@ -58,6 +58,7 @@ public class Pipeline {
 		ValidationUtil.validateModule( exeModule() );
 		if( !runDetached ) SummaryUtil.reportSuccess( exeModule() );
 		Config.saveModuleProps( exeModule() );
+		MetaUtil.tapSampleAssignmentMap();
 		ModuleUtil.markComplete( exeModule() );
 	}
 
