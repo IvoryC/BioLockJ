@@ -150,11 +150,26 @@ public class DockerUtil {
 		if( module instanceof OutsidePipelineWriter ) {
 			OutsidePipelineWriter wopMod = (OutsidePipelineWriter) module;
 			Set<String> wopDirs = wopMod.getWriteDirs();
-			if( wopDirs.contains( getMapper().getMap().get( key ) ) ) {
-				Log.info( DockerUtil.class, "The module [" + ModuleUtil.displaySignature( module ) +
-					"] is granted write access to the folder [" + key + "]" );
-				return true;
+			String keyVal = getMapper().getMap().get( key );
+			for (String dir : wopDirs) {
+				if (isParentDir(keyVal, dir)) {
+					Log.info( DockerUtil.class, "The module [" + ModuleUtil.displaySignature( module ) +
+						"] is granted write access to the folder [" + key + "]" );
+					return true;
+				}
 			}
+		}
+		return false;
+	}
+	
+	protected static boolean isParentDir(String parent, String child){
+		if( child.equals( parent ) ) {
+			return true;
+		}
+		if( child.startsWith( parent ) 
+						&& child.length() > parent.length() 
+						&& child.charAt( parent.length() )==File.separatorChar) {
+			return true;
 		}
 		return false;
 	}
