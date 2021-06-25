@@ -466,6 +466,25 @@ public class DockerUtil {
 			Log.info( DockerUtil.class, "Not running in Docker.  No need to check Docker dependencies." );
 		}
 	}
+	
+	public static long getTotalMem() throws SpecialPropertiesException, ConfigNotFoundException, IOException, InterruptedException {
+		long mem;
+		String cmd = Config.getExe( null, Constants.EXE_DOCKER ) + " info --format='{{json .MemTotal}}' ";
+		String label="checking docker memory setting.";		
+		File cmdFile = new File(BioLockJ.getPipelineDir(), ".docker_info_mem.sh");
+		FileWriter writer = new FileWriter( cmdFile );
+		writer.write( cmd );
+		writer.close();
+		cmdFile.setExecutable( true );
+		String result = Processor.submitQuery( cmdFile.getAbsolutePath(), label );
+		try {
+			mem = Long.valueOf( result );
+		}catch(NumberFormatException ex) {
+			mem = 0;
+		}
+		cmdFile.delete();
+		return mem; 
+	}
 
 	public static boolean isLocalImage(BioModule module, String image) throws SpecialPropertiesException, InterruptedException {
 		String cmd = Config.getExe( module, Constants.EXE_DOCKER ) + " image inspect " + image;
@@ -654,7 +673,7 @@ public class DockerUtil {
 	 * Docker container blj dir: {@value #CONTAINER_BLJ_DIR}
 	 */
 	public static final String CONTAINER_BLJ_DIR = "/app/biolockj";
-
+	
 	/**
 	 * {@link biolockj.Config} String property: {@value #DOCKER_IMG_VERSION} {@value #DOCKER_IMG_VERSION_DESC}
 	 */

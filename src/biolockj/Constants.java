@@ -12,6 +12,7 @@
 package biolockj;
 
 import biolockj.api.API_Exception;
+import biolockj.exception.InsufficientMemoryException;
 
 /**
  * Single Java class to hold shared constant values referenced my multiple classes.
@@ -32,6 +33,7 @@ public class Constants {
 		Properties.registerProp( DEFAULT_STATS_MODULE, Properties.STRING_TYPE, DEFAULT_STATS_MODULE_DESC );
 		Properties.registerProp( DETACH_JAVA_MODULES, Properties.BOOLEAN_TYPE, DETACH_JAVA_MODULES_DESC );
 		Properties.registerProp( DISABLE_ADD_IMPLICIT_MODULES, Properties.BOOLEAN_TYPE, DISABLE_ADD_IMPLICIT_MODULES_DESC );
+		Properties.registerProp( CHECK_MEMORY, Properties.BOOLEAN_TYPE, CHECK_MEMORY_DESC );
 		Properties.registerProp( DISABLE_PRE_REQ_MODULES, Properties.BOOLEAN_TYPE, DISABLE_PRE_REQ_MODULES_DESC );
 		Properties.registerProp( EXE_AWK, Properties.EXE_PATH, "" );
 		Properties.registerProp( EXE_DOCKER, Properties.EXE_PATH, "" );
@@ -224,6 +226,13 @@ public class Constants {
 	public static final String DISABLE_ADD_IMPLICIT_MODULES = "pipeline.disableAddImplicitModules";
 	private static final String DISABLE_ADD_IMPLICIT_MODULES_DESC = "If set to true, implicit modules will not be added to the pipeline.";
 
+	/**
+	 * {@link biolockj.Config} property: {@value #DISABLE_CHECK_MEMORY}
+	 * {@value #DISABLE_CHECK_MEMORY_DESC}
+	 */
+	public static final String CHECK_MEMORY = "pipeline.checkMemory";
+	public static final String CHECK_MEMORY_DESC = "Some modules may check for available memory, and fail in check dependencies if there is not enough memory for the module to complete.  This check may be inaccurate.  Optionally disable it, forcing check dependencies to pass with a warning instead of an error.";
+	
 	/**
 	 * {@link biolockj.Config} {@value biolockj.Properties#BOOLEAN_TYPE } property: {@value #DISABLE_PRE_REQ_MODULES}<br>
 	 * {@value #DISABLE_PRE_REQ_MODULES_DESC}

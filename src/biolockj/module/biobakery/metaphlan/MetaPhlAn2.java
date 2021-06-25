@@ -10,17 +10,16 @@ import biolockj.Properties;
 import biolockj.api.ApiModule;
 import biolockj.exception.ConfigFormatException;
 import biolockj.exception.ConfigNotFoundException;
+import biolockj.exception.InsufficientMemoryException;
 import biolockj.module.BioModule;
 import biolockj.module.SeqModule;
 import biolockj.util.BashScriptBuilder;
 import biolockj.util.BioLockJUtil;
+import biolockj.util.DockerUtil;
 import biolockj.util.MetaUtil;
 import biolockj.util.SeqUtil;
 
 public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
-	
-	static final String CHECK_PARAMS = "metaphlan.checkParams";
-	static final String CHECK_PARAMS_DESC = "Should BioLockJ check the user-provided parameters to metaphlan2.";
 	
 	protected M2Params params;
 	
@@ -37,6 +36,7 @@ public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
 		addNewProperty( INDEX, Properties.STRING_TYPE, INDEX_DESC );
 		addNewProperty( METAPHLAN_PARAMS, Properties.STRING_TYPE, METAPHLAN_PARAMS_DESC );
 		addNewProperty( CHECK_PARAMS, Properties.BOOLEAN_TYPE, CHECK_PARAMS_DESC, "Y" );
+		addGeneralProperty( InsufficientMemoryException.ENABLING_PROP, "If enabled, this module throws an error unless there at least about 4BG of available memory");
 		params = new M2Params();
 	}
 	
@@ -49,6 +49,14 @@ public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
 		isValidProp(INDEX);
 		isValidProp(METAPHLAN_PARAMS);
 		isValidProp(CHECK_PARAMS);
+		checkMemory();
+	}
+	
+	private void checkMemory() throws ConfigFormatException, InsufficientMemoryException {
+		String memMsg = "Loading the bowite index requires sufficient memory to load the index.";
+		if (DockerUtil.inDockerEnv()) memMsg += " In docker, a total memory of 4GB or less will likley fail for even a small dataset.";
+		InsufficientMemoryException ex = new InsufficientMemoryException(memMsg, this, 4129873920L);
+		if (ex.shouldThrow()) throw ex;
 	}
 	
 	@Override
@@ -137,12 +145,12 @@ public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
 		list.add( Config.getExe( null, EXE_METAPHLAN ) + " " + M2Params.TYPE + " " + analysis + continued );
 		list.add( continueing + "$IN $IN_RV" + continued);
 		list.add( continueing + M2Params.OUT_FILE_LONG + " $OUT" + continued);
-		for (String name : params.NAMED_ARGS ) {
+		for (String name : params.getNamedArgsList() ) {
 			if (argMap.containsKey( name ) ) {
 				list.add( continueing + name + " " + argMap.get( name ) + continued );
 			}
 		}
-		for (String flag : params.FLAG_ARGS ) {
+		for (String flag : params.getFlagArgList() ) {
 			if (argMap.containsKey( flag )) {
 				list.add( continueing + flag + continued );
 			}
@@ -157,6 +165,7 @@ public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
 		list.add( "echo '' >> " + infoFile );
 		list.add( Config.getExe( this, EXE_METAPHLAN ) + " --help >> " + infoFile );
 		list.add( "}" );
+		list.add( "" );
 		return list;
 	}
 	
@@ -187,22 +196,22 @@ public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
 		return argMap;
 	}	
 	
-	public void check_auto_params() throws RejectedMetaphlan2Parameter {
+	public void check_auto_params() throws RejectedMetaphlanParameter {
 		Map<String, String> map = params.getMap();
 		if (map.containsKey( M2Params.OUT_FILE ) | map.containsKey( M2Params.OUT_FILE_LONG )) {
-			throw new RejectedMetaphlan2Parameter( "Do not include [" + M2Params.OUT_FILE + "] in the parameters; the output file is set automatically by BioLockJ. Output will be in the modules output folder." );
+			throw new RejectedMetaphlanParameter( "Do not include [" + M2Params.OUT_FILE + "] in the parameters; the output file is set automatically by BioLockJ. Output will be in the modules output folder." );
 		}
 		if (map.containsKey( M2Params.NPROC )) {
-			throw new RejectedMetaphlan2Parameter( M2Params.NPROC, Constants.SCRIPT_NUM_THREADS );
+			throw new RejectedMetaphlanParameter( M2Params.NPROC, Constants.SCRIPT_NUM_THREADS );
 		}
 		if (map.containsKey( M2Params.BOWTIE2DB )) {
-			throw new RejectedMetaphlan2Parameter(M2Params.BOWTIE2DB, MetaPhlAn2.BOWTIE2DB);
+			throw new RejectedMetaphlanParameter(M2Params.BOWTIE2DB, MetaPhlAn2.BOWTIE2DB);
 		}
 		if (map.containsKey( M2Params.MPA_PKL )) {
-			throw new RejectedMetaphlan2Parameter( M2Params.MPA_PKL, MetaPhlAn2.MPA_PKL);
+			throw new RejectedMetaphlanParameter( M2Params.MPA_PKL, MetaPhlAn2.MPA_PKL);
 		}
 		if (map.containsKey( M2Params.INDEX ) | map.containsKey( M2Params.INDEX_LONG )) {
-			throw new RejectedMetaphlan2Parameter( M2Params.INDEX_LONG, MetaPhlAn2.INDEX);
+			throw new RejectedMetaphlanParameter( M2Params.INDEX_LONG, MetaPhlAn2.INDEX);
 		}
 	}
 	
@@ -245,15 +254,25 @@ public class MetaPhlAn2 extends MetaPhlAn_Tool implements ApiModule {
 		sb.append( Constants.markDownReturn + "If _" + CHECK_PARAMS +
 			"=Y_ then BioLockJ will review the params for metaphlan to check for common problems." );
 		sb.append( "BioLockJ will check that if any of these arguments are used there is a value: " +
-			BioLockJUtil.getCollectionAsString( params.NAMED_ARGS ) );
+			BioLockJUtil.getCollectionAsString( params.getNamedArgsList() ) );
 		sb.append( "BioLockJ will check that if any of these arguments are used there is no following value: " +
-			BioLockJUtil.getCollectionAsString( params.FLAG_ARGS ) );
+			BioLockJUtil.getCollectionAsString( params.getFlagArgList() ) );
 		sb.append( "These properties are set using specific BioLockJ properties: " +
 			BioLockJUtil.getCollectionAsString( params.AUTO_ARGS ) );
 		sb.append(
 			"BioLockJ will also check to ensure there are no arguments that do not match the recognized set (these are typically mistakes) and no arugments that would prevent the program from running (such as -v or -h )." );
 		sb.append( "This check is done during check dependences, before the first module starts." );
 		return sb.toString();
+	}
+	
+	@Override
+	public String getDockerImageName() {
+		return "metaphlan2";
+	}
+
+	@Override
+	public String getDockerImageTag() {
+		return "2.7.7_cloud_r1";
 	}
 	
 	@Override
