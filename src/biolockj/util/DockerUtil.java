@@ -296,6 +296,7 @@ public class DockerUtil {
 		if( inDockerEnv() ) {
 			try {
 				System.err.println( CONTAINER_ID_KEY + getContainerId() );
+				if( !getInfoFile( INFO ).exists() ) writeDockerInfo( INFO );
 				if( !getInfoFile( INSPECT ).exists() ) writeDockerInfo( INSPECT );
 				if( !getInfoFile( VERSION ).exists() ) writeDockerInfo( VERSION );
 			} catch( Exception e ) {
@@ -313,7 +314,9 @@ public class DockerUtil {
 		File infoFile = getInfoFile(infoType);
 		Log.info( DockerUtil.class, "Creating " + infoFile.getName() + " file." );
 		final BufferedWriter writer = new BufferedWriter( new FileWriter( infoFile ) );
-		final Process p = Runtime.getRuntime().exec( getDockerInforCmd(infoType) );
+		String cmd = getDockerInforCmd(infoType);
+		Log.info( DockerUtil.class, "Creating " + infoFile.getName() + " file with output of command: " + cmd );
+		final Process p = Runtime.getRuntime().exec( cmd );
 		final BufferedReader br = new BufferedReader( new InputStreamReader( p.getInputStream() ) );
 		StringBuilder sb = new StringBuilder();
 		String s = null;
@@ -336,6 +339,7 @@ public class DockerUtil {
 	private static String getDockerInforCmd(String infoType) throws IOException, DockerVolCreationException {
 		// return "curl --unix-socket /var/run/docker.sock http:/v1.38/containers/" + getHostName() + "/json";
 		if (infoType == INSPECT) return "docker inspect " + getContainerId();
+		else if (infoType == INFO) return "docker info";
 		else return "docker version";
 	}
 
@@ -351,8 +355,12 @@ public class DockerUtil {
 				BioModuleImpl.TEMP_DIR );
 		if( parentDir != null && parentDir.exists() ) {
 			File file;
-			if (infoType == INSPECT) {
+			if (infoType == INFO) {
 				file = new File( parentDir, DOCKER_INFO_FILE );
+				Log.debug( DockerUtil.class,
+					"path to info file: " + file.getAbsolutePath() );
+			}else if (infoType == INSPECT) {
+				file = new File( parentDir, DOCKER_INSPECT_FILE );
 				Log.debug( DockerUtil.class,
 					"path to info file: " + file.getAbsolutePath() );
 			}else{ //if (infoType == VERSION) 
@@ -706,11 +714,13 @@ public class DockerUtil {
 	private static final String ID_VAR = "containerId";
 	private static final String SCRIPT_ID_VAR = "SCRIPT_ID";
 	private static final String DOCKER_KEY = "docker";
-	private static final String DOCKER_INFO_FILE = "dockerInfo.json";
+	private static final String DOCKER_INFO_FILE = "dockerInfo.txt";
+	private static final String DOCKER_INSPECT_FILE = "dockerInspect.json";
 	private static final String DOCKER_VERSION_FILE = "dockerVersion.txt";
 	private static final String ALL_GOOD = "Everything is awesome!";
 	private static final String USE_BASH = "/bin/bash -c";
 	private static final String TEST_SCRIPT = "testDockerImage.sh";
+	private static final String INFO = "INFO";
 	private static final String INSPECT = "INSPECT";
 	private static final String VERSION = "VERSION";
 	public static final String CONTAINER_ID_KEY = "Current container id: ";
