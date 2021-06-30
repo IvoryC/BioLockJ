@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import biolockj.Config;
 import biolockj.Constants;
@@ -26,8 +27,11 @@ import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
 import biolockj.api.BuildDocs;
+import biolockj.exception.BioLockJException;
 import biolockj.exception.ConfigConflictException;
+import biolockj.exception.ConfigNotFoundException;
 import biolockj.exception.ConfigPathException;
+import biolockj.exception.DockerVolCreationException;
 import biolockj.module.ScriptModuleImpl;
 import biolockj.module.getData.InputDataModule;
 import biolockj.util.ModuleUtil;
@@ -46,6 +50,7 @@ public class GenMod extends ScriptModuleImpl implements ApiModule, InputDataModu
 		addNewProperty( SCRIPT, Properties.FILE_PATH, SCRIPT_DESC );
 		addNewProperty( RESOURCES, Properties.FILE_PATH_LIST, RESOURCES_DESC );
 		addNewProperty( CODE_LINE, Properties.STRING_TYPE, CODE_LINE_DESC );
+		addNewProperty( CHECK_DEP_SCRIPT, Properties.FILE_PATH, CHECK_DEP_SCRIPT_DESC );
 	}
 
 	@Override
@@ -70,6 +75,46 @@ public class GenMod extends ScriptModuleImpl implements ApiModule, InputDataModu
 		if (Config.getString( this, CODE_LINE ) != null && Config.getString( this, SCRIPT ) != null) {
 			throw new ConfigConflictException( new String[] {SCRIPT, CODE_LINE}, "These properties are mutually exclusive." );
 		}
+		if (Config.getString( this, CHECK_DEP_SCRIPT ) != null) {
+			runPrecheckScript();
+		}
+	}
+	
+	protected void runPrecheckScript() throws IOException, PrecheckScriptException, ConfigPathException, ConfigNotFoundException, DockerVolCreationException {
+		transferResources();
+		final File original = Config.requireExistingFile( this, CHECK_DEP_SCRIPT );
+		FileUtils.copyFileToDirectory( original, getResourceDir() );
+		File copy = new File( getResourceDir(), original.getName() );
+		copy.setExecutable( true );
+		String cmd = copy.getAbsolutePath();
+		Log.info(getClass(), "Running precheck script, command: " + cmd);
+		int exit = 0;
+		boolean finished = true;
+		try {
+			final Process p = Runtime.getRuntime().exec( cmd, null, getTempDir() );
+			finished = p.waitFor(5, TimeUnit.SECONDS);
+			p.destroy();
+			exit=p.exitValue();
+		}catch(Exception ex) {
+			Log.debug(getClass(), "Exception with message: " + ex.getMessage());
+			exit=1;
+		}
+		if (exit != 0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append( ModuleUtil.displaySignature( this ) + " is expected to fail because its precheck script returned exit status of [" + exit + "].");
+			if (!finished) sb.append(System.lineSeparator() + "The precheck script runtime exceeded the precheck time limit of " + PRECHECK_SCRIPT_TIMEOUT + " seconds.");
+			sb.append( System.lineSeparator() + "Please review the precheck script: " + original );
+			sb.append(System.lineSeparator() + "To avoid running this check, you may set [ " + Config.getModulePropName( this, CHECK_DEP_SCRIPT ) + "= ] or remove the property from the config file.");
+			throw new PrecheckScriptException( sb.toString() );
+		}
+	}
+	
+	public class PrecheckScriptException extends BioLockJException {
+
+		public PrecheckScriptException( String msg ) {
+			super( msg );
+		}
+		
 	}
 	
 	@Override
@@ -142,13 +187,18 @@ public class GenMod extends ScriptModuleImpl implements ApiModule, InputDataModu
 		Log.debug( GenMod.class, "Users script saved to: " + copy.getAbsolutePath() );
 		return copy.getAbsolutePath();
 	}
-	
-	protected void transferResources() throws ConfigPathException, IOException, Exception {
+
+	protected void transferResources() throws ConfigPathException, IOException, DockerVolCreationException {
 		if( Config.getString( this, RESOURCES ) != null ) {
 			for( File file: Config.getExistingFileList( this, RESOURCES ) ) {
-				FileUtils.copyFileToDirectory( file, getResourceDir() );
-				Log.info( this.getClass(),
-					"Copied resource " + file.getAbsolutePath() + " to module resource folder: " + getResourceDir() );
+				if( ( new File( getResourceDir(), file.getName() ) ).exists() ) {
+					Log.debug( getClass(),
+						"Resource file [" + file.getName() + "] has already been copied into module resources dir." );
+				} else {
+					FileUtils.copyFileToDirectory( file, getResourceDir() );
+					Log.info( this.getClass(), "Copied resource " + file.getAbsolutePath() +
+						" to module resource folder: " + getResourceDir() );
+				}
 			}
 		}
 	}
@@ -229,5 +279,14 @@ public class GenMod extends ScriptModuleImpl implements ApiModule, InputDataModu
 		"A line of code to create a one-line script.  This is mutually exclusive with _" + SCRIPT +
 			"_. This is the preferred option for particularly simple scripts.  This code will be executed using whatever system is specified by _" +
 			LAUNCHER + "_.";
+	
+	protected static final int PRECHECK_SCRIPT_TIMEOUT = 5;
+	
+	/**
+	 * {@value #CHECK_DEP_SCRIPT_DESC}: {@value #CHECK_DEP_SCRIPT}
+	 */
+	protected static final String CHECK_DEP_SCRIPT = "genMod.precheckScript";
+	private static final String CHECK_DEP_SCRIPT_DESC =
+		"This optional script is run during check dependencies.  If the scripts ends with a non-status (or runs beyond the " + PRECHECK_SCRIPT_TIMEOUT + "-second timeout), the pipeline will not start.";
 
 }

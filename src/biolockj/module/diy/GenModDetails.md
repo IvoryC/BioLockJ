@@ -29,3 +29,6 @@ Part1.script=path/to/first/script.py
 Part2.script=path/to/bash/script/doLast.sh
 ```
 With this, `script.py` will be run using python.  Then other modules will run. Then `doLast.sh` will be run using the default system (probably bash, unless it has a shebang line specifiying something else).
+
+As of version v1.4.1, the GenMod modules support a precheck script (`genMod.precheckScript`). This optional script is run during check dependencies.  If the scripts ends with a non-status, the pipeline will not start.  This is a useful way to catch any common/simple things that will cause your main script to fail. The script is run with no launcher and no parameters, the working directory will be a sub-directory of the module directory. This script will timeout (non-zero exit) at 5 seconds.  BioLockJ does not produce any helpful messages about why the pipeline failed to start, just a message saying that this script failed.  Presumably this script includes comments that can direct the user to fix the problem.
+			
