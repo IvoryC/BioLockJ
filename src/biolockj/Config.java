@@ -39,13 +39,16 @@ public class Config {
 	 * @return boolean value
 	 * @throws ConfigFormatException if property value is not null but also not Y or N.
 	 */
-	public static boolean getBoolean( final BioModule module, final String property ) throws ConfigFormatException {
-		String value = getString( module, property );
+	public static boolean getBoolean( final BioModule module, final String property, final String defaultVal ) throws ConfigFormatException {
+		String value = getString( module, property, null );
 		if ( value == null ) return false;
 		else if ( value.equalsIgnoreCase( Constants.TRUE ) ) return true;
 		else if ( value.equalsIgnoreCase( Constants.FALSE ) ) return false;
 		throw new ConfigFormatException( property, "Boolean properties must be set to either " + Constants.TRUE +
 			" or " + Constants.FALSE + "." );
+	}
+	public static boolean getBoolean( final BioModule module, final String property ) throws ConfigFormatException {
+		return getBoolean( module, property, null );
 	}
 
 	/**
