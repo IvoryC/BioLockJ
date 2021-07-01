@@ -1,22 +1,18 @@
-# MetaPhlAn_DB
+# Merge_MetaPhlAn_Tables
 Add to module run order:                    
-`#BioModule biolockj.module.biobakery.metaphlan.MetaPhlAn_DB`
+`#BioModule biolockj.module.biobakery.metaphlan.Merge_MetaPhlAn_Tables`
 
 ## Description 
-Install the reference database required by [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).
+Run the merge_metaphlan_tables.py utility from [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).
 
 ## Properties 
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
 
-### MetaPhlAn_DB properties: 
+### Merge_MetaPhlAn_Tables properties: 
 | Property| Description |
 | :--- | :--- |
-| *exe.bowtie2* | _executable_ <br>Path for the "bowtie2" executable; if not supplied, any script that needs the bowtie2 command will assume it is on the PATH.<br>*default:*  *null* |
-| *exe.bowtie2build* | _executable_ <br>Path for the "bowtie2build" executable; if not supplied, any script that needs the bowtie2build command will assume it is on the PATH.<br>*default:*  *null* |
-| *exe.metaphlan* | _executable_ <br>Path for the "metaphlan" executable; if not supplied, any script that needs the metaphlan command will assume it is on the PATH.<br>*default:*  *null* |
-| *metaphlan.bowtie2db* | _file path_ <br>Path to the directory containing the bowtie2 reference database, passed to metaphlan via the --bowtie2db argument.<br>*default:*  *null* |
+| *exe.merge_metaphlan_tables.py* | _executable_ <br>Path for the "merge_metaphlan_tables.py" executable; if not supplied, any script that needs the merge_metaphlan_tables.py command will assume it is on the PATH.<br>*default:*  *null* |
 | *metaphlan.consistentModules* | _boolean_ <br>Ensure same core settings for modules in the in the metaphlan2 family in the same pipeline.<br>*default:*  Y |
-| *metaphlan.dbIndex* | _string_ <br>The version of the database to use, passed to metaphlan via the --index parameter. Specifying this value is recommended. Example: mpa_v30_CHOCOPhlAn_201901<br>*default:*  *null* |
 | *metaphlan.mpa_dir* | _file path_ <br>The path to the metaphlan directory. To use the mpa_dir environment variable, use `${mpa_dir}`.<br>*default:*  *null* |
 
 ### General properties applicable to this module: 
@@ -37,9 +33,7 @@ Install the reference database required by [MetaPhlAn](https://github.com/biobak
 
 ## Details 
 _version: 0.0.0_ 
-Use this module to verify that a given index of the database is present or to download/build it if it is not.  Downloading requires internet access.                   
-The command run by this module will be something like:                   
-`metaphlan --install --bowtie2db /path/to/metaphlan/metaphlan_databases/ --index mpa_v30_CHOCOPhlAn_201901`
+*none*
 
 ## Adds modules 
 **pre-requisite modules**                    
@@ -53,9 +47,9 @@ If running in docker, this module will run in a docker container from this image
 biobakery/metaphlan:3.0.7
 ```
 This can be modified using the following properties:<br>
-`MetaPhlAn_DB.imageOwner`<br>
-`MetaPhlAn_DB.imageName`<br>
-`MetaPhlAn_DB.imageTag`<br>
+`Merge_MetaPhlAn_Tables.imageOwner`<br>
+`Merge_MetaPhlAn_Tables.imageName`<br>
+`Merge_MetaPhlAn_Tables.imageTag`<br>
 
 ## Citation 
 The BioLockJ module was developed by Ivory Blakley to facilitate using MetaPhlan2.                   

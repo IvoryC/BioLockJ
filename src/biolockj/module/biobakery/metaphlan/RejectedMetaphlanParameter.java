@@ -2,13 +2,13 @@ package biolockj.module.biobakery.metaphlan;
 
 import biolockj.exception.ConfigFormatException;
 
-public class RejectedMetaphlan2Parameter extends ConfigFormatException {
+public class RejectedMetaphlanParameter extends ConfigFormatException {
 
-	public RejectedMetaphlan2Parameter( String m2arg, String property ) {
+	public RejectedMetaphlanParameter( String m2arg, String property ) {
 		this( redirectMsg(m2arg, property) );
 	}
 	
-	public RejectedMetaphlan2Parameter( String msg ) {
+	public RejectedMetaphlanParameter( String msg ) {
 		super( MetaPhlAn2.METAPHLAN_PARAMS, msg + System.lineSeparator() + maybeGenMod);
 	}
 	

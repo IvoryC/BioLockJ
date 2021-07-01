@@ -1,23 +1,25 @@
-# MetaPhlAn_DB
+# MetaPhlAn3
 Add to module run order:                    
-`#BioModule biolockj.module.biobakery.metaphlan.MetaPhlAn_DB`
+`#BioModule biolockj.module.biobakery.metaphlan.MetaPhlAn3`
 
 ## Description 
-Install the reference database required by [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).
+Profile the composition of microbial communities using [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).
 
 ## Properties 
 *Properties are the `name=value` pairs in the [configuration](../../../Configuration#properties) file.*                   
 
-### MetaPhlAn_DB properties: 
+### MetaPhlAn3 properties: 
 | Property| Description |
 | :--- | :--- |
 | *exe.bowtie2* | _executable_ <br>Path for the "bowtie2" executable; if not supplied, any script that needs the bowtie2 command will assume it is on the PATH.<br>*default:*  *null* |
 | *exe.bowtie2build* | _executable_ <br>Path for the "bowtie2build" executable; if not supplied, any script that needs the bowtie2build command will assume it is on the PATH.<br>*default:*  *null* |
 | *exe.metaphlan* | _executable_ <br>Path for the "metaphlan" executable; if not supplied, any script that needs the metaphlan command will assume it is on the PATH.<br>*default:*  *null* |
-| *metaphlan.bowtie2db* | _file path_ <br>Path to the directory containing the bowtie2 reference database, passed to metaphlan via the --bowtie2db argument.<br>*default:*  *null* |
+| *metaphlan.checkParams* | _boolean_ <br>Should BioLockJ check the user-provided parameters to metaphlan.<br>*default:*  Y |
 | *metaphlan.consistentModules* | _boolean_ <br>Ensure same core settings for modules in the in the metaphlan2 family in the same pipeline.<br>*default:*  Y |
 | *metaphlan.dbIndex* | _string_ <br>The version of the database to use, passed to metaphlan via the --index parameter. Specifying this value is recommended. Example: mpa_v30_CHOCOPhlAn_201901<br>*default:*  *null* |
 | *metaphlan.mpa_dir* | _file path_ <br>The path to the metaphlan directory. To use the mpa_dir environment variable, use `${mpa_dir}`.<br>*default:*  *null* |
+| *metaphlan.params* | _string_ <br>Additional parameters to use with metaphlan2. Several options are handled specially. See details.<br>*default:*  *null* |
+| *pipeline.checkMemory* | _boolean_ <br>Some modules may check for available memory, and fail in check dependencies if there is not enough memory for the module to complete.  This check may be inaccurate.  Optionally disable it, forcing check dependencies to pass with a warning instead of an error. -> If enabled, this module throws an error unless there at least about 4BG of available memory<br>*default:*  Y |
 
 ### General properties applicable to this module: 
 | Property| Description |
@@ -29,6 +31,7 @@ Install the reference database required by [MetaPhlAn](https://github.com/biobak
 | *cluster.statusCommand* | _string_ <br>Terminal command used to check the status of jobs on the cluster<br>*default:*  *null* |
 | *docker.saveContainerOnExit* | _boolean_ <br>If Y, docker run command will NOT include the --rm flag<br>*default:*  *null* |
 | *docker.verifyImage* | _boolean_ <br>In check dependencies, run a test to verify the docker image.<br>*default:*  *null* |
+| *pipeline.checkMemory* | _boolean_ <br>Some modules may check for available memory, and fail in check dependencies if there is not enough memory for the module to complete.  This check may be inaccurate.  Optionally disable it, forcing check dependencies to pass with a warning instead of an error. -> If enabled, this module throws an error unless there at least about 4BG of available memory<br>*default:*  Y |
 | *script.defaultHeader* | _string_ <br>Store default script header for MAIN script and locally run WORKER scripts.<br>*default:*  #!/bin/bash |
 | *script.numThreads* | _integer_ <br>Used to reserve cluster resources and passed to any external application call that accepts a numThreads parameter.<br>*default:*  8 |
 | *script.numWorkers* | _integer_ <br>Set number of samples to process per script (if parallel processing)<br>*default:*  1 |
@@ -37,13 +40,14 @@ Install the reference database required by [MetaPhlAn](https://github.com/biobak
 
 ## Details 
 _version: 0.0.0_ 
-Use this module to verify that a given index of the database is present or to download/build it if it is not.  Downloading requires internet access.                   
-The command run by this module will be something like:                   
-`metaphlan --install --bowtie2db /path/to/metaphlan/metaphlan_databases/ --index mpa_v30_CHOCOPhlAn_201901`
+[MetaPhlAn](https://github.com/biobakery/MetaPhlAn) is one of many tools in the BioBakery project.This module facilitates using MetaPhlAn2 as part of a BioLockJ pipeline.                   
+Arguments to be passed to MetaPhlAn can be added via the _metaphlan.params_ property.                   
+The input and output locations will be specified automatically by BioLockJ.  Outputs are named using the <sample id>_<analysis type>.txt .The MetaPhlAn2 analsyis type is rel_ab_w_read_stats by default, but can be specified in _metaphlan.params_. --nproc will be set based on the _script.numThreads_ property and cannot be included in the _metaphlan.params_ value.                    
+If _metaphlan.checkParams=Y_ then BioLockJ will review the params for metaphlan to check for common problems.BioLockJ will check that if any of these arguments are used there is a value: --input_type, --mpa_pkl, --bowtie2db, -x, --bt2_ps, --tmp_dir, --bowtie2_exe, --bowtie2_build, --bowtie2out, --tax_lev, --stat_q, --ignore_markers, -t, --nreads, --pres_th, -o, --sample_id_key, --sample_id, -s, --samout, --biom, --biom_output_file, --mdelim, --metadata_delimiter_char, --nproc, --read_min_len, --min_cu_len, --min_alignment_len, --stat, --clade, --min_abBioLockJ will check that if any of these arguments are used there is no following value: --no_map, --ignore_viruses, --ignore_eukaryotes, --ignore_bacteria, --ignore_archaea, --avoid_disqm, --install, -v, --version, -h, --helpThese properties are set using specific BioLockJ properties: -o, --nproc, --bowtie2db, --mpa_pklBioLockJ will also check to ensure there are no arguments that do not match the recognized set (these are typically mistakes) and no arugments that would prevent the program from running (such as -v or -h ).This check is done during check dependences, before the first module starts.
 
 ## Adds modules 
 **pre-requisite modules**                    
-*none found*                   
+biolockj.module.biobakery.metaphlan.MetaPhlAn_DB                   
 **post-requisite modules**                    
 *none found*                   
 
@@ -53,9 +57,9 @@ If running in docker, this module will run in a docker container from this image
 biobakery/metaphlan:3.0.7
 ```
 This can be modified using the following properties:<br>
-`MetaPhlAn_DB.imageOwner`<br>
-`MetaPhlAn_DB.imageName`<br>
-`MetaPhlAn_DB.imageTag`<br>
+`MetaPhlAn3.imageOwner`<br>
+`MetaPhlAn3.imageName`<br>
+`MetaPhlAn3.imageTag`<br>
 
 ## Citation 
 The BioLockJ module was developed by Ivory Blakley to facilitate using MetaPhlan2.                   

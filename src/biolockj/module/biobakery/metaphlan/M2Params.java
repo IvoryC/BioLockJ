@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import biolockj.Constants;
 
 public class M2Params {
 
 	// Flags and argument names for metaphlan2
 	static final String INPUT_TYPE = "--input_type";
-	static final String FORCE = "--force";
 	static final String MPA_PKL = "--mpa_pkl";
 	static final String BOWTIE2DB = "--bowtie2db";
 	static final String INDEX = "-x";
@@ -56,15 +54,22 @@ public class M2Params {
 	static final String HELP_ARG = "-h";
 	static final String HELP_ARG_LONG = "--help";
 
-	public final List<String> NAMED_ARGS = Arrays.asList( INPUT_TYPE, MPA_PKL, BOWTIE2DB, INDEX, BT2_PS, TMP_DIR,
-		BOWTIE2_EXE, BOWTIE2_BUILD, BOWTIE2OUT, TAX_LEV, STAT_Q, IGNORE_MARKERS, TYPE, NREADS, PRES_TH, OUT_FILE,
-		ID_KEY, ID, SAM, SAM_LONG, BIOM, BIOM_LONG, MDELIM, MDELIM_LONG, NPROC, READ_MIN_LEN, MIN_CU_LEN,
-		MIN_ALIGNMENT_LEN, STAT, CLADE, MIN_AB );
+	public List<String> getNamedArgsList(){
+		return Arrays.asList( INPUT_TYPE, MPA_PKL, BOWTIE2DB, INDEX, BT2_PS, TMP_DIR,
+			BOWTIE2_EXE, BOWTIE2_BUILD, BOWTIE2OUT, TAX_LEV, STAT_Q, IGNORE_MARKERS, TYPE, NREADS, PRES_TH, OUT_FILE,
+			ID_KEY, ID, SAM, SAM_LONG, BIOM, BIOM_LONG, MDELIM, MDELIM_LONG, NPROC, READ_MIN_LEN, MIN_CU_LEN,
+			MIN_ALIGNMENT_LEN, STAT, CLADE, MIN_AB );
+	}
 
-	public final List<String> FLAG_ARGS = Arrays.asList( FORCE, NO_MAP, IGNORE_VIRUSES, IGNORE_EUKARYOTES, IGNORE_BACTERIA,
-		IGNORE_ARCHEA, AVOID_DISQM, INSTALL, VERSION_ARG, VERSION_ARG_LONG, HELP_ARG, HELP_ARG_LONG );
+	public List<String> getFlagArgList(){
+		return Arrays.asList( NO_MAP, IGNORE_VIRUSES, IGNORE_EUKARYOTES, IGNORE_BACTERIA,
+			IGNORE_ARCHEA, AVOID_DISQM, INSTALL, VERSION_ARG, VERSION_ARG_LONG, HELP_ARG, HELP_ARG_LONG );
+	}
 	
 	public final List<String> HALT_ARGS = Arrays.asList( INSTALL, VERSION_ARG, VERSION_ARG_LONG, HELP_ARG, HELP_ARG_LONG );
+	public List<String> getHaltArgList(){
+		return Arrays.asList( INSTALL, VERSION_ARG, VERSION_ARG_LONG, HELP_ARG, HELP_ARG_LONG );
+	}
 		
 	public final List<String> AUTO_ARGS = Arrays.asList( OUT_FILE, NPROC, BOWTIE2DB, MPA_PKL );
 	
@@ -94,26 +99,26 @@ public class M2Params {
 		}
 	}
 
-	public void check_param_names() throws UnrecognizedMetaphlan2Parameter {
+	public void check_param_names() throws UnrecognizedMetaphlanParameter {
 		for (String name : map.keySet()) {
-			if ( Arrays.asList( NAMED_ARGS ).contains( name ) && map.get(name) == null ) {
-				throw new UnrecognizedMetaphlan2Parameter("The parameter [" + name + "] to metaphlan2 takes a value.");
+			if ( Arrays.asList( getNamedArgsList() ).contains( name ) && map.get(name) == null ) {
+				throw new UnrecognizedMetaphlanParameter("The parameter [" + name + "] to metaphlan2 takes a value.");
 			}
-			if ( FLAG_ARGS.contains( name ) && map.get(name) != null ) {
-				throw new UnrecognizedMetaphlan2Parameter("The parameter [" + name 
+			if ( getFlagArgList().contains( name ) && map.get(name) != null ) {
+				throw new UnrecognizedMetaphlanParameter("The parameter [" + name 
 					+ "] to metaphlan2 does not take a value take a value; found value [" + map.get( name ) + "].");
 			}
-			if ( !NAMED_ARGS.contains( name ) && !FLAG_ARGS.contains( name ) ) {
-				throw new UnrecognizedMetaphlan2Parameter("The parameter [" + name 
+			if ( !getNamedArgsList().contains( name ) && !getFlagArgList().contains( name ) ) {
+				throw new UnrecognizedMetaphlanParameter("The parameter [" + name 
 					+ "] is not a known parameter for metaphlan2.");
 			}
 		}
 	}
 	
-	public void check_halt_params() throws RejectedMetaphlan2Parameter {
-		for (String name : HALT_ARGS ) {
+	public void check_halt_params() throws RejectedMetaphlanParameter {
+		for (String name : getHaltArgList() ) {
 			if (map.containsKey( name )) {
-				throw new RejectedMetaphlan2Parameter("The parameter [" + name + "] will prevent metaphlan2 from running.");
+				throw new RejectedMetaphlanParameter("The parameter [" + name + "] will prevent metaphlan2 from running.");
 			}
 		}
 	}

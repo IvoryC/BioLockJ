@@ -26,6 +26,12 @@ public abstract class MetaPhlAn_Tool extends ScriptModuleImpl {
 	static final String EXE_BOWTIE2_BUILD = "exe.bowtie2build";
 	
 	/**
+	 * {@value CHECK_PARAMS_DESC}: {@value CHECK_PARAMS}
+	 */
+	static final String CHECK_PARAMS = "metaphlan.checkParams";
+	static final String CHECK_PARAMS_DESC = "Should BioLockJ check the user-provided parameters to metaphlan.";
+	
+	/**
 	 * {@value METAPHLAN_PARAMS_DESC}: {@value METAPHLAN_PARAMS}
 	 */
 	static final String METAPHLAN_PARAMS = "metaphlan.params";
@@ -127,7 +133,7 @@ public abstract class MetaPhlAn_Tool extends ScriptModuleImpl {
 
 	@Override
 	public String getDockerImageName() {
-		return "metaphlan2";
+		return "metaphlan";
 	}
 
 	@Override
@@ -137,7 +143,7 @@ public abstract class MetaPhlAn_Tool extends ScriptModuleImpl {
 
 	@Override
 	public String getDockerImageTag() {
-		return "2.7.7_cloud_r1";
+		return "3.0.7";
 	}
 	
 	protected static String citeMetaphlan() {

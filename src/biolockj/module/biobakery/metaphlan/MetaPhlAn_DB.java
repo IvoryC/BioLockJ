@@ -3,15 +3,22 @@ package biolockj.module.biobakery.metaphlan;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import biolockj.Config;
 import biolockj.Constants;
 import biolockj.Log;
 import biolockj.Properties;
 import biolockj.api.API_Exception;
 import biolockj.api.ApiModule;
+import biolockj.exception.ConfigPathException;
+import biolockj.exception.DockerVolCreationException;
+import biolockj.module.OutsidePipelineWriter;
 import biolockj.util.BashScriptBuilder;
 
-public class MetaPhlAn_DB extends MetaPhlAn_Tool implements ApiModule{
+public class MetaPhlAn_DB extends MetaPhlAn_Tool implements ApiModule, OutsidePipelineWriter {
+	
+	private static final String FUNCTION_NAME = "doInstall";
 	
 	public MetaPhlAn_DB() {
 		addNewProperty( EXE_METAPHLAN, Properties.EXE_PATH, "" );
@@ -61,25 +68,32 @@ public class MetaPhlAn_DB extends MetaPhlAn_Tool implements ApiModule{
 
 	@Override
 	public List<List<String>> buildScript( List<File> files ) throws Exception {
-		String continued = BashScriptBuilder.continueLine();
-		String continueing = "       ";
 		List<List<String>> outer = new ArrayList<>();
 		List<String> inner = new ArrayList<>();
-		StringBuilder sb = new StringBuilder();
-		sb.append( Config.getExe( this, EXE_METAPHLAN ) + " " + M2Params.INSTALL + continued);
-		if (Config.getString( this, BOWTIE2DB ) != null) {
-			sb.append( continueing + M2Params.BOWTIE2DB + " " + Config.getExistingDir( this, BOWTIE2DB ) + continued);
-		}
-		if (Config.getString( this, EXE_BOWTIE2 ) != null) {
-			sb.append( continueing + M2Params.BOWTIE2_EXE + " " + Config.getExe( this, EXE_BOWTIE2 ) + continued);
-		}
-		if (Config.getString( this, EXE_BOWTIE2_BUILD ) != null) {
-			sb.append( continueing + M2Params.BOWTIE2_BUILD + " " + Config.getExe( this, EXE_BOWTIE2_BUILD ) + continued);
-		}
-		sb.append( continueing + M2Params.INDEX_LONG + " " + Config.requireString( this, INDEX ) );
-		inner.add( sb.toString() );
+		inner.add( FUNCTION_NAME );
 		outer.add( inner );
 		return outer;
+	}
+	
+	@Override
+	public List<String> getWorkerScriptFunctions() throws Exception {
+		List<String> list = super.getWorkerScriptFunctions();
+		String continued = BashScriptBuilder.continueLine();
+		String continueing = "     ";
+		list.add( "function " + FUNCTION_NAME + "() {");
+		list.add( Config.getExe( this, EXE_METAPHLAN ) + " " + M2Params.INSTALL + continued);
+		if (Config.getString( this, BOWTIE2DB ) != null) {
+			list.add( continueing + M2Params.BOWTIE2DB + " " + Config.getExistingDir( this, BOWTIE2DB ) + continued);
+		}
+		if (Config.getString( this, EXE_BOWTIE2 ) != null) {
+			list.add( continueing + M2Params.BOWTIE2_EXE + " " + Config.getExe( this, EXE_BOWTIE2 ) + continued);
+		}
+		if (Config.getString( this, EXE_BOWTIE2_BUILD ) != null) {
+			list.add( continueing + M2Params.BOWTIE2_BUILD + " " + Config.getExe( this, EXE_BOWTIE2_BUILD ) + continued);
+		}
+		list.add( continueing + M2Params.INDEX_LONG + " " + Config.requireString( this, INDEX ) );
+		list.add( "}" );
+		return list;
 	}
 
 	@Override
@@ -99,6 +113,14 @@ public class MetaPhlAn_DB extends MetaPhlAn_Tool implements ApiModule{
 	public String getCitationString() {
 		return "The BioLockJ module was developed by Ivory Blakley to facilitate using MetaPhlan2." +
 			System.lineSeparator() + citeMetaphlan();
+	}
+
+	@Override
+	public Set<String> getWriteDirs() throws DockerVolCreationException, ConfigPathException {
+		Set<String> dirs = new TreeSet<>();
+		File dir = Config.getExistingDir( this, BOWTIE2DB );
+		if ( dir != null ) dirs.add( dir.getAbsolutePath() );
+		return dirs;
 	}
 
 }

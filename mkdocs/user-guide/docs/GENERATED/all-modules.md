@@ -32,6 +32,10 @@
 [KrakenParser](biolockj.module.implicit.parser.wgs/KrakenParser.md) - *Build OTU tables from [KRAKEN](http://ccb.jhu.edu/software/kraken/) mpa-format reports.*                   
 [LogTransformTaxaTables](biolockj.module.report.taxa/LogTransformTaxaTables.md) - *Log-transform the raw taxa counts on Log10 or Log-e scales.*                   
 [MergeQiimeOtuTables](biolockj.module.implicit.qiime/MergeQiimeOtuTables.md)                   
+[Merge_MetaPhlAn_Tables](biolockj.module.biobakery.metaphlan/Merge_MetaPhlAn_Tables.md) - *Run the merge_metaphlan_tables.py utility from [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).*                   
+[MetaPhlAn2](biolockj.module.biobakery.metaphlan/MetaPhlAn2.md) - *Profile the composition of microbial communities using [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).*                   
+[MetaPhlAn3](biolockj.module.biobakery.metaphlan/MetaPhlAn3.md) - *Profile the composition of microbial communities using [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).*                   
+[MetaPhlAn_DB](biolockj.module.biobakery.metaphlan/MetaPhlAn_DB.md) - *Install the reference database required by [MetaPhlAn](https://github.com/biobakery/MetaPhlAn).*                   
 [Metaphlan2Classifier](biolockj.module.classifier.wgs/Metaphlan2Classifier.md) - *Classify WGS samples with [MetaPhlAn2](http://bitbucket.org/biobakery/metaphlan2).*                   
 [Metaphlan2Parser](biolockj.module.implicit.parser.wgs/Metaphlan2Parser.md)                   
 [Multiplexer](biolockj.module.seq/Multiplexer.md) - *Multiplex samples into a single file, or two files (one with forward reads, one with reverse reads) if multiplexing paired reads.*                   
