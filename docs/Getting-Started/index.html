@@ -235,15 +235,17 @@
               
                 <h2 id="installation-and-test">Installation and test<a class="headerlink" href="#installation-and-test" title="Permanent link">#</a></h2>
 <h3 id="basic-installation">Basic installation<a class="headerlink" href="#basic-installation" title="Permanent link">#</a></h3>
-<p>The basic installation assumes you have java 1.8+ and a unix-like environment.  Some features assume a bash shell, see <a href="../Supported-Environments">Notes about environments</a>.</p>
+<p>The basic installation assumes you have java 1.8+ and a unix-like environment. </p>
+<p>Linux or MacOS command line is suitable.<br>If using Windows, see <a href="Getting-Started-Windows">Windows setup</a> to setup a suitable environment.</p>
+<p>Some features assume a bash shell, see <a href="../Supported-Environments">Notes about environments</a>.</p>
 <h4 id="1-download-the-latest-release-unpack-the-tarball">1. Download the <a href="https://github.com/BioLockJ-Dev-Team/BioLockJ/releases/latest">latest release</a> &amp; unpack the tarball.<a class="headerlink" href="#1-download-the-latest-release-unpack-the-tarball" title="Permanent link">#</a></h4>
 <pre><code class="bash">tar -zxf BioLockJ-v*.tar.gz
 </code></pre>
 
-<p>Save the folder wherever you like to keep executables.
-<strong>If</strong> you choose to download the source code, you will need to compile it by running <code>ant</code> with the <code>build.xml</code> file in the <code>resources</code> folder. </p>
+<p>Save the folder wherever you like to keep executables.</p>
+<p><strong>If</strong> you choose to download the source code rather than the pre-compiled project, you will need to compile it by running <code>ant</code> with the <code>build.xml</code> file in the <code>resources</code> folder. </p>
 <h4 id="2-run-the-install-script">2. Run the install script<a class="headerlink" href="#2-run-the-install-script" title="Permanent link">#</a></h4>
-<p>The <code>install</code> script updates the $USER bash profile to call <strong><a href="https://github.com/msioda/BioLockJ/blob/master/script/blj_config?raw=true">blj_config</a></strong>.  See <strong><a href="../Commands">Commands</a></strong> for a full description of <strong><a href="https://github.com/msioda/BioLockJ/blob/master/script/blj_config?raw=true">blj_config</a></strong></p>
+<p>The <code>install</code> script determines the location/name of the user profile, and appends it to define $BLJ and $BLJ_PROJ,  add the BioLockJ script folder to the path, and create a convenient alias called "cd-blj".</p>
 <pre><code class="bash">cd BioLockJ
 ./install
 #     Saved backup:  /users/joe/.bash_profile~
@@ -251,7 +253,9 @@
 # BioLockJ installation complete!
 </code></pre>
 
-<p>This will add the required variables to your path when you start your next session.<br></p>
+<p><strong>Recommended:</strong>  View your profile.  If there are older lines for earlier BioLockJ installations, remove those lines.</p>
+<p><strong>Recommended:</strong>  Edit your profile, and set the value of BLJ_PROJ to a convenient folder that you can find easily.  Your BioLockJ pipelines will be saved under this directory.</p>
+<p>Start a new session so these additions take effect.</p>
 <pre><code class="bash">exit # exit and start a new session
 </code></pre>
 
@@ -305,13 +309,13 @@ If that does not appear, see <a href="../FAQ/#question-why-doesnt-my-pipeline-ru
 
 <p>You should take a moment to <a href="../Getting-Started#review-your-first-pipeline">review your first pipeline</a>.</p>
 <h3 id="cluster-installation">Cluster installation<a class="headerlink" href="#cluster-installation" title="Permanent link">#</a></h3>
-<p>Installing BioLockJ on a cluster follows the same process as the <a href="../Getting-Started#Basic-Installation">Basic Installation</a>.  EACH USER must run the <code>install</code> script in order to run the BioLockJ launch scripts.  Use the property <code>pipeline.env=cluster</code> in your pipeline configuration to take advantage of parallell computing through the cluster.</p>
+<p>Installing BioLockJ on a cluster follows the same process as the <a href="../Getting-Started#Basic-Installation">Basic Installation</a>.  EACH USER must run the <code>install</code> script in order to run the BioLockJ launch scripts.  Use the property <code>pipeline.env=cluster</code> in your pipeline configuration to take advantage of parallel computing through the cluster.</p>
 <h2 id="review-your-first-pipeline">Review your first pipeline<a class="headerlink" href="#review-your-first-pipeline" title="Permanent link">#</a></h2>
 <p>The variable <code>$BLJ_PROJ</code> points to your projects folder. See a list of all of the pipelines in your projects folder.  </p>
 <pre><code class="bash">ls $BLJ_PROJ
 </code></pre>
 
-<p>By default, <code>$BLJ_PROJ</code> is set to the "pipelines" folder in BioLockJ (<code>$BLJ/pipelines</code>).  To change this, add a line to your bash_profile (or equivilent file): <code>export BLJ_PROJ=/path/to/my/projects</code>.  This line must be <em>after</em> the call to the blj_config script.</p>
+<p>By default, <code>$BLJ_PROJ</code> is set to the "pipelines" folder in BioLockJ (<code>$BLJ/pipelines</code>).  To change this, add a line to your bash_profile (or equivalent file): <code>export BLJ_PROJ=/path/to/my/projects</code>.  </p>
 <p>Look at your most recent pipeline:</p>
 <pre><code class="bash">cd-blj
 </code></pre>

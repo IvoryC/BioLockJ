@@ -4,17 +4,22 @@
 
 ### Basic installation
 
-The basic installation assumes you have java 1.8+ and a unix-like environment.  Some features assume a bash shell, see [Notes about environments](../Supported-Environments).
+The basic installation assumes you have java 1.8+ and a unix-like environment. 
+
+Linux or MacOS command line is suitable.<br>If using Windows, see [Windows setup](Getting-Started-Windows) to setup a suitable environment.
+
+Some features assume a bash shell, see [Notes about environments](../Supported-Environments).
 
 #### 1. Download the [latest release](https://github.com/BioLockJ-Dev-Team/BioLockJ/releases/latest) & unpack the tarball.
 ```bash
 tar -zxf BioLockJ-v*.tar.gz
 ```
 Save the folder wherever you like to keep executables.
-**If** you choose to download the source code, you will need to compile it by running `ant` with the `build.xml` file in the `resources` folder. 
+
+**If** you choose to download the source code rather than the pre-compiled project, you will need to compile it by running `ant` with the `build.xml` file in the `resources` folder. 
 
 #### 2. Run the install script 
-The `install` script updates the $USER bash profile to call **[blj_config](https://github.com/msioda/BioLockJ/blob/master/script/blj_config?raw=true)**.  See **[Commands](../Commands)** for a full description of **[blj_config](https://github.com/msioda/BioLockJ/blob/master/script/blj_config?raw=true)**
+The `install` script determines the location/name of the user profile, and appends it to define $BLJ and $BLJ_PROJ,  add the BioLockJ script folder to the path, and create a convenient alias called "cd-blj".
 
 ```bash
 cd BioLockJ
@@ -24,7 +29,11 @@ cd BioLockJ
 # BioLockJ installation complete!
 ```
 
-This will add the required variables to your path when you start your next session.<br>
+**Recommended:**  View your profile.  If there are older lines for earlier BioLockJ installations, remove those lines.
+
+**Recommended:**  Edit your profile, and set the value of BLJ_PROJ to a convenient folder that you can find easily.  Your BioLockJ pipelines will be saved under this directory.
+
+Start a new session so these additions take effect.
 
 ```bash
 exit # exit and start a new session
@@ -97,7 +106,7 @@ You should take a moment to [review your first pipeline](../Getting-Started#revi
 
 ### Cluster installation
 
-Installing BioLockJ on a cluster follows the same process as the [Basic Installation](../Getting-Started#Basic-Installation).  EACH USER must run the `install` script in order to run the BioLockJ launch scripts.  Use the property `pipeline.env=cluster` in your pipeline configuration to take advantage of parallell computing through the cluster.
+Installing BioLockJ on a cluster follows the same process as the [Basic Installation](../Getting-Started#Basic-Installation).  EACH USER must run the `install` script in order to run the BioLockJ launch scripts.  Use the property `pipeline.env=cluster` in your pipeline configuration to take advantage of parallel computing through the cluster.
 
 
 ## Review your first pipeline
@@ -106,7 +115,7 @@ The variable `$BLJ_PROJ` points to your projects folder. See a list of all of th
 ```bash
 ls $BLJ_PROJ
 ```
-By default, `$BLJ_PROJ` is set to the "pipelines" folder in BioLockJ (`$BLJ/pipelines`).  To change this, add a line to your bash_profile (or equivilent file): `export BLJ_PROJ=/path/to/my/projects`.  This line must be _after_ the call to the blj_config script.
+By default, `$BLJ_PROJ` is set to the "pipelines" folder in BioLockJ (`$BLJ/pipelines`).  To change this, add a line to your bash_profile (or equivalent file): `export BLJ_PROJ=/path/to/my/projects`.  
 
 Look at your most recent pipeline:
 ```bash
