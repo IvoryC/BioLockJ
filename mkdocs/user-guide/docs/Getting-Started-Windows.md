@@ -57,7 +57,7 @@ Follow the standard instructions to for [Getting Started](Getting-Started.md) wi
 _In theory, operating within this system will be identical to working with BioLockJ in a unix-like operating system.  However we recommend (and run tests) using docker, as this removes the added troubleshooting of adapting to subtle differences across environments, which could be compounded by the system stacking, not to mention the often tedious task of installing all dependencies for all pipelines._
 
 
-##Now head to [Getting Started](Getting-Started.md)!
+##Now head to [Getting Started](../Getting-Started.md)!
 
 ---
 

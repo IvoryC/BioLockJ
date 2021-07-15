@@ -6,7 +6,7 @@
 
 The basic installation assumes you have java 1.8+ and a unix-like environment. 
 
-Linux or MacOS command line is suitable.<br>If using Windows, see [Windows setup](Getting-Started-Windows) to setup a suitable environment.
+Linux or MacOS command line is suitable.<br>If using Windows, see [Windows setup](Getting-Started-Windows.md) to setup a suitable environment.
 
 Some features assume a bash shell, see [Notes about environments](../Supported-Environments).
 
